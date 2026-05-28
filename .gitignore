@@ -1,0 +1,34 @@
+# Brainstorming session data (visual companion mockups)
+.superpowers/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Node / pnpm (will be populated when Phase 0 setup lands)
+node_modules/
+.pnpm-store/
+.next/
+.turbo/
+dist/
+build/
+*.tsbuildinfo
+
+# Env
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Coverage / test artefacts
+coverage/
+.nyc_output/

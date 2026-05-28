@@ -1,6 +1,6 @@
 ---
 name: safe-git-workflow
-description: Use when about to commit code, create a PR, or run destructive git operations (reset --hard, branch -D, push --force, clean -fd, checkout that overwrites, stash drop) — enforces branch verification, explicit staging, working-tree safety, and gitflow base for PRs.
+description: Use when about to commit code, create a PR, merge a PR, or run destructive git operations (reset --hard, branch -D, push --force, clean -fd, checkout that overwrites, stash drop) — enforces branch verification, explicit staging, working-tree safety, gitflow base for PRs, and auto-merge policy (squash + delete branch, skip drafts, require mergeable).
 ---
 
 # Safe Git Workflow
@@ -13,6 +13,7 @@ Git operations that touch shared state (commit, push, PR) or discard work (reset
 
 - About to `git commit` for the first time in a session or after any branch switch
 - About to `gh pr create`
+- About to `gh pr merge` (any PR — your own or otherwise)
 - About to run destructive git: `reset --hard`, `branch -D`, `push --force`, `clean -fd`, `checkout <ref> -- <path>` over local edits, `stash drop`, `stash clear`
 
 ## Project conventions
@@ -46,6 +47,22 @@ Read root `CLAUDE.md` for: base branch (often `develop`, not `main`), branch nam
 4. **HEREDOC body** with `## Summary` + `## Test plan` sections; link issues (`Refs #N`).
 5. **Push with upstream first:** `git push -u origin <branch>`.
 
+## Pre-merge checks
+
+Project policy: **autonomous auto-merge is enabled** for non-conflict, non-draft PRs. The agent merges its own PRs after opening them, then pulls the updated base.
+
+1. **Inspect PR state:** `gh pr view <N> --json mergeable,isDraft,state,baseRefName --jq '{state, isDraft, mergeable, base: .baseRefName}'`.
+2. **Eligibility gate (all must hold):**
+   - `state` is `OPEN`
+   - `isDraft` is `false` — **NEVER auto-merge a draft PR.** If you authored a draft that has stabilised, mark ready first: `gh pr ready <N>`.
+   - `mergeable` is `MERGEABLE` (not `CONFLICTING`, not `UNKNOWN`)
+3. **Default mode:** `gh pr merge <N> --squash --delete-branch`. Squash keeps one commit per PR on the base — clean history for solo dev; trivial revert.
+4. **After merge: sync local base.** `git checkout <base> && git pull --ff-only`. New work branches off the freshly-synced base.
+5. **CI:** when CI is configured (post-#15), add `--auto` and let GitHub merge when checks go green. Until then, manual mode is acceptable.
+6. **Target `main`:** same auto-merge rules unless the project later adds an explicit guard. PRs to `main` from `develop` (release flow) follow the same policy by default.
+
+If any eligibility check fails, **STOP and report** — do not work around the gate.
+
 ## Pre-destructive-op checks
 
 1. **`git status` first.** If working tree is dirty, **STOP**.
@@ -66,6 +83,7 @@ Read root `CLAUDE.md` for: base branch (often `develop`, not `main`), branch nam
 | Force push | User OK + `--force-with-lease` + not main/develop | Reflex force after mistake |
 | Open code PR | `--base <project-base> --draft` | Inferring base; non-draft before verification |
 | Open doc PR | `--base <project-base>` (ready, no draft flag) | Reflexively adding `--draft` to every PR |
+| Merge PR | `gh pr merge <N> --squash --delete-branch` after eligibility check | Merging draft; merging with `mergeable: CONFLICTING`; skipping post-merge `pull --ff-only` |
 
 ## Rationalizations — don't
 
@@ -84,9 +102,13 @@ Read root `CLAUDE.md` for: base branch (often `develop`, not `main`), branch nam
 - About to `reset --hard` with ANY modified/untracked files in `git status`
 - `gh pr create` without `--base` — and missing `--draft` for code PRs (doc PRs may omit it intentionally)
 - `push --force` to any branch
+- `gh pr merge` without first reading `mergeable` + `isDraft` from `gh pr view`
+- Merging a draft PR "because the content is ready" — mark ready explicitly first
+- Forgetting `git pull --ff-only` after a merge — next branch will diverge from base
 - "It's fine, this is" — confirm with command, not memory
 
 ## Changelog
 
+- v0.2.0 — 2026-05-28 — Adds Pre-merge checks section codifying project auto-merge policy: `gh pr merge --squash --delete-branch`, skip drafts, require `mergeable: MERGEABLE`, sync local base via `git pull --ff-only` after merge. Description + When-to-use + Quick Reference + Red flags updated to cover merge trigger.
 - v0.1.1 — 2026-05-28 — Pre-PR check 2 differentiates code PRs (draft default) from doc PRs (ready default). Quick Reference splits "Open PR" into two rows. Red flag note updated to allow ready-by-default for docs.
 - v0.1.0 — 2026-05-28 — Initial skill. Pre-commit / pre-PR / pre-destructive-op checks, quick reference, rationalizations, red flags.
