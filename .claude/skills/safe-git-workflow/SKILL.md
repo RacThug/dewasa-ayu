@@ -41,7 +41,7 @@ Read root `CLAUDE.md` for: base branch (often `develop`, not `main`), branch nam
 ## Pre-PR checks
 
 1. **Explicit base:** `--base <branch>` per project convention (default `develop`). Don't let `gh` infer.
-2. **Open as draft:** `--draft`. Promote with `gh pr ready <N>` only after verification.
+2. **Draft for code, ready for docs.** Code PRs (anything with runtime verification — tests, build, deploy preview, lighthouse) open with `--draft`; promote via `gh pr ready <N>` after verification passes. Pure documentation PRs (specs, READMEs, design docs) open as ready when confident in the content — structural verification at write-time is sufficient and reviewers can still request changes via comments.
 3. **Title <70 chars**, details in body.
 4. **HEREDOC body** with `## Summary` + `## Test plan` sections; link issues (`Refs #N`).
 5. **Push with upstream first:** `git push -u origin <branch>`.
@@ -64,7 +64,8 @@ Read root `CLAUDE.md` for: base branch (often `develop`, not `main`), branch nam
 | Discard local changes | `git stash push -- <files>` then op | `reset --hard` without status check |
 | Reset to remote | Stash → `reset --hard origin/<branch>` | Skipping stash |
 | Force push | User OK + `--force-with-lease` + not main/develop | Reflex force after mistake |
-| Open PR | `--base <project-base> --draft` | Inferring base; non-draft for WIP |
+| Open code PR | `--base <project-base> --draft` | Inferring base; non-draft before verification |
+| Open doc PR | `--base <project-base>` (ready, no draft flag) | Reflexively adding `--draft` to every PR |
 
 ## Rationalizations — don't
 
@@ -81,6 +82,11 @@ Read root `CLAUDE.md` for: base branch (often `develop`, not `main`), branch nam
 - Committing without running `git branch --show-current` this turn
 - About to `add -A` / `.` / `-u`
 - About to `reset --hard` with ANY modified/untracked files in `git status`
-- `gh pr create` without `--base` and `--draft`
+- `gh pr create` without `--base` — and missing `--draft` for code PRs (doc PRs may omit it intentionally)
 - `push --force` to any branch
 - "It's fine, this is" — confirm with command, not memory
+
+## Changelog
+
+- v0.1.1 — 2026-05-28 — Pre-PR check 2 differentiates code PRs (draft default) from doc PRs (ready default). Quick Reference splits "Open PR" into two rows. Red flag note updated to allow ready-by-default for docs.
+- v0.1.0 — 2026-05-28 — Initial skill. Pre-commit / pre-PR / pre-destructive-op checks, quick reference, rationalizations, red flags.
