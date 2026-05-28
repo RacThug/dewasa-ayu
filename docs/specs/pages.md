@@ -2,7 +2,7 @@
 id: UI-001
 title: Pages & Components — Next.js Frontend
 status: Draft
-version: 0.1.0
+version: 0.2.0
 owners: [@RacThug]
 created: 2026-05-28
 updated: 2026-05-28
@@ -10,6 +10,7 @@ implements: [20]
 supersedes: null
 related: [ENG-001, DB-001, API-001]
 prd_refs: ["§9", "§14", "§17.2", "§20", "§22.1"]
+external_refs: ["DESIGN.md"]
 ---
 
 # Pages & Components — Next.js Frontend
@@ -45,55 +46,18 @@ This spec covers MVP screens plus the SEO pages (PRD §14) and Phase 2 admin sur
 
 ### Design tokens
 
-Drop-in fragment for `tailwind.config.ts`:
+**Source of truth: [`/DESIGN.md`](../../DESIGN.md).** That file owns the full palette (paper / night / high-contrast), typography pairings, semantic colors, and rationale. UI-001 implements those decisions as a Tailwind config; it does not re-declare them.
 
-```typescript
-const tokens = {
-  colors: {
-    // Dark theme (default)
-    'gold': '#C4A265',
-    'gold-soft': '#D8BC8B',
-    'bg-dark': '#0D0B08',
-    'surface-dark': '#1A1610',
-    'text-on-dark': '#F5EFE6',
-    'muted-on-dark': '#A89878',
+Implementation expectations the Tailwind config must satisfy:
 
-    // Light theme
-    'bg-light': '#FDF8F0',
-    'surface-light': '#FFFFFF',
-    'text-on-light': '#1A1610',
-    'muted-on-light': '#5C4F3B',
+- **Theme default: `paper`** (cream + sepia ink), not `night`. Dark variant remains available; high-contrast available via `prefers-contrast: more` and the user toggle.
+- **Token names follow DESIGN.md naming:** `paper`, `paper-deep`, `paper-edge`, `ink`, `ink-soft`, `ink-faint`, `ochre`, `ochre-soft` for the paper theme; `night`, `ember`, `gold`, etc. for the night theme. Do NOT keep the older `bg-light` / `bg-dark` naming from v0.1.0 — DESIGN.md is the source of truth.
+- **Semantic colors:** `ayu`, `caution`, `ala` — desaturated values from DESIGN.md (sage, olive-gold, brick), distinct per theme. Three channels (color + icon + text) per PRD §9.4.1.
+- **Typography:** Cormorant Garamond serif + DM Sans pair, with the numeric-as-inscription pattern from DESIGN.md (Cormorant ochre at 1.5–3× body for scores and Pawukon day).
+- **Font scaling:** Normal (16 px) / Large (18 px) / Extra Large (20 px) bound to CSS variables; applied on `<html>`; persisted to `localStorage`.
+- **Spacing:** 8-px unit rhythm per DESIGN.md (4 / 8 / 16 / 24 / 40 / 64 / 96). Minimum touch target 44 px via `spacing.touch`.
 
-    // High-contrast theme
-    'bg-hc': '#FFFFFF',
-    'text-hc': '#000000',
-    'accent-hc': '#0000EE',
-
-    // Semantic — ceremony evaluation
-    'ayu': '#3F8F4B',          // calendar green
-    'caution': '#3A5FA8',      // calendar blue
-    'bad': '#B14250',          // calendar red
-  },
-  fontFamily: {
-    serif: ['Cormorant Garamond', 'serif'],
-    sans:  ['DM Sans', 'system-ui', 'sans-serif'],
-  },
-  fontSize: {
-    'base': 'var(--font-size-base, 1rem)',   // bound to font-scaling toggle
-    'lg':   'var(--font-size-lg, 1.125rem)',
-    'xl':   'var(--font-size-xl, 1.25rem)',
-    '2xl':  'var(--font-size-2xl, 1.5rem)',
-    '3xl':  'var(--font-size-3xl, 1.875rem)',
-  },
-  spacing: {
-    'touch': '2.75rem',                       // 44px minimum touch target (WCAG)
-  },
-};
-```
-
-Font scaling toggle drives the three `--font-size-*` CSS variables: Normal (1rem base), Large (1.125rem), Extra Large (1.25rem). Persisted to `localStorage`; applied on `<html>` so all `rem`-based values scale together.
-
-Color contrast targets per PRD §9.4.1: 4.5:1 normal text, 3:1 large text. The high-contrast theme variant overrides token values entirely (black-on-white, blue accent).
+The concrete `tailwind.config.ts` lives at `apps/web/tailwind.config.ts` once implementation lands (Phase 3, issue #4). It is not duplicated here.
 
 ### Global components
 
@@ -508,4 +472,5 @@ Auth: `next-auth` session OR API key + `X-Admin-Token` (same model as API-001 ad
 
 ## Changelog
 
+- v0.2.0 — 2026-05-28 — Design tokens deferred to `/DESIGN.md` (Lontar manuscript revival direction, paper theme default). UI-001 retains only the implementation expectations the Tailwind config must satisfy; concrete token literals and palette rationale moved to DESIGN.md to avoid two sources of truth. No screen or component contracts changed.
 - v0.1.0 — 2026-05-28 — Initial draft. Design tokens with three themes + font scaling. 14 global components. 9 screens documented (Home, Calendar, Recommendations, Date Detail, About, Ceremony landing, Monthly SEO, Yearly SEO, API Docs) plus 3 Phase 2 admin sub-routes. ASCII wireframes for the two most interactive screens. Cross-cutting behaviour for ceremony switch, theme switch, font scaling, share, animations. Six open questions flagged.
