@@ -46,10 +46,10 @@ This spec covers the **v1** surface. Versioning is URL-based (`/api/v1`); breaki
 
 Two access modes:
 
-| Mode | Used by | Header | Source |
-|------|---------|--------|--------|
-| **Public** | dewasaayu.com frontend, anonymous third parties (free tier) | none | open access; subject to IP-based rate limit |
-| **API key** | Registered third parties (free, pro, enterprise tiers) | `X-API-Key: <key>` | issued by operator via `pnpm api keys:issue` (writes to `api_keys` table — see [DB-001](./db.md#api_keys)) |
+| Mode        | Used by                                                     | Header             | Source                                                                                                     |
+| ----------- | ----------------------------------------------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------- |
+| **Public**  | dewasaayu.com frontend, anonymous third parties (free tier) | none               | open access; subject to IP-based rate limit                                                                |
+| **API key** | Registered third parties (free, pro, enterprise tiers)      | `X-API-Key: <key>` | issued by operator via `pnpm api keys:issue` (writes to `api_keys` table — see [DB-001](./db.md#api_keys)) |
 
 Rules:
 
@@ -78,25 +78,25 @@ const ErrorEnvelopeSchema = z.object({
       'NOT_FOUND',
       'INTERNAL_ERROR',
     ]),
-    message: z.string(),                         // human-readable, English
-    details: z.record(z.unknown()).optional(),   // optional structured info (retry_after, field paths, etc.)
+    message: z.string(), // human-readable, English
+    details: z.record(z.unknown()).optional(), // optional structured info (retry_after, field paths, etc.)
   }),
 });
 ```
 
 Mapping to HTTP status:
 
-| Code | Status | Meaning |
-|------|--------|---------|
-| `INVALID_DATE` | 400 | Bad date param (non-ISO, NaN, malformed). |
-| `UNKNOWN_CEREMONY` | 400 | `ceremony` param not in registry. `details.valid_ceremonies` lists accepted values. |
-| `INVALID_PARAM` | 400 | Other invalid params (negative count, bad month/year, malformed body). |
-| `OUT_OF_RANGE` | 400 | Date outside the supported 1900-2100 range. |
-| `UNAUTHORIZED` | 401 | API key missing where required, or key invalid/expired/revoked. |
-| `FORBIDDEN` | 403 | API key present but lacks the tier required (e.g. enterprise-only endpoint). |
-| `NOT_FOUND` | 404 | Resource (ceremony, dewasa code) not found. |
-| `RATE_LIMITED` | 429 | Tier quota exhausted. `details.retry_after` (seconds) and `details.tier` populated. |
-| `INTERNAL_ERROR` | 500 | Unhandled engine error or DB failure. `details.trace_id` populated for correlation. |
+| Code               | Status | Meaning                                                                             |
+| ------------------ | ------ | ----------------------------------------------------------------------------------- |
+| `INVALID_DATE`     | 400    | Bad date param (non-ISO, NaN, malformed).                                           |
+| `UNKNOWN_CEREMONY` | 400    | `ceremony` param not in registry. `details.valid_ceremonies` lists accepted values. |
+| `INVALID_PARAM`    | 400    | Other invalid params (negative count, bad month/year, malformed body).              |
+| `OUT_OF_RANGE`     | 400    | Date outside the supported 1900-2100 range.                                         |
+| `UNAUTHORIZED`     | 401    | API key missing where required, or key invalid/expired/revoked.                     |
+| `FORBIDDEN`        | 403    | API key present but lacks the tier required (e.g. enterprise-only endpoint).        |
+| `NOT_FOUND`        | 404    | Resource (ceremony, dewasa code) not found.                                         |
+| `RATE_LIMITED`     | 429    | Tier quota exhausted. `details.retry_after` (seconds) and `details.tier` populated. |
+| `INTERNAL_ERROR`   | 500    | Unhandled engine error or DB failure. `details.trace_id` populated for correlation. |
 
 Successful responses do NOT wrap in an envelope — they return the raw data. This avoids double-nesting in the common case (PRD §16.4 example).
 
@@ -118,8 +118,8 @@ Full date info + ceremony-specific evaluation for a single Gregorian date.
 
 ```typescript
 const CheckQuery = z.object({
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),   // ISO 8601 date
-  ceremony: CeremonyIdSchema,                       // see ENG-001
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), // ISO 8601 date
+  ceremony: CeremonyIdSchema, // see ENG-001
 });
 ```
 
@@ -127,9 +127,9 @@ const CheckQuery = z.object({
 
 ```typescript
 const CheckResponse = z.object({
-  date: z.string(),                          // echo of input
-  info: BalineseDateSchema,                  // matches ENG-001 BalineseDate
-  evaluation: EvaluationSchema,              // matches ENG-001 Evaluation
+  date: z.string(), // echo of input
+  info: BalineseDateSchema, // matches ENG-001 BalineseDate
+  evaluation: EvaluationSchema, // matches ENG-001 Evaluation
 });
 ```
 
@@ -160,12 +160,12 @@ const MonthResponse = z.object({
   year: z.number(),
   month: z.number(),
   ceremony: CeremonyIdSchema,
-  days: z.array(EvaluatedDateSchema),        // matches ENG-001 EvaluatedDate; length = days in month
+  days: z.array(EvaluatedDateSchema), // matches ENG-001 EvaluatedDate; length = days in month
   summary: z.object({
     ayuCount: z.number(),
     cautionCount: z.number(),
     badCount: z.number(),
-    topDates: z.array(EvaluatedDateSchema),  // up to 5
+    topDates: z.array(EvaluatedDateSchema), // up to 5
   }),
 });
 ```
@@ -185,7 +185,7 @@ Find N nearest good (`ayu`) dates from a starting date.
 ```typescript
 const RecommendQuery = z.object({
   from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  count: z.coerce.number().int().min(1).max(20),     // hard cap 20
+  count: z.coerce.number().int().min(1).max(20), // hard cap 20
   ceremony: CeremonyIdSchema,
 });
 ```
@@ -195,9 +195,9 @@ const RecommendQuery = z.object({
 ```typescript
 const RecommendResponse = z.object({
   from: z.string(),
-  count: z.number(),                         // requested
-  dates: z.array(EvaluatedDateSchema),       // actual results (≤ count)
-  capReached: z.boolean(),                   // true if engine's 365-day scan cap was hit
+  count: z.number(), // requested
+  dates: z.array(EvaluatedDateSchema), // actual results (≤ count)
+  capReached: z.boolean(), // true if engine's 365-day scan cap was hit
 });
 ```
 
@@ -214,14 +214,16 @@ Evaluate every date in a closed range.
 **Query params:**
 
 ```typescript
-const RangeQuery = z.object({
-  from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  ceremony: CeremonyIdSchema,
-}).refine(
-  ({ from, to }) => new Date(to).getTime() - new Date(from).getTime() <= 90 * 86400000,
-  { message: 'Range must be ≤ 90 days', path: ['to'] },
-);
+const RangeQuery = z
+  .object({
+    from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    ceremony: CeremonyIdSchema,
+  })
+  .refine(({ from, to }) => new Date(to).getTime() - new Date(from).getTime() <= 90 * 86400000, {
+    message: 'Range must be ≤ 90 days',
+    path: ['to'],
+  });
 ```
 
 **Response:**
@@ -251,13 +253,15 @@ List all supported ceremony types.
 
 ```typescript
 const CeremoniesResponse = z.object({
-  ceremonies: z.array(z.object({
-    id: CeremonyIdSchema,                    // engine slug
-    name: z.string(),                        // Indonesian display
-    category: z.enum(['manusa_yadnya', 'dewa_yadnya', 'pitra_yadnya', 'cross']),
-    description: z.string(),                 // 1-2 paragraph
-    icon: z.string(),                        // emoji
-  })),
+  ceremonies: z.array(
+    z.object({
+      id: CeremonyIdSchema, // engine slug
+      name: z.string(), // Indonesian display
+      category: z.enum(['manusa_yadnya', 'dewa_yadnya', 'pitra_yadnya', 'cross']),
+      description: z.string(), // 1-2 paragraph
+      icon: z.string(), // emoji
+    }),
+  ),
 });
 ```
 
@@ -275,8 +279,11 @@ List dewasa rules applicable to a ceremony (or all rules with `ceremony=all`).
 
 ```typescript
 const DewasaQuery = z.object({
-  ceremony: z.union([CeremonyIdSchema, z.literal('all')]).optional().default('all'),
-  type: z.enum(['ayu', 'ala']).optional(),   // filter by type
+  ceremony: z
+    .union([CeremonyIdSchema, z.literal('all')])
+    .optional()
+    .default('all'),
+  type: z.enum(['ayu', 'ala']).optional(), // filter by type
 });
 ```
 
@@ -285,14 +292,16 @@ const DewasaQuery = z.object({
 ```typescript
 const DewasaResponse = z.object({
   ceremony: z.union([CeremonyIdSchema, z.literal('all')]),
-  rules: z.array(z.object({
-    code: z.string(),                        // matches engine DewasaCode
-    name: z.string(),                        // Indonesian
-    type: z.enum(['ayu', 'ala']),
-    severity: z.enum(['critical', 'minor']).nullable(),
-    description: z.string(),                 // Indonesian
-    applicableCeremonies: z.array(CeremonyIdSchema),
-  })),
+  rules: z.array(
+    z.object({
+      code: z.string(), // matches engine DewasaCode
+      name: z.string(), // Indonesian
+      type: z.enum(['ayu', 'ala']),
+      severity: z.enum(['critical', 'minor']).nullable(),
+      description: z.string(), // Indonesian
+      applicableCeremonies: z.array(CeremonyIdSchema),
+    }),
+  ),
 });
 ```
 
@@ -321,7 +330,7 @@ const OtonanQuery = z.object({
 const OtonanResponse = z.object({
   birthdate: z.string(),
   year: z.number(),
-  occurrences: z.array(OtonanInfoSchema),    // matches ENG-001 OtonanInfo
+  occurrences: z.array(OtonanInfoSchema), // matches ENG-001 OtonanInfo
 });
 ```
 
@@ -350,7 +359,7 @@ const FeedbackBody = z.object({
 
 ```typescript
 const FeedbackResponse = z.object({
-  id: z.string().uuid(),                     // newly created feedback row
+  id: z.string().uuid(), // newly created feedback row
   receivedAt: z.string().datetime(),
 });
 ```
@@ -373,8 +382,8 @@ const HealthResponse = z.object({
   checks: z.object({
     database: z.enum(['ok', 'down']),
     redis: z.enum(['ok', 'down']),
-    engineVersion: z.string(),               // semver of @dewasa-ayu/wariga-engine
-    uptime: z.number(),                      // seconds
+    engineVersion: z.string(), // semver of @dewasa-ayu/wariga-engine
+    uptime: z.number(), // seconds
   }),
 });
 ```
@@ -403,12 +412,12 @@ Auth: requires `X-API-Key` with `tier = 'enterprise'` AND an additional `X-Admin
 
 Every successful response (regardless of endpoint) carries:
 
-| Header | Value | Purpose |
-|--------|-------|---------|
-| `X-API-Version` | `1` (matching `/v1`) | Lets clients log which version they targeted. |
-| `X-Engine-Version` | semver of `@dewasa-ayu/wariga-engine` at build time | Lets clients tie evaluation results to a specific engine release. |
-| `X-RateLimit-Remaining` | integer | Calls left in current window for the tier in use. |
-| `X-RateLimit-Reset` | unix epoch seconds | When the current rate-limit window resets. |
+| Header                  | Value                                               | Purpose                                                           |
+| ----------------------- | --------------------------------------------------- | ----------------------------------------------------------------- |
+| `X-API-Version`         | `1` (matching `/v1`)                                | Lets clients log which version they targeted.                     |
+| `X-Engine-Version`      | semver of `@dewasa-ayu/wariga-engine` at build time | Lets clients tie evaluation results to a specific engine release. |
+| `X-RateLimit-Remaining` | integer                                             | Calls left in current window for the tier in use.                 |
+| `X-RateLimit-Reset`     | unix epoch seconds                                  | When the current rate-limit window resets.                        |
 
 #### Worked requests
 
@@ -437,7 +446,18 @@ Success (200):
     "caturwara": "sri",
     "dwiwara": "menga",
     "ekawara": null,
-    "sasih": { "index": 2, "name": "katiga", "penanggal": 5, "isPangelong": false, "isPurnama": false, "isTilem": false, "isNampih": false, "isMala": false, "isEstimated": true, "tahunSaka": 1948 },
+    "sasih": {
+      "index": 2,
+      "name": "katiga",
+      "penanggal": 5,
+      "isPangelong": false,
+      "isPurnama": false,
+      "isTilem": false,
+      "isNampih": false,
+      "isMala": false,
+      "isEstimated": true,
+      "tahunSaka": 1948
+    },
     "ingkel": "manuk",
     "jejepan": "sato",
     "totalUrip": 15
@@ -454,7 +474,22 @@ Success (200):
       { "factor": "sasih", "passed": true, "weight": 2.0, "contribution": 2.0 },
       { "factor": "dewasa_ayu:sangawara_tulus", "passed": true, "weight": 1.5, "contribution": 1.5 }
     ],
-    "dewasaAyu": [{ "code": "sangawara_tulus", "name": "Sangawara Tulus", "type": "ayu", "description": "Langsung berhasil", "applicableCeremonies": ["pawiwahan", "manusa_yadnya", "dewa_yadnya", "pitra_yadnya", "pembangunan", "usaha"] }],
+    "dewasaAyu": [
+      {
+        "code": "sangawara_tulus",
+        "name": "Sangawara Tulus",
+        "type": "ayu",
+        "description": "Langsung berhasil",
+        "applicableCeremonies": [
+          "pawiwahan",
+          "manusa_yadnya",
+          "dewa_yadnya",
+          "pitra_yadnya",
+          "pembangunan",
+          "usaha"
+        ]
+      }
+    ],
     "dewasaAla": [],
     "hasCriticalAla": false,
     "sasihEstimated": true
@@ -471,7 +506,14 @@ Error (400 — unknown ceremony):
     "code": "UNKNOWN_CEREMONY",
     "message": "Ceremony 'wedding' is not recognised",
     "details": {
-      "valid_ceremonies": ["pawiwahan", "manusa_yadnya", "dewa_yadnya", "pitra_yadnya", "pembangunan", "usaha"]
+      "valid_ceremonies": [
+        "pawiwahan",
+        "manusa_yadnya",
+        "dewa_yadnya",
+        "pitra_yadnya",
+        "pembangunan",
+        "usaha"
+      ]
     }
   }
 }

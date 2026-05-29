@@ -28,13 +28,14 @@ No source code is created. No tests in the traditional sense; verification is by
 ## Task 1: Create `docs/specs/_template.md`
 
 **Files:**
+
 - Create: `docs/specs/_template.md`
 
 - [ ] **Step 1: Create the file with full content**
 
 Write the file exactly as below. The HTML comments (`<!-- ... -->`) provide guidance to the author without appearing in the rendered output. The YAML frontmatter uses placeholder values that the author replaces when copying the template.
 
-````markdown
+```markdown
 ---
 id: <PREFIX>-<NNN>             # ENG-001 / DB-001 / API-001 / UI-001
 title: <Spec Title>
@@ -119,11 +120,12 @@ Format: `- [Q] <Question>. Owner: @handle. Target: <date or milestone>.`
 <!-- Newest first. Format: `v<X.Y.Z> — YYYY-MM-DD — <what changed>`. -->
 
 - v0.1.0 — YYYY-MM-DD — Initial draft.
-````
+```
 
 - [ ] **Step 2: Verify the file exists and frontmatter is valid YAML**
 
 Run:
+
 ```bash
 test -f docs/specs/_template.md && echo "exists"
 # Extract frontmatter block and pipe through a YAML parser
@@ -131,12 +133,14 @@ sed -n '/^---$/,/^---$/p' docs/specs/_template.md | sed '1d;$d' | python -c "imp
 ```
 
 Expected output:
+
 ```
 exists
 YAML OK
 ```
 
 If `python -c "import yaml"` fails because PyYAML isn't installed, use Node instead:
+
 ```bash
 node -e "const fs=require('fs'); const m=fs.readFileSync('docs/specs/_template.md','utf8').match(/^---\n([\s\S]*?)\n---/); console.log(m ? 'frontmatter block found' : 'NO FRONTMATTER'); console.log(m[1].split('\n').length, 'frontmatter lines');"
 ```
@@ -146,6 +150,7 @@ Expected: `frontmatter block found` and line count ≥ 11.
 - [ ] **Step 3: Verify all 9 sections are present**
 
 Run:
+
 ```bash
 grep -c '^## ' docs/specs/_template.md
 ```
@@ -153,11 +158,13 @@ grep -c '^## ' docs/specs/_template.md
 Expected: `9`
 
 Then verify each section name:
+
 ```bash
 grep '^## ' docs/specs/_template.md
 ```
 
 Expected output (exact, in this order):
+
 ```
 ## Summary
 ## Context
@@ -177,6 +184,7 @@ If any section is missing or out of order, edit `docs/specs/_template.md` to fix
 ## Task 2: Create `docs/specs/CLAUDE.md`
 
 **Files:**
+
 - Create: `docs/specs/CLAUDE.md`
 
 - [ ] **Step 1: Create the file with full content**
@@ -190,13 +198,13 @@ This folder contains living engineering specs for Dewasa Ayu. This file is auto-
 
 ## What lives here
 
-| File | ID | Purpose |
-|------|----|---------|
-| `_template.md` | — | Starting template. Copy when creating a new spec. Do not edit. |
-| `engine.md` | ENG-001 | Wariga calculation engine: types, function signatures, algorithms. |
-| `db.md` | DB-001 | Database schema, indexes, JSONB shapes, migration strategy. |
-| `api.md` | API-001 | REST API: endpoints, auth, error envelope, rate limits. |
-| `pages.md` | UI-001 | Frontend pages: components, state strategy, wireframes. |
+| File           | ID      | Purpose                                                            |
+| -------------- | ------- | ------------------------------------------------------------------ |
+| `_template.md` | —       | Starting template. Copy when creating a new spec. Do not edit.     |
+| `engine.md`    | ENG-001 | Wariga calculation engine: types, function signatures, algorithms. |
+| `db.md`        | DB-001  | Database schema, indexes, JSONB shapes, migration strategy.        |
+| `api.md`       | API-001 | REST API: endpoints, auth, error envelope, rate limits.            |
+| `pages.md`     | UI-001  | Frontend pages: components, state strategy, wireframes.            |
 
 Specs are **living docs** — they must stay in sync with the code they describe. If implementation diverges from the spec, update the spec (with a Changelog entry); do not let code become a silent source of truth.
 
@@ -209,12 +217,12 @@ Draft ──(implementation lands)──▶ Active ──(replaced)──▶ Sup
    └──(abandoned)──▶ (delete file)
 ```
 
-| Status | Meaning |
-|--------|---------|
-| `Draft` | Design in progress; structure may still change. |
-| `Active` | Implemented (or being implemented). Spec must reflect current code. |
+| Status       | Meaning                                                                  |
+| ------------ | ------------------------------------------------------------------------ |
+| `Draft`      | Design in progress; structure may still change.                          |
+| `Active`     | Implemented (or being implemented). Spec must reflect current code.      |
 | `Superseded` | Replaced by a newer spec. The replacement points back via `supersedes:`. |
-| `Deprecated` | No longer current and not replaced. Kept for historical context. |
+| `Deprecated` | No longer current and not replaced. Kept for historical context.         |
 
 ## Writing a new spec
 
@@ -255,22 +263,22 @@ Draft ──(implementation lands)──▶ Active ──(replaced)──▶ Sup
 
 ## ID convention
 
-| Prefix | Domain |
-|--------|--------|
-| `ENG` | Wariga engine (`packages/wariga-engine`, `packages/types`) |
-| `DB` | Database schema (`prisma/`) |
-| `API` | REST API (`apps/api`) |
-| `UI` | Frontend pages and components (`apps/web`) |
+| Prefix | Domain                                                     |
+| ------ | ---------------------------------------------------------- |
+| `ENG`  | Wariga engine (`packages/wariga-engine`, `packages/types`) |
+| `DB`   | Database schema (`prisma/`)                                |
+| `API`  | REST API (`apps/api`)                                      |
+| `UI`   | Frontend pages and components (`apps/web`)                 |
 
 IDs are sequential per prefix: `ENG-001`, `ENG-002`, `ENG-003`. A new domain prefix may be added if a future area genuinely doesn't fit the existing four — document the addition here.
 
 ## Cross-reference convention
 
-| Target | Form |
-|--------|------|
-| Sibling spec | `[ENG-001 §Types](./engine.md#types)` |
-| PRD section | `[PRD §4.2](../PRD.md#42-dewasa-ayu-per-ceremony-type)` |
-| GitHub issue | `#17` (GitHub auto-links) |
+| Target                       | Form                                                                               |
+| ---------------------------- | ---------------------------------------------------------------------------------- |
+| Sibling spec                 | `[ENG-001 §Types](./engine.md#types)`                                              |
+| PRD section                  | `[PRD §4.2](../PRD.md#42-dewasa-ayu-per-ceremony-type)`                            |
+| GitHub issue                 | `#17` (GitHub auto-links)                                                          |
 | Source file (once it exists) | `[packages/wariga-engine/src/types.ts](../../packages/wariga-engine/src/types.ts)` |
 
 Avoid line-number anchors in source links — they break on refactor. Reference symbols by name in prose and let the link point to the file.
@@ -343,7 +351,7 @@ The `## Detailed Specification` section in `_template.md` is intentionally flexi
 
 ## Cultural sensitivity note
 
-Specs themselves are written in English (technical layer). However, any user-facing copy *described inside a spec* (e.g., button labels, error messages, disclaimer text in UI specs) must follow the project's cultural rules:
+Specs themselves are written in English (technical layer). However, any user-facing copy _described inside a spec_ (e.g., button labels, error messages, disclaimer text in UI specs) must follow the project's cultural rules:
 
 - Bahasa Indonesia primary.
 - Never claim religious authority — use "berdasarkan pedoman Wariga umum".
@@ -356,12 +364,14 @@ See PRD §18.2 for the full guidance.
 - [ ] **Step 2: Verify the file exists and has the expected sections**
 
 Run:
+
 ```bash
 test -f docs/specs/CLAUDE.md && echo "exists"
 grep '^## ' docs/specs/CLAUDE.md
 ```
 
 Expected output:
+
 ```
 exists
 ## What lives here
@@ -381,11 +391,13 @@ If any section is missing, edit `docs/specs/CLAUDE.md` to add it before continui
 - [ ] **Step 3: Verify all four per-type sub-sections are present**
 
 Run:
+
 ```bash
 grep '^### ' docs/specs/CLAUDE.md
 ```
 
 Expected output includes (order matters):
+
 ```
 ### Engine specs (ENG)
 ### Database specs (DB)
@@ -398,6 +410,7 @@ Expected output includes (order matters):
 ## Task 3: Sanity-check both files together
 
 **Files:**
+
 - Read-only: `docs/specs/_template.md`, `docs/specs/CLAUDE.md`
 
 - [ ] **Step 1: Verify the relative link from `_template.md` to `CLAUDE.md` resolves**
@@ -405,6 +418,7 @@ Expected output includes (order matters):
 Both files live in the same directory, so the template's reference `docs/specs/CLAUDE.md` is just an informational pointer in HTML comments — not a clickable link. No action needed.
 
 Confirm the comment exists in the template:
+
 ```bash
 grep -c 'docs/specs/CLAUDE.md' docs/specs/_template.md
 ```
@@ -414,6 +428,7 @@ Expected: `≥ 1`
 - [ ] **Step 2: Confirm the per-type sub-structure table in `CLAUDE.md` matches the comment in `_template.md`**
 
 Run:
+
 ```bash
 grep -A 4 'ENG: Constants' docs/specs/_template.md
 grep -A 4 'Engine specs (ENG)' docs/specs/CLAUDE.md
@@ -438,11 +453,13 @@ If anything renders broken, fix it in the source file before committing.
 ## Task 4: Commit both files
 
 **Files:**
+
 - Stage: `docs/specs/_template.md`, `docs/specs/CLAUDE.md`
 
 - [ ] **Step 1: Verify only the intended files are staged**
 
 Run:
+
 ```bash
 git status
 ```
@@ -452,6 +469,7 @@ Expected: `docs/specs/_template.md` and `docs/specs/CLAUDE.md` shown as untracke
 - [ ] **Step 2: Stage only the two new files**
 
 Run:
+
 ```bash
 git add docs/specs/_template.md docs/specs/CLAUDE.md
 git status
@@ -462,6 +480,7 @@ Expected: both files appear under "Changes to be committed:" and nothing else.
 - [ ] **Step 3: Create the commit**
 
 Run:
+
 ```bash
 git commit -m "$(cat <<'EOF'
 docs: add spec framework (_template.md + CLAUDE.md)
@@ -483,6 +502,7 @@ EOF
 - [ ] **Step 4: Verify the commit landed**
 
 Run:
+
 ```bash
 git log --oneline -3
 ```
@@ -494,11 +514,13 @@ Expected: the new commit appears at the top with the message above.
 ## Task 5: Update Phase 0 epic (#1) checklist on GitHub
 
 **Files:**
+
 - No local files modified. Update is via `gh issue edit` to GitHub issue #1.
 
 - [ ] **Step 1: Fetch the current issue body**
 
 Run:
+
 ```bash
 gh issue view 1 -R RacThug/dewasa-ayu --json body --jq '.body' > /tmp/issue-1-body.md
 cat /tmp/issue-1-body.md
@@ -518,6 +540,7 @@ So the section becomes:
 
 ```markdown
 ## Cakupan
+
 - [x] Spec framework: `docs/specs/_template.md` + `docs/specs/CLAUDE.md` (this PR / commit)
 - [ ] Bootstrap pnpm workspace + Turborepo + root `tsconfig.base.json`
 - [ ] Shared config: ESLint + Prettier + EditorConfig + `.gitignore`
@@ -533,6 +556,7 @@ Note: the new item is checked (`[x]`) because by the time this step runs, the co
 - [ ] **Step 3: Push the updated body to GitHub**
 
 Run:
+
 ```bash
 gh issue edit 1 -R RacThug/dewasa-ayu --body-file /tmp/issue-1-body.md
 ```
@@ -542,6 +566,7 @@ Expected: `https://github.com/RacThug/dewasa-ayu/issues/1` printed to stdout.
 - [ ] **Step 4: Verify the update**
 
 Run:
+
 ```bash
 gh issue view 1 -R RacThug/dewasa-ayu --json body --jq '.body' | grep -A 1 'Spec framework'
 ```

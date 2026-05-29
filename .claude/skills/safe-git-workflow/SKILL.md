@@ -73,27 +73,27 @@ If any eligibility check fails, **STOP and report** — do not work around the g
 
 ## Quick reference
 
-| Operation | Safe form | Forbidden / confirm |
-|-----------|-----------|---------------------|
-| Stage | `git add <path>` | `add -A`, `add .`, `add -u` |
-| Multi-line message | HEREDOC | `-m "line1\nline2"` |
-| Commit | On feature branch | To `main` / `develop` |
-| Discard local changes | `git stash push -- <files>` then op | `reset --hard` without status check |
-| Reset to remote | Stash → `reset --hard origin/<branch>` | Skipping stash |
-| Force push | User OK + `--force-with-lease` + not main/develop | Reflex force after mistake |
-| Open code PR | `--base <project-base> --draft` | Inferring base; non-draft before verification |
-| Open doc PR | `--base <project-base>` (ready, no draft flag) | Reflexively adding `--draft` to every PR |
-| Merge PR | `gh pr merge <N> --squash --delete-branch` after eligibility check | Merging draft; merging with `mergeable: CONFLICTING`; skipping post-merge `pull --ff-only` |
+| Operation             | Safe form                                                          | Forbidden / confirm                                                                        |
+| --------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| Stage                 | `git add <path>`                                                   | `add -A`, `add .`, `add -u`                                                                |
+| Multi-line message    | HEREDOC                                                            | `-m "line1\nline2"`                                                                        |
+| Commit                | On feature branch                                                  | To `main` / `develop`                                                                      |
+| Discard local changes | `git stash push -- <files>` then op                                | `reset --hard` without status check                                                        |
+| Reset to remote       | Stash → `reset --hard origin/<branch>`                             | Skipping stash                                                                             |
+| Force push            | User OK + `--force-with-lease` + not main/develop                  | Reflex force after mistake                                                                 |
+| Open code PR          | `--base <project-base> --draft`                                    | Inferring base; non-draft before verification                                              |
+| Open doc PR           | `--base <project-base>` (ready, no draft flag)                     | Reflexively adding `--draft` to every PR                                                   |
+| Merge PR              | `gh pr merge <N> --squash --delete-branch` after eligibility check | Merging draft; merging with `mergeable: CONFLICTING`; skipping post-merge `pull --ff-only` |
 
 ## Rationalizations — don't
 
-| Excuse | Reality |
-|--------|---------|
-| "I know what branch I'm on" | `git branch --show-current` is one command. Memory drifts. |
-| "Reset is faster than stash" | Stash ~2s. Recovering wiped work: hours, often impossible. |
-| "`fsck` can recover anything" | Untracked edits are NOT in the object store. Gone means gone. |
-| "Solo project, no review" | Draft PRs are free. Wrong-base PRs cost a force-push to fix. |
-| "User said go" | "Go" = execute agreed plan; not "skip safety". Flag new destructive ops. |
+| Excuse                        | Reality                                                                  |
+| ----------------------------- | ------------------------------------------------------------------------ |
+| "I know what branch I'm on"   | `git branch --show-current` is one command. Memory drifts.               |
+| "Reset is faster than stash"  | Stash ~2s. Recovering wiped work: hours, often impossible.               |
+| "`fsck` can recover anything" | Untracked edits are NOT in the object store. Gone means gone.            |
+| "Solo project, no review"     | Draft PRs are free. Wrong-base PRs cost a force-push to fix.             |
+| "User said go"                | "Go" = execute agreed plan; not "skip safety". Flag new destructive ops. |
 
 ## Red flags — STOP and run the check
 

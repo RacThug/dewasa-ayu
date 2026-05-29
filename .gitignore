@@ -32,3 +32,7 @@ pnpm-debug.log*
 # Coverage / test artefacts
 coverage/
 .nyc_output/
+
+# Lint / format caches
+.eslintcache
+.prettiercache

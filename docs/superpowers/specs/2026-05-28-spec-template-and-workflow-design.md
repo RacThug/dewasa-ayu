@@ -74,12 +74,12 @@ prd_refs: ["§10", "§4.2"]      # PRD sections this spec elaborates
 
 **ID prefixes:**
 
-| Prefix | Domain |
-|--------|--------|
+| Prefix | Domain                                                     |
+| ------ | ---------------------------------------------------------- |
 | `ENG`  | Wariga engine (`packages/wariga-engine`, `packages/types`) |
-| `DB`   | Database schema (`prisma/`) |
-| `API`  | REST API (`apps/api`) |
-| `UI`   | Frontend pages/components (`apps/web`) |
+| `DB`   | Database schema (`prisma/`)                                |
+| `API`  | REST API (`apps/api`)                                      |
+| `UI`   | Frontend pages/components (`apps/web`)                     |
 
 IDs are sequential per prefix. A future Phase 2 engine extension would be `ENG-002`, not `ENG-2`.
 
@@ -101,11 +101,11 @@ Every spec has these 9 sections in this order:
 
 Defined in `docs/specs/CLAUDE.md`. Summary:
 
-| Type | Sub-sections (in order) |
-|------|-------------------------|
-| **ENG** | Constants → Types → Function signatures → Algorithms → Examples |
-| **DB**  | ERD → Tables (one sub-section per table) → Indexes → JSONB shapes → Migration strategy |
-| **API** | Auth → Error envelope → Endpoints (one sub-section per endpoint: req/resp/errors/cache) → Examples |
+| Type    | Sub-sections (in order)                                                                                 |
+| ------- | ------------------------------------------------------------------------------------------------------- |
+| **ENG** | Constants → Types → Function signatures → Algorithms → Examples                                         |
+| **DB**  | ERD → Tables (one sub-section per table) → Indexes → JSONB shapes → Migration strategy                  |
+| **API** | Auth → Error envelope → Endpoints (one sub-section per endpoint: req/resp/errors/cache) → Examples      |
 | **UI**  | Design tokens → Global components → Screens (one sub-section per screen: hierarchy/state/API/wireframe) |
 
 ### Status lifecycle
@@ -147,13 +147,13 @@ Defined in `docs/specs/CLAUDE.md`. Summary:
 
 ### Cross-reference convention
 
-| Target | Form |
-|--------|------|
-| Sibling spec | `[ENG-001 §Types](./engine.md#types)` |
-| PRD section | `[PRD §4.2](../PRD.md#42-dewasa-ayu-per-ceremony-type)` |
-| GitHub issue | `#17` (renders as link on GitHub) |
+| Target                    | Form                                                                               |
+| ------------------------- | ---------------------------------------------------------------------------------- |
+| Sibling spec              | `[ENG-001 §Types](./engine.md#types)`                                              |
+| PRD section               | `[PRD §4.2](../PRD.md#42-dewasa-ayu-per-ceremony-type)`                            |
+| GitHub issue              | `#17` (renders as link on GitHub)                                                  |
 | Source file (once exists) | `[packages/wariga-engine/src/types.ts](../../packages/wariga-engine/src/types.ts)` |
-| Specific symbol in code | Reference by name in prose; link to file. Avoid line-number links (brittle). |
+| Specific symbol in code   | Reference by name in prose; link to file. Avoid line-number links (brittle).       |
 
 ### Drift prevention
 

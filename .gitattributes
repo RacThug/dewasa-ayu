@@ -1,2 +1,16 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Normalise line endings: store as LF in the repo AND check out as LF on every OS.
+# (eol=lf is what silences the "LF will be replaced by CRLF" warnings on Windows.)
+* text=auto eol=lf
+
+# Binary assets — never normalise or attempt to diff.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.webp binary
+*.woff  binary
+*.woff2 binary
+
+# Lockfile: generated — collapse in diffs and mark as generated on GitHub.
+pnpm-lock.yaml linguist-generated=true -diff

@@ -139,35 +139,35 @@ erDiagram
 
 Master list of supported ceremonies. Each row is one ceremony slot the UI's ceremony selector can show. The `rules` JSONB column holds the full `CeremonyConfig` rule data minus the redundant id/name/category fields (those are columns).
 
-| Column | Type | Null | Default | Notes |
-|--------|------|------|---------|-------|
-| `id` | `UUID` | NOT NULL | `gen_random_uuid()` | PK |
-| `slug` | `VARCHAR(50)` | NOT NULL | — | UNIQUE. Matches engine `CeremonyId` (e.g. `'pawiwahan'`). |
-| `name` | `VARCHAR(200)` | NOT NULL | — | Indonesian display name. |
-| `category` | `VARCHAR(50)` | NOT NULL | — | One of `manusa_yadnya`, `dewa_yadnya`, `pitra_yadnya`, `cross`. |
-| `description` | `TEXT` | NOT NULL | — | 1-2 paragraph Indonesian description. |
-| `icon` | `VARCHAR(50)` | NOT NULL | — | Emoji or icon ref (e.g. `'💍'`). |
-| `rules` | `JSONB` | NOT NULL | — | See [JSONB shapes › `ceremony_types.rules`](#ceremony_typesrules). |
-| `sort_order` | `INTEGER` | NOT NULL | `0` | Controls display order in the ceremony selector. |
-| `created_at` | `TIMESTAMPTZ` | NOT NULL | `NOW()` | |
-| `updated_at` | `TIMESTAMPTZ` | NOT NULL | `NOW()` | Updated via Prisma `@updatedAt`. |
+| Column        | Type           | Null     | Default             | Notes                                                              |
+| ------------- | -------------- | -------- | ------------------- | ------------------------------------------------------------------ |
+| `id`          | `UUID`         | NOT NULL | `gen_random_uuid()` | PK                                                                 |
+| `slug`        | `VARCHAR(50)`  | NOT NULL | —                   | UNIQUE. Matches engine `CeremonyId` (e.g. `'pawiwahan'`).          |
+| `name`        | `VARCHAR(200)` | NOT NULL | —                   | Indonesian display name.                                           |
+| `category`    | `VARCHAR(50)`  | NOT NULL | —                   | One of `manusa_yadnya`, `dewa_yadnya`, `pitra_yadnya`, `cross`.    |
+| `description` | `TEXT`         | NOT NULL | —                   | 1-2 paragraph Indonesian description.                              |
+| `icon`        | `VARCHAR(50)`  | NOT NULL | —                   | Emoji or icon ref (e.g. `'💍'`).                                   |
+| `rules`       | `JSONB`        | NOT NULL | —                   | See [JSONB shapes › `ceremony_types.rules`](#ceremony_typesrules). |
+| `sort_order`  | `INTEGER`      | NOT NULL | `0`                 | Controls display order in the ceremony selector.                   |
+| `created_at`  | `TIMESTAMPTZ`  | NOT NULL | `NOW()`             |                                                                    |
+| `updated_at`  | `TIMESTAMPTZ`  | NOT NULL | `NOW()`             | Updated via Prisma `@updatedAt`.                                   |
 
 #### `dewasa_rules`
 
 All 33 dewasa rules (16 ayu + 17 ala from PRD §4.2-§4.3). Each row describes a single dewasa code with a JSONB condition tree that the engine evaluates against a `BalineseDate`.
 
-| Column | Type | Null | Default | Notes |
-|--------|------|------|---------|-------|
-| `id` | `UUID` | NOT NULL | `gen_random_uuid()` | PK |
-| `code` | `VARCHAR(50)` | NOT NULL | — | UNIQUE. Matches engine `DewasaCode` (e.g. `'subacara'`). |
-| `name` | `VARCHAR(200)` | NOT NULL | — | Indonesian display name. |
-| `type` | `dewasa_type` | NOT NULL | — | Enum `'ayu'` \| `'ala'`. |
-| `severity` | `severity` | NULL | `NULL` | Enum `'critical'` \| `'minor'`. Required when `type = 'ala'`; must be NULL when `type = 'ayu'` (enforced by CHECK constraint). |
-| `condition` | `JSONB` | NOT NULL | — | See [JSONB shapes › `dewasa_rules.condition`](#dewasa_rulescondition). |
-| `description` | `TEXT` | NOT NULL | — | 1-2 sentence Indonesian explanation, surfaced in UI tooltips. |
-| `applicable_ceremonies` | `VARCHAR(50)[]` | NOT NULL | `'{}'` | PostgreSQL array of ceremony slugs. Empty array means "applies to all". |
-| `created_at` | `TIMESTAMPTZ` | NOT NULL | `NOW()` | |
-| `updated_at` | `TIMESTAMPTZ` | NOT NULL | `NOW()` | |
+| Column                  | Type            | Null     | Default             | Notes                                                                                                                          |
+| ----------------------- | --------------- | -------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `id`                    | `UUID`          | NOT NULL | `gen_random_uuid()` | PK                                                                                                                             |
+| `code`                  | `VARCHAR(50)`   | NOT NULL | —                   | UNIQUE. Matches engine `DewasaCode` (e.g. `'subacara'`).                                                                       |
+| `name`                  | `VARCHAR(200)`  | NOT NULL | —                   | Indonesian display name.                                                                                                       |
+| `type`                  | `dewasa_type`   | NOT NULL | —                   | Enum `'ayu'` \| `'ala'`.                                                                                                       |
+| `severity`              | `severity`      | NULL     | `NULL`              | Enum `'critical'` \| `'minor'`. Required when `type = 'ala'`; must be NULL when `type = 'ayu'` (enforced by CHECK constraint). |
+| `condition`             | `JSONB`         | NOT NULL | —                   | See [JSONB shapes › `dewasa_rules.condition`](#dewasa_rulescondition).                                                         |
+| `description`           | `TEXT`          | NOT NULL | —                   | 1-2 sentence Indonesian explanation, surfaced in UI tooltips.                                                                  |
+| `applicable_ceremonies` | `VARCHAR(50)[]` | NOT NULL | `'{}'`              | PostgreSQL array of ceremony slugs. Empty array means "applies to all".                                                        |
+| `created_at`            | `TIMESTAMPTZ`   | NOT NULL | `NOW()`             |                                                                                                                                |
+| `updated_at`            | `TIMESTAMPTZ`   | NOT NULL | `NOW()`             |                                                                                                                                |
 
 CHECK constraint: `(type = 'ala' AND severity IS NOT NULL) OR (type = 'ayu' AND severity IS NULL)`.
 
@@ -175,19 +175,19 @@ CHECK constraint: `(type = 'ala' AND severity IS NOT NULL) OR (type = 'ayu' AND 
 
 Year-by-year override for Sasih estimation. Filled from published Kalender Bali sources (PRD §24.1). Each row pins a specific `tahun_saka × sasih_index` combination's tilem/purnama dates and intercalary flags.
 
-| Column | Type | Null | Default | Notes |
-|--------|------|------|---------|-------|
-| `id` | `UUID` | NOT NULL | `gen_random_uuid()` | PK |
-| `tahun_saka` | `INTEGER` | NOT NULL | — | Saka year (e.g. `1948`). |
-| `sasih_index` | `SMALLINT` | NOT NULL | — | 0-11 matching engine `SasihInfo.index`. CHECK `0 <= sasih_index AND sasih_index <= 11`. |
-| `sasih_name` | `VARCHAR(20)` | NOT NULL | — | Denormalised name for human inspection (e.g. `'kadasa'`). |
-| `tilem_date` | `DATE` | NOT NULL | — | Gregorian date of Tilem (new moon, Pangelong 15). |
-| `purnama_date` | `DATE` | NOT NULL | — | Gregorian date of Purnama (full moon, Penanggal 15). |
-| `is_nampih` | `BOOLEAN` | NOT NULL | `FALSE` | Intercalary month flag. |
-| `is_mala` | `BOOLEAN` | NOT NULL | `FALSE` | Skipped month flag (rare). |
-| `source` | `VARCHAR(200)` | NOT NULL | — | Citation (e.g. `'kalenderbali.org/2026'`). |
-| `created_at` | `TIMESTAMPTZ` | NOT NULL | `NOW()` | |
-| `updated_at` | `TIMESTAMPTZ` | NOT NULL | `NOW()` | |
+| Column         | Type           | Null     | Default             | Notes                                                                                   |
+| -------------- | -------------- | -------- | ------------------- | --------------------------------------------------------------------------------------- |
+| `id`           | `UUID`         | NOT NULL | `gen_random_uuid()` | PK                                                                                      |
+| `tahun_saka`   | `INTEGER`      | NOT NULL | —                   | Saka year (e.g. `1948`).                                                                |
+| `sasih_index`  | `SMALLINT`     | NOT NULL | —                   | 0-11 matching engine `SasihInfo.index`. CHECK `0 <= sasih_index AND sasih_index <= 11`. |
+| `sasih_name`   | `VARCHAR(20)`  | NOT NULL | —                   | Denormalised name for human inspection (e.g. `'kadasa'`).                               |
+| `tilem_date`   | `DATE`         | NOT NULL | —                   | Gregorian date of Tilem (new moon, Pangelong 15).                                       |
+| `purnama_date` | `DATE`         | NOT NULL | —                   | Gregorian date of Purnama (full moon, Penanggal 15).                                    |
+| `is_nampih`    | `BOOLEAN`      | NOT NULL | `FALSE`             | Intercalary month flag.                                                                 |
+| `is_mala`      | `BOOLEAN`      | NOT NULL | `FALSE`             | Skipped month flag (rare).                                                              |
+| `source`       | `VARCHAR(200)` | NOT NULL | —                   | Citation (e.g. `'kalenderbali.org/2026'`).                                              |
+| `created_at`   | `TIMESTAMPTZ`  | NOT NULL | `NOW()`             |                                                                                         |
+| `updated_at`   | `TIMESTAMPTZ`  | NOT NULL | `NOW()`             |                                                                                         |
 
 UNIQUE: `(tahun_saka, sasih_index)`.
 
@@ -195,16 +195,16 @@ UNIQUE: `(tahun_saka, sasih_index)`.
 
 Anonymous accuracy-feedback storage for the widget defined in PRD §17.2 ("Apakah hasil ini sesuai dengan saran Sulinggih/Pemangku Anda?").
 
-| Column | Type | Null | Default | Notes |
-|--------|------|------|---------|-------|
-| `id` | `UUID` | NOT NULL | `gen_random_uuid()` | PK |
-| `target_date` | `DATE` | NOT NULL | — | The Gregorian date the user was evaluating. |
-| `ceremony_slug` | `VARCHAR(50)` | NOT NULL | — | The ceremony selected at submission time. |
-| `rating_match` | `rating_match` | NOT NULL | — | Enum `'yes'` \| `'no'` \| `'unknown'`. |
-| `notes` | `TEXT` | NULL | — | Free-form reply (Indonesian expected). |
-| `user_agent` | `TEXT` | NULL | — | Browser UA for bot filtering during analysis. |
-| `ip_hash` | `VARCHAR(64)` | NULL | — | SHA-256 of `(ip + daily_salt)` for de-duplication without storing the IP. |
-| `created_at` | `TIMESTAMPTZ` | NOT NULL | `NOW()` | |
+| Column          | Type           | Null     | Default             | Notes                                                                     |
+| --------------- | -------------- | -------- | ------------------- | ------------------------------------------------------------------------- |
+| `id`            | `UUID`         | NOT NULL | `gen_random_uuid()` | PK                                                                        |
+| `target_date`   | `DATE`         | NOT NULL | —                   | The Gregorian date the user was evaluating.                               |
+| `ceremony_slug` | `VARCHAR(50)`  | NOT NULL | —                   | The ceremony selected at submission time.                                 |
+| `rating_match`  | `rating_match` | NOT NULL | —                   | Enum `'yes'` \| `'no'` \| `'unknown'`.                                    |
+| `notes`         | `TEXT`         | NULL     | —                   | Free-form reply (Indonesian expected).                                    |
+| `user_agent`    | `TEXT`         | NULL     | —                   | Browser UA for bot filtering during analysis.                             |
+| `ip_hash`       | `VARCHAR(64)`  | NULL     | —                   | SHA-256 of `(ip + daily_salt)` for de-duplication without storing the IP. |
+| `created_at`    | `TIMESTAMPTZ`  | NOT NULL | `NOW()`             |                                                                           |
 
 No `updated_at` — feedback rows are immutable after submission.
 
@@ -212,28 +212,28 @@ No `updated_at` — feedback rows are immutable after submission.
 
 Optional user accounts for saved dates and preferences. Table exists from v1 so migrations are stable; actually populated only when Phase 2 auth ships.
 
-| Column | Type | Null | Default | Notes |
-|--------|------|------|---------|-------|
-| `id` | `UUID` | NOT NULL | `gen_random_uuid()` | PK |
-| `email` | `VARCHAR(255)` | NOT NULL | — | UNIQUE. Case-insensitive lookup via lowercased copy stored as the canonical form. |
-| `name` | `VARCHAR(200)` | NULL | — | Display name, optional. |
-| `locale` | `VARCHAR(10)` | NOT NULL | `'id-ID'` | BCP-47 (`'id-ID'` or `'en'`). |
-| `created_at` | `TIMESTAMPTZ` | NOT NULL | `NOW()` | |
-| `updated_at` | `TIMESTAMPTZ` | NOT NULL | `NOW()` | |
+| Column       | Type           | Null     | Default             | Notes                                                                             |
+| ------------ | -------------- | -------- | ------------------- | --------------------------------------------------------------------------------- |
+| `id`         | `UUID`         | NOT NULL | `gen_random_uuid()` | PK                                                                                |
+| `email`      | `VARCHAR(255)` | NOT NULL | —                   | UNIQUE. Case-insensitive lookup via lowercased copy stored as the canonical form. |
+| `name`       | `VARCHAR(200)` | NULL     | —                   | Display name, optional.                                                           |
+| `locale`     | `VARCHAR(10)`  | NOT NULL | `'id-ID'`           | BCP-47 (`'id-ID'` or `'en'`).                                                     |
+| `created_at` | `TIMESTAMPTZ`  | NOT NULL | `NOW()`             |                                                                                   |
+| `updated_at` | `TIMESTAMPTZ`  | NOT NULL | `NOW()`             |                                                                                   |
 
 #### `saved_dates` (Phase 2)
 
 Per-user date bookmarks. FK to `users` and `ceremony_types`. Cascading delete: dropping a user wipes their bookmarks; renaming a ceremony slug breaks nothing because `ceremony_type_id` is a UUID FK, not a slug.
 
-| Column | Type | Null | Default | Notes |
-|--------|------|------|---------|-------|
-| `id` | `UUID` | NOT NULL | `gen_random_uuid()` | PK |
-| `user_id` | `UUID` | NOT NULL | — | FK → `users(id)` ON DELETE CASCADE. |
-| `date` | `DATE` | NOT NULL | — | Gregorian date saved. |
-| `ceremony_type_id` | `UUID` | NOT NULL | — | FK → `ceremony_types(id)` ON DELETE CASCADE. |
-| `notes` | `TEXT` | NULL | — | User's free-form note. |
-| `created_at` | `TIMESTAMPTZ` | NOT NULL | `NOW()` | |
-| `updated_at` | `TIMESTAMPTZ` | NOT NULL | `NOW()` | |
+| Column             | Type          | Null     | Default             | Notes                                        |
+| ------------------ | ------------- | -------- | ------------------- | -------------------------------------------- |
+| `id`               | `UUID`        | NOT NULL | `gen_random_uuid()` | PK                                           |
+| `user_id`          | `UUID`        | NOT NULL | —                   | FK → `users(id)` ON DELETE CASCADE.          |
+| `date`             | `DATE`        | NOT NULL | —                   | Gregorian date saved.                        |
+| `ceremony_type_id` | `UUID`        | NOT NULL | —                   | FK → `ceremony_types(id)` ON DELETE CASCADE. |
+| `notes`            | `TEXT`        | NULL     | —                   | User's free-form note.                       |
+| `created_at`       | `TIMESTAMPTZ` | NOT NULL | `NOW()`             |                                              |
+| `updated_at`       | `TIMESTAMPTZ` | NOT NULL | `NOW()`             |                                              |
 
 UNIQUE: `(user_id, date, ceremony_type_id)` — a user shouldn't save the same date for the same ceremony twice.
 
@@ -241,18 +241,18 @@ UNIQUE: `(user_id, date, ceremony_type_id)` — a user shouldn't save the same d
 
 API key registry for the public REST API rate-limiting and tier enforcement.
 
-| Column | Type | Null | Default | Notes |
-|--------|------|------|---------|-------|
-| `id` | `UUID` | NOT NULL | `gen_random_uuid()` | PK |
-| `key_hash` | `VARCHAR(64)` | NOT NULL | — | UNIQUE. SHA-256 of the issued key. The raw key is shown to the operator once and never persisted. |
-| `tier` | `api_tier` | NOT NULL | `'free'` | Enum `'free'` \| `'pro'` \| `'enterprise'`. |
-| `rate_limit` | `INTEGER` | NOT NULL | `60` | Requests per minute. |
-| `owner_email` | `VARCHAR(255)` | NULL | — | Optional contact for the key's owner. |
-| `description` | `TEXT` | NULL | — | Operator note (e.g. `'wedding-planner-app'`). |
-| `expires_at` | `TIMESTAMPTZ` | NULL | — | Optional expiry. |
-| `revoked_at` | `TIMESTAMPTZ` | NULL | — | When the key was manually revoked. |
-| `last_used_at` | `TIMESTAMPTZ` | NULL | — | Updated by the API on each accepted request. |
-| `created_at` | `TIMESTAMPTZ` | NOT NULL | `NOW()` | |
+| Column         | Type           | Null     | Default             | Notes                                                                                             |
+| -------------- | -------------- | -------- | ------------------- | ------------------------------------------------------------------------------------------------- |
+| `id`           | `UUID`         | NOT NULL | `gen_random_uuid()` | PK                                                                                                |
+| `key_hash`     | `VARCHAR(64)`  | NOT NULL | —                   | UNIQUE. SHA-256 of the issued key. The raw key is shown to the operator once and never persisted. |
+| `tier`         | `api_tier`     | NOT NULL | `'free'`            | Enum `'free'` \| `'pro'` \| `'enterprise'`.                                                       |
+| `rate_limit`   | `INTEGER`      | NOT NULL | `60`                | Requests per minute.                                                                              |
+| `owner_email`  | `VARCHAR(255)` | NULL     | —                   | Optional contact for the key's owner.                                                             |
+| `description`  | `TEXT`         | NULL     | —                   | Operator note (e.g. `'wedding-planner-app'`).                                                     |
+| `expires_at`   | `TIMESTAMPTZ`  | NULL     | —                   | Optional expiry.                                                                                  |
+| `revoked_at`   | `TIMESTAMPTZ`  | NULL     | —                   | When the key was manually revoked.                                                                |
+| `last_used_at` | `TIMESTAMPTZ`  | NULL     | —                   | Updated by the API on each accepted request.                                                      |
+| `created_at`   | `TIMESTAMPTZ`  | NOT NULL | `NOW()`             |                                                                                                   |
 
 A key is valid when `revoked_at IS NULL AND (expires_at IS NULL OR expires_at > NOW())`.
 
@@ -269,16 +269,16 @@ CREATE TYPE api_tier AS ENUM ('free', 'pro', 'enterprise');
 
 Beyond the primary keys and `UNIQUE` constraints (which Postgres indexes automatically), the schema declares:
 
-| Index | Table | Columns | Type | Purpose |
-|-------|-------|---------|------|---------|
-| `idx_dewasa_rules_applicable_gin` | `dewasa_rules` | `applicable_ceremonies` | GIN | `WHERE applicable_ceremonies && ARRAY['pawiwahan']` to fetch the dewasa active for a given ceremony. |
-| `idx_dewasa_rules_type_severity` | `dewasa_rules` | `(type, severity)` | B-tree | Bulk filtering during evaluation (e.g. all critical ala). |
-| `idx_sasih_corrections_year` | `sasih_corrections` | `(tahun_saka)` | B-tree | Per-year correction lookup (one row read per evaluation when correction exists). |
-| `idx_feedback_target_date` | `feedback` | `(target_date)` | B-tree | Analytics queries: "how does the engine score this specific date vs user reports?" |
-| `idx_feedback_ceremony_created` | `feedback` | `(ceremony_slug, created_at DESC)` | B-tree | Dashboard query: "most recent feedback for ceremony X". |
-| `idx_feedback_partial_negative` | `feedback` | `(created_at DESC)` | B-tree, WHERE `rating_match = 'no'` | Cheap monthly-review query for cases where users disagreed with the engine. |
-| `idx_saved_dates_user_date` | `saved_dates` | `(user_id, date)` | B-tree | "Show this user's saved dates, soonest first." |
-| `idx_api_keys_valid` | `api_keys` | `(key_hash)` | B-tree, WHERE `revoked_at IS NULL` | Lookup on valid keys only; revoked keys never match. |
+| Index                             | Table               | Columns                            | Type                                | Purpose                                                                                              |
+| --------------------------------- | ------------------- | ---------------------------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `idx_dewasa_rules_applicable_gin` | `dewasa_rules`      | `applicable_ceremonies`            | GIN                                 | `WHERE applicable_ceremonies && ARRAY['pawiwahan']` to fetch the dewasa active for a given ceremony. |
+| `idx_dewasa_rules_type_severity`  | `dewasa_rules`      | `(type, severity)`                 | B-tree                              | Bulk filtering during evaluation (e.g. all critical ala).                                            |
+| `idx_sasih_corrections_year`      | `sasih_corrections` | `(tahun_saka)`                     | B-tree                              | Per-year correction lookup (one row read per evaluation when correction exists).                     |
+| `idx_feedback_target_date`        | `feedback`          | `(target_date)`                    | B-tree                              | Analytics queries: "how does the engine score this specific date vs user reports?"                   |
+| `idx_feedback_ceremony_created`   | `feedback`          | `(ceremony_slug, created_at DESC)` | B-tree                              | Dashboard query: "most recent feedback for ceremony X".                                              |
+| `idx_feedback_partial_negative`   | `feedback`          | `(created_at DESC)`                | B-tree, WHERE `rating_match = 'no'` | Cheap monthly-review query for cases where users disagreed with the engine.                          |
+| `idx_saved_dates_user_date`       | `saved_dates`       | `(user_id, date)`                  | B-tree                              | "Show this user's saved dates, soonest first."                                                       |
+| `idx_api_keys_valid`              | `api_keys`          | `(key_hash)`                       | B-tree, WHERE `revoked_at IS NULL`  | Lookup on valid keys only; revoked keys never match.                                                 |
 
 ### JSONB shapes
 
@@ -291,10 +291,18 @@ Both JSONB columns are validated by Zod schemas at the API boundary. Schemas liv
 const CeremonyRulesSchema = z.object({
   sasihRules: z.object({
     good: z.array(z.number().int().min(0).max(11)),
-    bad:  z.array(z.number().int().min(0).max(11)),
+    bad: z.array(z.number().int().min(0).max(11)),
   }),
-  dewasaAyu: z.array(z.enum([/* all DewasaAyuCode values */])),
-  dewasaAla: z.array(z.enum([/* all DewasaAlaCode values */])),
+  dewasaAyu: z.array(
+    z.enum([
+      /* all DewasaAyuCode values */
+    ]),
+  ),
+  dewasaAla: z.array(
+    z.enum([
+      /* all DewasaAlaCode values */
+    ]),
+  ),
   scoringWeights: z.object({
     saptawara: z.number(),
     wuku: z.number(),
@@ -323,31 +331,37 @@ const FactCondition = z.discriminatedUnion('fact', [
   // Wewaran membership
   z.object({ fact: z.literal('saptawara'), in: z.array(z.string()) }),
   z.object({ fact: z.literal('pancawara'), in: z.array(z.string()) }),
-  z.object({ fact: z.literal('triwara'),   in: z.array(z.string()) }),
-  z.object({ fact: z.literal('sadwara'),   in: z.array(z.string()) }),
-  z.object({ fact: z.literal('astawara'),  in: z.array(z.string()) }),
+  z.object({ fact: z.literal('triwara'), in: z.array(z.string()) }),
+  z.object({ fact: z.literal('sadwara'), in: z.array(z.string()) }),
+  z.object({ fact: z.literal('astawara'), in: z.array(z.string()) }),
   z.object({ fact: z.literal('sangawara'), in: z.array(z.string()) }),
-  z.object({ fact: z.literal('dasawara'),  in: z.array(z.string()) }),
-  z.object({ fact: z.literal('wuku'),      in: z.array(z.string()) }),
-  z.object({ fact: z.literal('sasih'),     in: z.array(z.string()) }),
-  z.object({ fact: z.literal('ingkel'),    in: z.array(z.string()) }),
-  z.object({ fact: z.literal('jejepan'),   in: z.array(z.string()) }),
+  z.object({ fact: z.literal('dasawara'), in: z.array(z.string()) }),
+  z.object({ fact: z.literal('wuku'), in: z.array(z.string()) }),
+  z.object({ fact: z.literal('sasih'), in: z.array(z.string()) }),
+  z.object({ fact: z.literal('ingkel'), in: z.array(z.string()) }),
+  z.object({ fact: z.literal('jejepan'), in: z.array(z.string()) }),
   // Numeric facts
   z.object({ fact: z.literal('totalUrip'), equals: z.number().int() }),
-  z.object({ fact: z.literal('totalUrip'), gte: z.number().int(), lte: z.number().int().optional() }),
+  z.object({
+    fact: z.literal('totalUrip'),
+    gte: z.number().int(),
+    lte: z.number().int().optional(),
+  }),
   z.object({ fact: z.literal('penanggal'), equals: z.number().int().min(1).max(15) }),
   // Boolean flags
   z.object({ fact: z.literal('isPangelong'), equals: z.boolean() }),
-  z.object({ fact: z.literal('isPurnama'),   equals: z.boolean() }),
-  z.object({ fact: z.literal('isTilem'),     equals: z.boolean() }),
+  z.object({ fact: z.literal('isPurnama'), equals: z.boolean() }),
+  z.object({ fact: z.literal('isTilem'), equals: z.boolean() }),
 ]);
 
-const ConditionSchema: z.ZodType<Condition> = z.lazy(() => z.union([
-  z.object({ all: z.array(ConditionSchema) }),    // AND
-  z.object({ any: z.array(ConditionSchema) }),    // OR
-  z.object({ not: ConditionSchema }),             // NOT
-  FactCondition,
-]));
+const ConditionSchema: z.ZodType<Condition> = z.lazy(() =>
+  z.union([
+    z.object({ all: z.array(ConditionSchema) }), // AND
+    z.object({ any: z.array(ConditionSchema) }), // OR
+    z.object({ not: ConditionSchema }), // NOT
+    FactCondition,
+  ]),
+);
 
 type Condition =
   | { all: Condition[] }
@@ -359,19 +373,35 @@ type Condition =
 **Worked examples:**
 
 `pati_paten` (Sukra + Tilem OR Sukra + Pangelong 10):
+
 ```json
-{ "any": [
-  { "all": [{ "fact": "saptawara", "in": ["sukra"] }, { "fact": "isTilem", "equals": true }] },
-  { "all": [{ "fact": "saptawara", "in": ["sukra"] }, { "fact": "isPangelong", "equals": true }, { "fact": "penanggal", "equals": 10 }] }
-]}
+{
+  "any": [
+    {
+      "all": [
+        { "fact": "saptawara", "in": ["sukra"] },
+        { "fact": "isTilem", "equals": true }
+      ]
+    },
+    {
+      "all": [
+        { "fact": "saptawara", "in": ["sukra"] },
+        { "fact": "isPangelong", "equals": true },
+        { "fact": "penanggal", "equals": 10 }
+      ]
+    }
+  ]
+}
 ```
 
 `semut_sadulur` (Total Urip = 13):
+
 ```json
 { "fact": "totalUrip", "equals": 13 }
 ```
 
 `rangda_tiga` (specific wuku set):
+
 ```json
 { "fact": "wuku", "in": ["wariga", "warigadean", "pujut", "pahang", "menail", "prangbakat"] }
 ```
@@ -388,12 +418,12 @@ Migrations are produced by `pnpm prisma migrate dev` and committed under `prisma
 
 Seeding runs after migration and is idempotent (every row uses Prisma `upsert` keyed by the table's natural unique column — `slug`, `code`, or `(tahun_saka, sasih_index)`).
 
-| Table | Source | Format | Notes |
-|-------|--------|--------|-------|
-| `ceremony_types` | `packages/ceremony-rules/src/*.ts` | TypeScript → JSONB via Prisma | One file per ceremony. Adding a ceremony = one new file + one seed run. |
-| `dewasa_rules` | `prisma/seed-data/dewasa-rules.json` | JSON | Manually curated from PRD §4.2-§4.3, reviewed by Sulinggih (PRD §18.3). |
-| `sasih_corrections` | `prisma/seed-data/sasih-corrections-<year>.json` | JSON per year | One file per Gregorian year, sourced from kalenderbali.org. Pre-publish 6 months ahead per PRD §14.4. |
-| `api_keys` | manual via admin script | — | Not seeded automatically. Operators provision keys via `pnpm api keys:issue --tier=pro --owner=alice@example.com`. |
+| Table               | Source                                           | Format                        | Notes                                                                                                              |
+| ------------------- | ------------------------------------------------ | ----------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `ceremony_types`    | `packages/ceremony-rules/src/*.ts`               | TypeScript → JSONB via Prisma | One file per ceremony. Adding a ceremony = one new file + one seed run.                                            |
+| `dewasa_rules`      | `prisma/seed-data/dewasa-rules.json`             | JSON                          | Manually curated from PRD §4.2-§4.3, reviewed by Sulinggih (PRD §18.3).                                            |
+| `sasih_corrections` | `prisma/seed-data/sasih-corrections-<year>.json` | JSON per year                 | One file per Gregorian year, sourced from kalenderbali.org. Pre-publish 6 months ahead per PRD §14.4.              |
+| `api_keys`          | manual via admin script                          | —                             | Not seeded automatically. Operators provision keys via `pnpm api keys:issue --tier=pro --owner=alice@example.com`. |
 
 #### Local dev workflow
 
