@@ -130,6 +130,33 @@ pnpm dev
 
 Web: `http://localhost:3000` · API: `http://localhost:3001`
 
+## Menjalankan Layanan Lokal
+
+Database & cache untuk pengembangan dijalankan via Docker Compose (`docker/docker-compose.yml`): PostgreSQL 16 (port 5432) dan Redis 7 (port 6379).
+
+```bash
+# Nyalakan (background)
+docker compose -f docker/docker-compose.yml up -d
+
+# Cek status + healthcheck
+docker compose -f docker/docker-compose.yml ps
+
+# Lihat log
+docker compose -f docker/docker-compose.yml logs -f
+
+# Matikan (data tetap aman di volume)
+docker compose -f docker/docker-compose.yml down
+
+# Matikan + hapus data (reset bersih)
+docker compose -f docker/docker-compose.yml down -v
+```
+
+Salin template environment lalu sesuaikan bila perlu:
+
+```bash
+cp .env.example .env   # Windows (PowerShell): Copy-Item .env.example .env
+```
+
 ## Roadmap (ringkas)
 
 | Fase | Fokus                                                                |

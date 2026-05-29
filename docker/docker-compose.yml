@@ -1,0 +1,49 @@
+# Dewasa Ayu — local development services (PostgreSQL + Redis).
+#
+#   docker compose -f docker/docker-compose.yml up -d
+#
+# Compose v2 ignores the obsolete top-level "version:" key — intentionally omitted.
+# The credentials below are for local development only and must stay in sync
+# with .env.example.
+
+name: dewasa-ayu
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: dewasa-ayu-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: dewasa
+      POSTGRES_PASSWORD: dewasa
+      POSTGRES_DB: dewasa_ayu
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U dewasa -d dewasa_ayu']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  redis:
+    image: redis:7-alpine
+    container_name: dewasa-ayu-redis
+    restart: unless-stopped
+    command: ['redis-server', '--save', '60', '1', '--loglevel', 'warning']
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+volumes:
+  postgres-data:
+  redis-data:
