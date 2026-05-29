@@ -173,7 +173,7 @@ Session 1 builds; Session 2 reviews with fresh eyes — no ego in the code, so i
   - **Monorepo boundaries**: `wariga-engine` stays zero-dependency; shared types live in `packages/types`. Adding a ceremony = one new config file, no engine change.
   - **Zod everywhere** (one schema in `packages/types`, reused by NestJS + RHF). **REST-only**, base path `/api/v1`.
   - **Engine = clean-room + proprietary** — never copy/translate SakaCalendar; "All Rights Reserved" header; SakaCalendar is a test oracle only.
-  - **Specs are English; user-facing copy is Bahasa Indonesia** (English i18n is Phase 1).
+  - **Code, config, comments, and specs are written in English** — this includes all source, infra/config files (`.ts`, `.yml`, `.json`, `.prisma`, Dockerfiles, CI) and their comments. Bahasa Indonesia is reserved for user-facing copy (UI strings) and the existing Indonesian docs (`README.md`, `docs/PRD.md`); when extending an Indonesian doc, match its language. UI English i18n is Phase 1.
 - **Cultural & content rules** _(non-negotiable — Wariga is sacred knowledge; bad framing can kill the product)_:
   - Bahasa Indonesia primary. Never claim religious authority — phrase as "berdasarkan pedoman Wariga umum".
   - Always present the app as a **reference, not a substitute for Sulinggih/Pemangku consultation** — disclaimer always visible.
