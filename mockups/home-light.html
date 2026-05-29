@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Daytime / light-mode variant ("Incised Lontar" paper). Default theme is the night/lamplight build in home.html. See DESIGN.md v0.2.0. -->
+  <title>Dewasa Ayu — Cek Hari Baik (tema siang)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --paper:      #F2E8D2;
+      --paper-deep: #E7D8B6;
+      --paper-edge: #CDBB92;
+      --leaf:       #E2D0A8;   /* inscription strip */
+      --leaf-deep:  #D6C194;
+      --ink:        #362A1A;
+      --ink-soft:   #5C4C36;
+      --ink-faint:  #8A7960;
+      --ochre:      #9E6E1F;
+      --ochre-deep: #7E5614;
+      --ochre-soft: #C49A4E;
+      --ayu:        #5C7A4F;
+      --ala:        #8A4B47;
+
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --sans:  'DM Sans', system-ui, sans-serif;
+
+      --s1:4px; --s2:8px; --s3:16px; --s4:24px; --s5:40px; --s6:64px; --s7:96px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+
+    body {
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.62;
+      color: var(--ink);
+      background-color: var(--paper);
+      /* layered atmosphere: palm-leaf horizontal banding + warm vignette + grain */
+      background-image:
+        radial-gradient(120% 70% at 50% -10%, rgba(158,110,31,0.07), transparent 60%),
+        repeating-linear-gradient(to bottom,
+          rgba(54,42,26,0.000) 0px,
+          rgba(54,42,26,0.000) 132px,
+          rgba(54,42,26,0.022) 132px,
+          rgba(54,42,26,0.022) 133px,
+          rgba(255,250,235,0.30) 133px,
+          rgba(255,250,235,0.30) 134px),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='7' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.21 0 0 0 0 0.16 0 0 0 0 0.10 0 0 0 0.04 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .wrap { max-width: 1000px; margin: 0 auto; padding: 0 var(--s4); position: relative; }
+
+    /* binding-cord identity rail (the cord that threads a lontar stack) */
+    .wrap::before {
+      content: "";
+      position: absolute;
+      left: 11px; top: 86px; bottom: 120px;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--paper-edge) 8%, var(--paper-edge) 92%, transparent);
+      opacity: 0.8;
+    }
+    @media (max-width: 820px) { .wrap::before { display: none; } }
+
+    /* ─────────── HEADER ─────────── */
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: var(--s5) 0 var(--s4);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .brand .leaf-mark { width: 30px; height: 30px; color: var(--ochre); flex-shrink: 0; }
+    .brand .name {
+      font-family: var(--serif); font-style: italic; font-weight: 600;
+      font-size: 24px; color: var(--ink); letter-spacing: -0.01em; line-height: 1;
+    }
+    .brand .name small {
+      display: block; font-family: var(--sans); font-style: normal; font-weight: 500;
+      font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase;
+      color: var(--ink-faint); margin-top: 4px;
+    }
+    .tools { display: flex; align-items: center; gap: var(--s3); }
+    .tool {
+      background: none; border: none; cursor: pointer; color: var(--ink-soft);
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: color .18s ease-out; padding: 4px;
+    }
+    .tool:hover { color: var(--ochre); }
+    .tool svg { width: 19px; height: 19px; }
+    .tool.type { font-family: var(--serif); gap: 1px; align-items: baseline; }
+    .tool.type .a1 { font-size: 13px; font-style: italic; }
+    .tool.type .a2 { font-size: 20px; font-style: italic; }
+
+    /* ─────────── CEREMONY SELECTOR ─────────── */
+    .ceremonies {
+      display: flex; flex-wrap: wrap; gap: var(--s4);
+      list-style: none; padding: var(--s2) 0 var(--s5);
+      border-bottom: 1px solid var(--paper-edge);
+    }
+    .ceremonies a {
+      font-family: var(--sans); font-size: 14px; font-weight: 500;
+      color: var(--ink-faint); text-decoration: none; letter-spacing: 0.01em;
+      padding-bottom: 6px; border-bottom: 1.5px solid transparent;
+      transition: color .18s ease-out;
+    }
+    .ceremonies a:hover { color: var(--ink-soft); }
+    .ceremonies a.active {
+      font-family: var(--serif); font-style: italic; font-weight: 600;
+      font-size: 19px; color: var(--ink); border-bottom-color: var(--ochre);
+      padding-bottom: 4px;
+    }
+
+    /* ─────────── ASK BLOCK (primary action) ─────────── */
+    .ask { padding: var(--s6) 0 var(--s5); max-width: 600px; }
+    .ask .eyebrow {
+      font-family: var(--sans); font-size: 11px; font-weight: 600;
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--ochre);
+      margin-bottom: var(--s3);
+    }
+    .ask h1 {
+      font-family: var(--serif); font-weight: 500; font-style: italic;
+      font-size: clamp(34px, 6vw, 50px); line-height: 1.08; letter-spacing: -0.01em;
+      color: var(--ink); margin-bottom: var(--s4);
+    }
+    .ask h1 .pick { color: var(--ochre); font-style: normal; font-weight: 600; }
+    .field {
+      display: flex; align-items: flex-end; gap: var(--s4);
+      flex-wrap: wrap;
+    }
+    .date-input {
+      display: inline-flex; align-items: baseline; gap: 10px;
+      border-bottom: 1.5px solid var(--paper-edge);
+      padding: 0 4px 8px;
+      transition: border-color .18s ease-out;
+    }
+    .date-input:hover { border-bottom-color: var(--ochre-soft); }
+    .date-input .d {
+      font-family: var(--serif); font-style: italic; font-size: 28px; color: var(--ink);
+    }
+    .date-input .d b { font-style: normal; font-weight: 600; color: var(--ochre); }
+    .date-input .edit { color: var(--ink-faint); display: inline-flex; }
+    .date-input .edit svg { width: 15px; height: 15px; }
+    .periksa {
+      font-family: var(--sans); font-size: 14px; font-weight: 600; letter-spacing: 0.02em;
+      color: var(--paper); background: var(--ochre);
+      border: 1px solid var(--ochre-deep); border-radius: 3px;
+      padding: 11px 22px; cursor: pointer;
+      box-shadow: 0 2px 0 var(--ochre-deep), 0 6px 14px -8px rgba(126,86,20,0.7);
+      transition: transform .12s ease-out, background .18s ease-out;
+    }
+    .periksa:hover { background: var(--ochre-deep); transform: translateY(-1px); }
+    .periksa:active { transform: translateY(1px); box-shadow: 0 0 0 var(--ochre-deep); }
+
+    /* ─────────── INSCRIPTION PANEL (the centerpiece artifact) ─────────── */
+    .inscription {
+      position: relative;
+      margin: var(--s4) 0 var(--s6);
+      padding: var(--s5) var(--s5) var(--s5) calc(var(--s5) + 18px);
+      border-radius: 4px;
+      color: var(--ink);
+      background-color: var(--leaf);
+      background-image:
+        repeating-linear-gradient(to bottom,
+          transparent 0, transparent 33px,
+          rgba(54,42,26,0.05) 33px, rgba(54,42,26,0.05) 34px),
+        linear-gradient(105deg, var(--leaf) 0%, var(--leaf-deep) 100%);
+      border: 1px solid var(--paper-edge);
+      box-shadow:
+        inset 0 1px 0 rgba(255,250,235,0.55),
+        inset 0 -22px 40px -30px rgba(54,42,26,0.45),
+        0 1px 0 #c2ae84,
+        0 22px 36px -26px rgba(54,42,26,0.55);
+    }
+    /* aged deckle edge highlight */
+    .inscription::after {
+      content: ""; position: absolute; inset: 3px; border-radius: 3px;
+      border: 1px solid rgba(255,250,235,0.18); pointer-events: none;
+    }
+    /* binding hole at the leaf's left margin */
+    .inscription .hole {
+      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+      width: 11px; height: 11px; border-radius: 50%;
+      background: radial-gradient(circle at 40% 35%, #b39c6e, #7c6a45);
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.45), 0 1px 0 rgba(255,250,235,0.4);
+    }
+    @media (max-width: 560px) { .inscription { padding-left: var(--s4); } .inscription .hole { display: none; } }
+
+    .insc-top { display: flex; align-items: center; gap: 14px; margin-bottom: var(--s2); }
+    .insc-glyph { width: 30px; height: 30px; color: var(--ochre); flex-shrink: 0; }
+    .verdict {
+      font-family: var(--serif); font-style: italic; font-weight: 600;
+      font-size: clamp(28px, 5vw, 38px); line-height: 1; color: var(--ink);
+    }
+    .verdict b { font-style: normal; color: var(--ochre); }
+    .insc-sub {
+      font-family: var(--sans); font-size: 13.5px; color: var(--ink-soft);
+      margin-bottom: var(--s5);
+    }
+    .insc-sub em { font-style: italic; font-family: var(--serif); font-size: 15px; }
+
+    .scorewrap { display: flex; align-items: flex-end; gap: var(--s5); flex-wrap: wrap; }
+    .score {
+      font-family: var(--serif); font-weight: 600; font-size: clamp(86px, 17vw, 132px);
+      line-height: 0.82; letter-spacing: -0.03em;
+      color: var(--ochre);
+      /* carved-into-leaf effect */
+      text-shadow:
+        0 1px 0 rgba(255,250,235,0.65),
+        0 -1px 1px rgba(54,42,26,0.40);
+      font-feature-settings: "lnum" 1;
+    }
+    .score sup {
+      font-size: 0.30em; font-weight: 500; vertical-align: super;
+      color: var(--ochre-soft); margin-left: 2px; text-shadow: none;
+    }
+    .score-side { padding-bottom: 10px; flex: 1; min-width: 200px; }
+    .score-side .label {
+      font-family: var(--sans); font-size: 11px; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-faint);
+      margin-bottom: var(--s3);
+    }
+    .meter { position: relative; height: 3px; background: rgba(54,42,26,0.18); border-radius: 2px; }
+    .meter .fill {
+      position: absolute; left: 0; top: 0; height: 100%;
+      width: 77%; background: var(--ayu); border-radius: 2px;
+      box-shadow: 0 0 0 1px rgba(92,122,79,0.25);
+    }
+    .meter .pin {
+      position: absolute; top: 50%; left: 77%; transform: translate(-50%, -50%);
+      width: 9px; height: 9px; border-radius: 50%;
+      background: var(--ochre); box-shadow: 0 0 0 2px var(--leaf);
+    }
+    .meter-scale {
+      display: flex; justify-content: space-between;
+      font-family: var(--sans); font-size: 10px; letter-spacing: 0.1em;
+      color: var(--ink-faint); margin-top: 10px; text-transform: uppercase;
+    }
+
+    /* ─────────── BREAKDOWN (editorial two-column) ─────────── */
+    .breakdown {
+      display: grid; grid-template-columns: 1fr; gap: var(--s6) var(--s7);
+    }
+    @media (min-width: 760px) {
+      .breakdown { grid-template-columns: 1fr 1fr; gap: var(--s6) var(--s6); }
+    }
+    .col-head {
+      font-family: var(--serif); font-style: italic; font-weight: 600; font-size: 22px;
+      color: var(--ink); margin-bottom: var(--s4);
+      display: flex; align-items: baseline; gap: 12px;
+    }
+    .col-head em { color: var(--ochre); }
+    .col-head .n {
+      font-family: var(--sans); font-style: normal; font-size: 11px; font-weight: 500;
+      letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-faint);
+    }
+
+    /* Pawukon — ruled definition rows */
+    .pawukon { list-style: none; }
+    .pawukon li {
+      display: flex; align-items: baseline; justify-content: space-between; gap: var(--s3);
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(205,187,146,0.55);
+    }
+    .pawukon dt, .pawukon .t {
+      font-family: var(--serif); font-style: italic; font-size: 16px; color: var(--ink-faint);
+    }
+    .pawukon dd, .pawukon .v {
+      font-family: var(--sans); font-size: 15px; font-weight: 500; color: var(--ink); text-align: right;
+    }
+    .pawukon .v.hl { color: var(--ochre); }
+
+    /* Analysis checklist */
+    .analysis { list-style: none; counter-reset: f; }
+    .analysis li {
+      counter-increment: f;
+      display: grid; grid-template-columns: 30px 1fr auto; gap: 6px var(--s3);
+      align-items: baseline; padding: var(--s3) 0;
+      border-bottom: 1px solid rgba(205,187,146,0.55);
+    }
+    .analysis li:last-child { border-bottom: none; }
+    .analysis .idx {
+      font-family: var(--serif); font-size: 17px; color: var(--ochre);
+      font-feature-settings: "lnum" 1;
+    }
+    .analysis .idx::before { content: counter(f, decimal-leading-zero); }
+    .analysis .name { font-family: var(--serif); font-style: italic; font-size: 17px; color: var(--ink); }
+    .analysis .why { display: block; font-family: var(--sans); font-size: 12.5px; color: var(--ink-faint); margin-top: 2px; line-height: 1.5; }
+    .analysis .mark {
+      font-family: var(--sans); font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--ayu); display: inline-flex; align-items: center; gap: 5px;
+    }
+    .analysis .mark svg { width: 13px; height: 13px; }
+
+    /* Dewasa tags */
+    .tags { display: flex; flex-wrap: wrap; gap: var(--s2); margin-top: var(--s2); }
+    .tag {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-family: var(--serif); font-style: italic; font-size: 15px; color: var(--ink);
+      border: 1px solid var(--paper-edge); border-radius: 3px;
+      padding: 6px 13px; background: rgba(255,250,235,0.35);
+      transition: border-color .18s ease-out, color .18s ease-out;
+    }
+    .tag svg { width: 13px; height: 13px; color: var(--ayu); }
+    .tag:hover { border-color: var(--ochre); color: var(--ochre); }
+    .note { font-family: var(--sans); font-size: 13px; color: var(--ink-faint); margin-top: var(--s3); line-height: 1.55; }
+
+    /* ─────────── DIVIDER ─────────── */
+    .divider { display: flex; justify-content: center; margin: var(--s6) 0; color: var(--paper-edge); }
+    .divider svg { width: min(280px, 70%); height: 12px; }
+
+    /* ─────────── SHARE ─────────── */
+    .share { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s5); margin: var(--s5) 0 var(--s6); }
+    .share a {
+      display: inline-flex; align-items: center; gap: 9px;
+      font-family: var(--sans); font-size: 14px; font-weight: 500; color: var(--ink-soft);
+      text-decoration: none; border-bottom: 1px solid var(--paper-edge); padding-bottom: 4px;
+      transition: color .18s ease-out, border-color .18s ease-out;
+    }
+    .share a:hover { color: var(--ochre); border-bottom-color: var(--ochre); }
+    .share svg { width: 17px; height: 17px; }
+
+    /* ─────────── FOOTER ─────────── */
+    footer { border-top: 1px solid var(--paper-edge); }
+    .foot {
+      max-width: 1000px; margin: 0 auto; padding: var(--s4) var(--s4) var(--s6);
+      display: flex; align-items: flex-start; gap: 12px;
+      font-family: var(--sans); font-size: 12.5px; line-height: 1.6; color: var(--ink-faint);
+    }
+    .foot .seal { width: 26px; height: 26px; color: var(--ochre); flex-shrink: 0; opacity: 0.8; margin-top: 2px; }
+    .foot em { font-family: var(--serif); font-style: italic; font-size: 14px; color: var(--ink-soft); }
+
+    /* ─────────── MOTION ─────────── */
+    @media (prefers-reduced-motion: no-preference) {
+      .anim { opacity: 0; transform: translateY(10px); animation: rise .6s cubic-bezier(.2,.7,.3,1) forwards; }
+      .d1{animation-delay:.05s}.d2{animation-delay:.14s}.d3{animation-delay:.24s}
+      .d4{animation-delay:.36s}.d5{animation-delay:.50s}.d6{animation-delay:.62s}
+      @keyframes rise { to { opacity: 1; transform: none; } }
+      .meter .fill { width: 0; animation: fill 1s .7s cubic-bezier(.2,.7,.2,1) forwards; }
+      @keyframes fill { to { width: 77%; } }
+      .meter .pin { left: 0; animation: pin 1s .7s cubic-bezier(.2,.7,.2,1) forwards; }
+      @keyframes pin { to { left: 77%; } }
+    }
+
+    @media (max-width: 560px) {
+      header { padding-top: var(--s4); }
+      .brand .name { font-size: 21px; }
+      .ceremonies { gap: var(--s3); }
+      .ask { padding-top: var(--s5); }
+      .score { letter-spacing: -0.02em; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wrap">
+
+    <!-- HEADER -->
+    <header class="anim d1">
+      <a class="brand" href="#" aria-label="Dewasa Ayu — beranda">
+        <!-- custom lontar-leaf mark -->
+        <svg class="leaf-mark" viewBox="0 0 30 30" fill="none" aria-hidden="true">
+          <path d="M3 15c4-9 20-12 24-12-1 11-9 22-21 24-2 .3-3.4-1-3-3 .1-3 0-6 0-9z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+          <path d="M7 22C12 16 18 11 25 7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+          <circle cx="9.5" cy="19" r="1.4" fill="currentColor"/>
+        </svg>
+        <span class="name">Dewasa Ayu<small>Pencari Hari Wariga</small></span>
+      </a>
+      <div class="tools">
+        <button class="tool type" aria-label="Ubah ukuran teks"><span class="a1">A</span><span class="a2">A</span></button>
+        <button class="tool" aria-label="Tema malam">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 14.5A8 8 0 1 1 10 4a6.3 6.3 0 0 0 10 10.5z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- CEREMONY SELECTOR -->
+    <nav aria-label="Pilih jenis upacara" class="anim d2">
+      <ul class="ceremonies">
+        <li><a class="active" href="#" aria-current="page">Pawiwahan</a></li>
+        <li><a href="#">Manusa Yadnya</a></li>
+        <li><a href="#">Dewa Yadnya</a></li>
+        <li><a href="#">Pitra Yadnya</a></li>
+        <li><a href="#">Pembangunan</a></li>
+        <li><a href="#">Usaha</a></li>
+      </ul>
+    </nav>
+
+    <!-- ASK -->
+    <section class="ask anim d3" aria-labelledby="ask-h">
+      <p class="eyebrow">Berdasarkan pedoman Wariga umum</p>
+      <h1 id="ask-h">Apakah hari ini <span class="pick">baik</span><br>untuk pawiwahan?</h1>
+      <div class="field">
+        <span class="date-input" role="group" aria-label="Tanggal terpilih">
+          <span class="d">Rabu, <b>15 Oktober 2026</b></span>
+          <a class="edit" href="#" aria-label="Ubah tanggal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
+            </svg>
+          </a>
+        </span>
+        <button class="periksa" type="button">Periksa Dewasa</button>
+      </div>
+    </section>
+
+    <!-- INSCRIPTION PANEL -->
+    <section class="inscription anim d4" aria-labelledby="verdict-h">
+      <span class="hole" aria-hidden="true"></span>
+      <div class="insc-top">
+        <!-- Pawiwahan marginal glyph: two joined rings -->
+        <svg class="insc-glyph" viewBox="0 0 30 30" fill="none" aria-hidden="true">
+          <circle cx="11.5" cy="15" r="7.5" stroke="currentColor" stroke-width="1.2"/>
+          <circle cx="18.5" cy="15" r="7.5" stroke="currentColor" stroke-width="1.2"/>
+        </svg>
+        <h2 class="verdict" id="verdict-h">Dewasa <b>ayu</b></h2>
+      </div>
+      <p class="insc-sub">Disarankan untuk <em>pawiwahan</em> &nbsp;·&nbsp; Rabu, 15 Oktober 2026</p>
+
+      <div class="scorewrap">
+        <div class="score" aria-label="Skor 77 persen">77<sup>%</sup></div>
+        <div class="score-side">
+          <p class="label">Skor berbobot</p>
+          <div class="meter" role="img" aria-label="77 dari 100">
+            <span class="fill"></span><span class="pin"></span>
+          </div>
+          <div class="meter-scale"><span>Kurang ideal</span><span>Dewasa ayu</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BREAKDOWN -->
+    <div class="breakdown">
+
+      <!-- Tanggal Bali -->
+      <section class="anim d5" aria-labelledby="bali-h">
+        <h3 class="col-head" id="bali-h">Tanggal <em>Bali</em> <span class="n">12 unsur</span></h3>
+        <dl class="pawukon">
+          <li><dt class="t">Wuku</dt><dd class="v">Krulut</dd></li>
+          <li><dt class="t">Saptawara</dt><dd class="v">Wraspati</dd></li>
+          <li><dt class="t">Pancawara</dt><dd class="v">Pon</dd></li>
+          <li><dt class="t">Triwara</dt><dd class="v">Kajeng</dd></li>
+          <li><dt class="t">Sadwara</dt><dd class="v">Tungleh</dd></li>
+          <li><dt class="t">Sangawara</dt><dd class="v hl">Tulus</dd></li>
+          <li><dt class="t">Astawara</dt><dd class="v">Indra</dd></li>
+          <li><dt class="t">Dasawara</dt><dd class="v">Dewa</dd></li>
+          <li><dt class="t">Sasih</dt><dd class="v">Katiga · penanggal 5</dd></li>
+          <li><dt class="t">Ingkel</dt><dd class="v">Manuk</dd></li>
+          <li><dt class="t">Jejepan</dt><dd class="v">Sato</dd></li>
+          <li><dt class="t">Urip</dt><dd class="v">15</dd></li>
+        </dl>
+      </section>
+
+      <!-- Analisis + Dewasa -->
+      <section class="anim d6" aria-labelledby="an-h">
+        <h3 class="col-head" id="an-h">Analisis <span class="n">4 faktor</span></h3>
+        <ol class="analysis">
+          <li>
+            <span class="idx" aria-hidden="true"></span>
+            <span><span class="name">Saptawara</span><span class="why">Wraspati termasuk hari baik untuk pawiwahan.</span></span>
+            <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Lulus</span>
+          </li>
+          <li>
+            <span class="idx" aria-hidden="true"></span>
+            <span><span class="name">Sasih</span><span class="why">Sasih Katiga disarankan untuk pawiwahan.</span></span>
+            <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Lulus</span>
+          </li>
+          <li>
+            <span class="idx" aria-hidden="true"></span>
+            <span><span class="name">Penanggal</span><span class="why">Paro terang, penanggal 5 — bukan pangelong.</span></span>
+            <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Lulus</span>
+          </li>
+          <li>
+            <span class="idx" aria-hidden="true"></span>
+            <span><span class="name">Sangawara</span><span class="why">Tulus — pertanda lancar; dewasa ayu aktif.</span></span>
+            <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Lulus</span>
+          </li>
+        </ol>
+
+        <h3 class="col-head" id="dw-h" style="margin-top:var(--s5)">Dewasa <em>ayu</em> aktif <span class="n">2 terdeteksi</span></h3>
+        <div class="tags">
+          <span class="tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Sangawara Tulus</span>
+          <span class="tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Subacara</span>
+        </div>
+        <p class="note">Tidak ditemukan pantangan kuat untuk pawiwahan pada tanggal ini.</p>
+      </section>
+    </div>
+
+    <!-- DIVIDER -->
+    <div class="divider" aria-hidden="true">
+      <svg viewBox="0 0 280 12" preserveAspectRatio="xMidYMid meet">
+        <line x1="0" y1="6" x2="118" y2="6" stroke="currentColor" stroke-width="1"/>
+        <path d="M132 6 L140 2 L148 6 L140 10 Z" fill="none" stroke="currentColor" stroke-width="1"/>
+        <circle cx="140" cy="6" r="1.1" fill="currentColor"/>
+        <line x1="162" y1="6" x2="280" y2="6" stroke="currentColor" stroke-width="1"/>
+      </svg>
+    </div>
+
+    <!-- SHARE -->
+    <div class="share">
+      <a href="#" aria-label="Bagikan ke WhatsApp">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3.5 20.5l1.3-4.7A8.2 8.2 0 1 1 8.2 19l-4.7 1.5z"/><path d="M8.5 8.5c1 3 3 5 6 6l1.5-1.6 2 .9-.4 2.2c-3.6.6-8.2-3.8-8.6-7.4l2.1-.5.9 1.9z"/>
+        </svg>
+        Bagikan
+      </a>
+      <a href="#" aria-label="Salin tautan">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M10 13a5 5 0 0 0 7.5.5l2.5-2.5a5 5 0 0 0-7-7L11 6"/><path d="M14 11a5 5 0 0 0-7.5-.5L4 13a5 5 0 0 0 7 7l1-1"/>
+        </svg>
+        Salin tautan
+      </a>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="foot">
+      <svg class="seal" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+        <circle cx="13" cy="13" r="11" stroke="currentColor" stroke-width="1"/>
+        <path d="M13 5v16M5 13h16" stroke="currentColor" stroke-width="0.8" opacity="0.5"/>
+        <circle cx="13" cy="13" r="3.4" stroke="currentColor" stroke-width="1"/>
+      </svg>
+      <p><em>Catatan.</em> Platform ini menyediakan perhitungan referensi berdasarkan pedoman <em>Wariga</em> umum, bukan pengganti konsultasi <em>Sulinggih</em> atau <em>Pemangku</em>. Perhitungan Sasih bersifat estimasi dan dapat berbeda dengan variasi tradisi regional.</p>
+    </div>
+  </footer>
+
+</body>
+</html>

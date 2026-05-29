@@ -2,7 +2,7 @@
 
 > Aesthetic philosophy and signature patterns for the Dewasa Ayu platform. This file is the north star for visual decisions, complementing [UI-001](./docs/specs/pages.md) (technical token contract) and informing AI agents producing frontend code. Read this before writing or generating any user-facing surface.
 
-**Status:** Draft · **Version:** 0.1.0 · **Updated:** 2026-05-28
+**Status:** Draft · **Version:** 0.2.0 · **Updated:** 2026-05-29
 
 ---
 
@@ -10,16 +10,16 @@
 
 **Lontar manuscript revival — a quiet, scholarly platform with reverence for source.**
 
-The lontar (palm-leaf manuscript) is the canonical physical artefact of Wariga knowledge in Bali. The platform inherits its visual mood: warm cream surfaces like aged palm leaf, sepia and ochre ink, deliberate hand-feel touches in the ornaments, generous breathing room between lines, and typography that signals "this content is to be read carefully, not skimmed."
+The lontar (palm-leaf manuscript) is the canonical physical artefact of Wariga knowledge in Bali. The platform inherits its visual mood: the manuscript read **by oil-lamp light** — a warm near-black surface with ember-toned text and burnished gold ink as the default, with an aged-palm-leaf cream surface available for daytime reading. Either way: sepia/gold ink, deliberate hand-feel touches in the ornaments, generous breathing room between lines, and typography that signals "this content is to be read carefully, not skimmed."
 
-The platform is **not** a temple replica. It does not lean on dark Black + Gold "luxury" aesthetics, nor on tropical-Bali stock photography, nor on overt mandala motifs. Those signals risk exotifying Wariga or reducing it to surface decoration. Instead the platform borrows what manuscripts give: *patience*, *reverence for the page*, *typographic hierarchy as the primary visual instrument*.
+The platform is **not** a temple replica. Crucially, the default dark theme is **warm oil-lamp light, not glossy "luxury" Black + Gold**: the surface is a soft brown-black (`#181410`), the gold is muted and burnished (never high-saturation), and there is no high-gloss, no jewel tones, no mandala fields. That line matters — pure black with bright gold reads as luxury branding and risks *exotifying* Wariga; warm lamplight reads as a manuscript being read at night. The platform also avoids tropical-Bali stock photography and overt mandala motifs, which reduce Wariga to surface decoration. Instead it borrows what manuscripts give: *patience*, *reverence for the page*, *typographic hierarchy as the primary visual instrument*.
 
 A reader should feel that the platform was made by someone who has spent time with the source — not by a tourism brand.
 
 ### Core principles
 
 1. **Type carries the design.** Decisions about hierarchy, mood, and emphasis are typographic first; color and ornament are secondary.
-2. **Cream is the default, dark is the variant.** The light "paper" theme is canonical. The dark theme exists for night reading, not as a stylistic default.
+2. **Lamplight (night) is the default; paper is the daytime variant.** The warm dark "night" theme is canonical — the manuscript read by oil lamp. The cream "paper" theme is the daytime / light-mode companion (and the basis for the high-contrast variant). Respect OS `prefers-color-scheme` for the initial theme; both are first-class and fully maintained.
 3. **Ornament is restrained and intentional.** A hand-drawn divider here, a small marginal glyph there — never decorative fields or background patterns.
 4. **Color is the smallest channel.** Sepia for normal content, ochre/gold only for emphasis. Semantic colors (ayu green, ala red, neutral blue) are muted and never saturated.
 5. **No claim to authority.** Visual gravitas is for the *source* (Wariga, Sulinggih), not the platform. Avoid imposing fonts, large headlines that "shout", or any tone that says "trust us."
@@ -48,7 +48,7 @@ Indonesian primary (per project cultural rules). Voice is:
 
 The Lontar palette starts from aged-palm-leaf and ink, not from a brand-color picker. Hex values below; CSS-variable names in [UI-001](./docs/specs/pages.md) need updating to align (see [Reconciliations](#reconciliations-with-existing-tokens)).
 
-### Paper theme (default — `light` in UI-001)
+### Paper theme (daytime variant — `light` in UI-001)
 
 | Token | Hex | Role |
 |-------|-----|------|
@@ -61,7 +61,7 @@ The Lontar palette starts from aged-palm-leaf and ink, not from a brand-color pi
 | `ochre` | `#A87A2A` | Emphasis, headings, ornaments — burnished gold-brown |
 | `ochre-soft` | `#C8A055` | Hover states, soft highlights |
 
-### Night theme (variant — `dark` in UI-001)
+### Night theme (default — `dark` in UI-001)
 
 | Token | Hex | Role |
 |-------|-----|------|
@@ -192,7 +192,7 @@ How signature patterns appear across the components from UI-001:
 
 UI-001 v0.1.0 captures earlier tokens (Gold `#C4A265` on Dark `#0D0B08`, Dark default). DESIGN.md v0.1.0 implies:
 
-- **Paper theme becomes default** (was Dark in UI-001).
+- **Night theme is the default** (re-aligns with UI-001 v0.1.0's original dark-first intent); paper is the daytime / light-mode variant.
 - **Token names change:** `bg-light → paper`, `bg-dark → night`, `gold → ochre` (paper) or `gold` (night), `text-on-light → ink`, `text-on-dark → ember`.
 - **Semantic colours desaturated** vs UI-001's `#3F8F4B / #3A5FA8 / #B14250`.
 - **New tokens for ornament:** `paper-edge`, `ink-faint`, etc.
@@ -215,4 +215,5 @@ Do not invoke `frontend-design` to make decisions for this file. This file is th
 
 ## Changelog
 
+- v0.2.0 — 2026-05-29 — **Night (lamplight) theme promoted to default**; paper demoted to the daytime / light-mode variant (re-aligns with UI-001's original dark-first default). Clarified the Black + Gold guardrail: the default dark is warm oil-lamp (soft brown-black + muted burnished gold), explicitly **not** glossy luxury Black + Gold. Updated core principle 2, the aesthetic-philosophy opening, palette section labels, and the reconciliations note. Decision made after reviewing two home-screen mockups (paper vs. night, in `mockups/`); the lamplight direction is more distinctive and memorable for a consumer product while staying inside the cultural guardrail.
 - v0.1.0 — 2026-05-28 — Initial DESIGN.md drafted from brainstorm. Lontar manuscript revival direction chosen. Defines aesthetic philosophy, voice, full color palette (paper + night + high-contrast), typography rules, layout DNA, five signature patterns, imagery rules, motion, component map, and reconciliations needed against UI-001 tokens.
