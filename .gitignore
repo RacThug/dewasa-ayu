@@ -36,3 +36,6 @@ coverage/
 # Lint / format caches
 .eslintcache
 .prettiercache
+
+# Next.js generated type shim (regenerated on build)
+next-env.d.ts

@@ -35,7 +35,9 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "turbo"
+      "turbo",
+      "sharp",
+      "@nestjs/core"
     ]
   },
   "lint-staged": {
