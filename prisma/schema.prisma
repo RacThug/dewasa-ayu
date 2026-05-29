@@ -1,0 +1,108 @@
+// Dewasa Ayu — Prisma schema.
+//
+// SKELETON (issue #14): minimal but real models transcribed from PRD §11 so
+// that `prisma migrate dev --name init` produces a first migration. Field-level
+// refinement (indexes, constraints, precise types, relation policies) happens
+// in Phase 2 (DB-001).
+
+generator client {
+  // Prisma 7: `prisma-client` is the current generator and `output` is required.
+  provider = "prisma-client"
+  output   = "./generated/client"
+}
+
+datasource db {
+  // Prisma 7: the connection URL lives in prisma.config.ts (datasource.url) —
+  // a schema-level `url` is no longer supported.
+  provider = "postgresql"
+}
+
+enum DewasaRuleType {
+  ayu // auspicious
+  ala // inauspicious
+}
+
+model CeremonyType {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  category    String
+  description String?
+  rules       Json? // per-ceremony scoring config (JSONB)
+  icon        String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  savedDates SavedDate[]
+
+  @@map("ceremony_types")
+}
+
+model DewasaRule {
+  id                   String         @id @default(cuid())
+  name                 String
+  type                 DewasaRuleType
+  condition            Json // rule predicate (JSONB)
+  description          String?
+  severity             Int            @default(0)
+  applicableCeremonies String[]       @map("applicable_ceremonies")
+  createdAt            DateTime       @default(now()) @map("created_at")
+  updatedAt            DateTime       @updatedAt @map("updated_at")
+
+  @@map("dewasa_rules")
+}
+
+model SasihCorrection {
+  id          String    @id @default(cuid())
+  tahunSaka   Int       @map("tahun_saka")
+  sasihIndex  Int       @map("sasih_index")
+  tilemDate   DateTime? @map("tilem_date") @db.Date
+  purnamaDate DateTime? @map("purnama_date") @db.Date
+  isNampih    Boolean   @default(false) @map("is_nampih")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@unique([tahunSaka, sasihIndex])
+  @@map("sasih_corrections")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  locale    String   @default("id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  savedDates SavedDate[]
+
+  @@map("users")
+}
+
+model SavedDate {
+  id             String   @id @default(cuid())
+  userId         String   @map("user_id")
+  date           DateTime @db.Date
+  ceremonyTypeId String   @map("ceremony_type_id")
+  notes          String?
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ceremonyType CeremonyType @relation(fields: [ceremonyTypeId], references: [id])
+
+  @@index([userId])
+  @@index([ceremonyTypeId])
+  @@map("saved_dates")
+}
+
+model ApiKey {
+  id        String   @id @default(cuid())
+  keyHash   String   @unique @map("key_hash")
+  tier      String   @default("free")
+  rateLimit Int      @default(60) @map("rate_limit")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("api_keys")
+}
