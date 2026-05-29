@@ -5,6 +5,7 @@ build
 .turbo
 coverage
 pnpm-lock.yaml
+prisma/generated
 .husky/_
 
 # Hand-crafted design mockups — leave formatting as authored.
