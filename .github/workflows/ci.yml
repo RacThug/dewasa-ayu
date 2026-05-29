@@ -29,7 +29,7 @@ concurrency:
 
 jobs:
   verify:
-    name: lint · typecheck · test (Node ${{ matrix.node-version }})
+    name: verify (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
 
     strategy:

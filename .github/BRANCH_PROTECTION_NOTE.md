@@ -20,11 +20,11 @@ auto-merge will simply wait for CI to go green instead of merging broken code.
    - Also tick **Require branches to be up to date before merging** (forces a
      re-run against the latest `main` — prevents "passed on a stale base" merges).
 5. In the status-check search box, type and select the CI job:
-   **`lint · typecheck · test (Node 20.x)`**
+   **`verify (Node 20.x)`**
    - The check only appears in the list **after CI has run at least once**, so
      open one PR (or push to `develop`) first, let CI run, then come back here.
    - If you later add Node versions to the matrix, add each new
-     `lint · typecheck · test (Node XX.x)` entry as a required check too.
+     `verify (Node XX.x)` entry as a required check too.
 6. (Recommended) Also tick **Require a pull request before merging** so nothing
    lands on `main` without going through a PR + CI.
 7. Click **Create** / **Save changes**.
@@ -34,7 +34,7 @@ auto-merge will simply wait for CI to go green instead of merging broken code.
 ## Verify it works
 
 1. Open a throwaway PR that deliberately breaks lint (e.g. an unused variable).
-2. Confirm the PR shows a red **`lint · typecheck · test (Node 20.x)`** check and
+2. Confirm the PR shows a red **`verify (Node 20.x)`** check and
    the **Merge** button is disabled / blocked.
 3. Fix the lint error, push — the check goes green and Merge unblocks.
 4. Delete the throwaway branch.
