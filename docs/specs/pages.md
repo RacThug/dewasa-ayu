@@ -63,22 +63,22 @@ The concrete `tailwind.config.ts` lives at `apps/web/tailwind.config.ts` once im
 
 Component library lives under `apps/web/components/`. Each item has one job; composition is shallow.
 
-| Component | Path | Purpose |
-|-----------|------|---------|
-| `<RootLayout>` | `app/layout.tsx` | Theme provider, font scaling, query client, top header + bottom nav (mobile) shell. |
-| `<CeremonySelector>` | `components/ceremony-selector.tsx` | Tabs (desktop) / dropdown (mobile) for the 6 ceremonies. Always visible at top. |
-| `<ThemeToggle>` | `components/theme-toggle.tsx` | Dark / Light / High Contrast switch. Persists to `localStorage` via `next-themes`. |
-| `<FontScalingToggle>` | `components/font-scaling-toggle.tsx` | Aa button cycling Normal → Large → Extra Large. |
-| `<DatePicker>` | `components/date-picker.tsx` | Wraps `react-day-picker`; 44px+ touch targets; locale-aware. |
-| `<ScoreBar>` | `components/score-bar.tsx` | Horizontal bar with percentage label + rating badge (ayu/caution/bad). Color + icon + text (never color-only per WCAG). |
-| `<PawukonGrid>` | `components/pawukon-grid.tsx` | Card grid showing Wuku, Wewaran rows, Sasih, totalUrip for a `BalineseDate`. |
-| `<DewasaTagList>` | `components/dewasa-tag-list.tsx` | Pills for active dewasa ayu/ala with tooltips containing the Indonesian `description`. |
-| `<AnalysisChecklist>` | `components/analysis-checklist.tsx` | Ordered list of `Check[]` entries; pass/fail icon + factor name + contribution. |
-| `<CalendarGrid>` | `components/calendar-grid.tsx` | 7-column month grid; day cells render colored background + icon overlay for color-blind users. |
-| `<ResultCard>` | `components/result-card.tsx` | Compose of ScoreBar + DewasaTagList + collapsed AnalysisChecklist; "Lihat detail lengkap" expand. |
-| `<FeedbackWidget>` | `components/feedback-widget.tsx` | "Apakah hasil ini sesuai…" 3-button + optional notes; submits `POST /feedback` (API-001). |
-| `<WhatsAppShareButton>` | `components/whatsapp-share.tsx` | Generates share text + URL with current `?ceremony=&date=` URL state; opens `https://wa.me/?text=…`. |
-| `<DisclaimerBanner>` | `components/disclaimer-banner.tsx` | Bottom-of-page strip with the Sulinggih disclaimer (PRD §18.1). Always visible. |
+| Component               | Path                                 | Purpose                                                                                                                 |
+| ----------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| `<RootLayout>`          | `app/layout.tsx`                     | Theme provider, font scaling, query client, top header + bottom nav (mobile) shell.                                     |
+| `<CeremonySelector>`    | `components/ceremony-selector.tsx`   | Tabs (desktop) / dropdown (mobile) for the 6 ceremonies. Always visible at top.                                         |
+| `<ThemeToggle>`         | `components/theme-toggle.tsx`        | Dark / Light / High Contrast switch. Persists to `localStorage` via `next-themes`.                                      |
+| `<FontScalingToggle>`   | `components/font-scaling-toggle.tsx` | Aa button cycling Normal → Large → Extra Large.                                                                         |
+| `<DatePicker>`          | `components/date-picker.tsx`         | Wraps `react-day-picker`; 44px+ touch targets; locale-aware.                                                            |
+| `<ScoreBar>`            | `components/score-bar.tsx`           | Horizontal bar with percentage label + rating badge (ayu/caution/bad). Color + icon + text (never color-only per WCAG). |
+| `<PawukonGrid>`         | `components/pawukon-grid.tsx`        | Card grid showing Wuku, Wewaran rows, Sasih, totalUrip for a `BalineseDate`.                                            |
+| `<DewasaTagList>`       | `components/dewasa-tag-list.tsx`     | Pills for active dewasa ayu/ala with tooltips containing the Indonesian `description`.                                  |
+| `<AnalysisChecklist>`   | `components/analysis-checklist.tsx`  | Ordered list of `Check[]` entries; pass/fail icon + factor name + contribution.                                         |
+| `<CalendarGrid>`        | `components/calendar-grid.tsx`       | 7-column month grid; day cells render colored background + icon overlay for color-blind users.                          |
+| `<ResultCard>`          | `components/result-card.tsx`         | Compose of ScoreBar + DewasaTagList + collapsed AnalysisChecklist; "Lihat detail lengkap" expand.                       |
+| `<FeedbackWidget>`      | `components/feedback-widget.tsx`     | "Apakah hasil ini sesuai…" 3-button + optional notes; submits `POST /feedback` (API-001).                               |
+| `<WhatsAppShareButton>` | `components/whatsapp-share.tsx`      | Generates share text + URL with current `?ceremony=&date=` URL state; opens `https://wa.me/?text=…`.                    |
+| `<DisclaimerBanner>`    | `components/disclaimer-banner.tsx`   | Bottom-of-page strip with the Sulinggih disclaimer (PRD §18.1). Always visible.                                         |
 
 All components are typed against `@dewasa-ayu/types` (shared with engine + API). Server-Action-friendly where possible — interactivity defaults to client components (`'use client'`) only when needed for `useState` / event handlers.
 
@@ -86,13 +86,13 @@ All components are typed against `@dewasa-ayu/types` (shared with engine + API).
 
 Per PRD §20:
 
-| State class | Mechanism | Survives refresh? | Shareable? | Examples |
-|-------------|-----------|-------------------|------------|----------|
-| URL state | `nuqs` | yes | yes | `ceremony`, `date`, `month`, `year`, `from`, `count` |
-| UI state | `useState` | no | no | expand/collapse, modal open/closed, in-flight loading |
-| User preferences | `localStorage` (via `next-themes` for theme, custom hook for font/locale) | yes | no | theme, font size, last ceremony, locale |
-| Server cache | `@tanstack/react-query` | TTL-based | no | `/calendar/check`, `/calendar/month`, `/ceremonies` |
-| Offline cache | Service Worker (Phase 6) | yes (offline) | no | pre-computed 3-month evaluations |
+| State class      | Mechanism                                                                 | Survives refresh? | Shareable? | Examples                                              |
+| ---------------- | ------------------------------------------------------------------------- | ----------------- | ---------- | ----------------------------------------------------- |
+| URL state        | `nuqs`                                                                    | yes               | yes        | `ceremony`, `date`, `month`, `year`, `from`, `count`  |
+| UI state         | `useState`                                                                | no                | no         | expand/collapse, modal open/closed, in-flight loading |
+| User preferences | `localStorage` (via `next-themes` for theme, custom hook for font/locale) | yes               | no         | theme, font size, last ceremony, locale               |
+| Server cache     | `@tanstack/react-query`                                                   | TTL-based         | no         | `/calendar/check`, `/calendar/month`, `/ceremonies`   |
+| Offline cache    | Service Worker (Phase 6)                                                  | yes (offline)     | no         | pre-computed 3-month evaluations                      |
 
 ### Screens
 
@@ -409,7 +409,7 @@ Auth: `next-auth` session OR API key + `X-Admin-Token` (same model as API-001 ad
 
 **WhatsApp share:**
 
-- Generates message template: "Cek dewasa ayu untuk *{ceremony}* tanggal *{date}* — {url}"
+- Generates message template: "Cek dewasa ayu untuk _{ceremony}_ tanggal _{date}_ — {url}"
 - URL contains current `?ceremony=&date=`
 - Opens `https://wa.me/?text={encoded}`
 

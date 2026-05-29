@@ -11,14 +11,14 @@ Dewasa Ayu mengubah tanggal Masehi menjadi seluruh komponen kalender Bali — Pa
 
 ## Jenis Upacara yang Didukung
 
-| Kategori | Termasuk | Panca Yadnya |
-|---|---|---|
-| Pawiwahan | Pernikahan | Manusa Yadnya |
-| Manusa Yadnya | Metatah/Mepandes, Otonan, Potong Rambut, Upacara Kelahiran | Manusa Yadnya |
-| Dewa Yadnya | Melaspas, Ngenteg Linggih, Piodalan, Persembahyangan | Dewa Yadnya |
-| Pitra Yadnya | Ngaben, Nyekah, Atma Wedana, Ngasti, Memukur | Pitra Yadnya |
-| Pembangunan | Membangun rumah/pura, Mengatapi, Renovasi | Lintas kategori |
-| Memulai Usaha | Membuka usaha, Berdagang, Mulai belajar/berlatih | Lintas kategori |
+| Kategori      | Termasuk                                                   | Panca Yadnya    |
+| ------------- | ---------------------------------------------------------- | --------------- |
+| Pawiwahan     | Pernikahan                                                 | Manusa Yadnya   |
+| Manusa Yadnya | Metatah/Mepandes, Otonan, Potong Rambut, Upacara Kelahiran | Manusa Yadnya   |
+| Dewa Yadnya   | Melaspas, Ngenteg Linggih, Piodalan, Persembahyangan       | Dewa Yadnya     |
+| Pitra Yadnya  | Ngaben, Nyekah, Atma Wedana, Ngasti, Memukur               | Pitra Yadnya    |
+| Pembangunan   | Membangun rumah/pura, Mengatapi, Renovasi                  | Lintas kategori |
+| Memulai Usaha | Membuka usaha, Berdagang, Mulai belajar/berlatih           | Lintas kategori |
 
 ## Fitur Utama (MVP)
 
@@ -30,22 +30,22 @@ Dewasa Ayu mengubah tanggal Masehi menjadi seluruh komponen kalender Bali — Pa
 - **Sistem Skor** — skor persentase berbobot dengan pembobotan khusus per upacara.
 - **Halaman Edukasi (About)** — dokumentasi Wariga lengkap dalam Bahasa Indonesia.
 - **Desain Responsif** — mobile-first, aksesibel untuk segala usia (WCAG 2.1 AA).
-- **REST API** *(P1)* — endpoint `/check`, `/calendar`, `/recommend` dengan parameter jenis upacara.
+- **REST API** _(P1)_ — endpoint `/check`, `/calendar`, `/recommend` dengan parameter jenis upacara.
 
 Fitur lanjutan (Phase 2): Kalkulator Otonan, Mesakapan/Jodoh, panel admin koreksi Sasih, sinkronisasi kalender, akun pengguna, dan tier API.
 
 ## Arsitektur & Tech Stack
 
-| Layer | Teknologi |
-|---|---|
+| Layer    | Teknologi                                                                               |
+| -------- | --------------------------------------------------------------------------------------- |
 | Frontend | Next.js 16 (App Router, Turbopack), Tailwind CSS v4, shadcn/ui, Radix UI, Framer Motion |
-| Backend | NestJS (Swagger, Throttler, cache-manager) |
-| Database | PostgreSQL + Prisma |
-| Cache | Redis |
-| Monorepo | Turborepo + pnpm |
-| Testing | Vitest (unit) + Playwright (E2E) |
-| Deploy | Docker, Vercel (web), Railway (api), Neon (PG), Upstash (Redis) |
-| CI/CD | GitHub Actions |
+| Backend  | NestJS (Swagger, Throttler, cache-manager)                                              |
+| Database | PostgreSQL + Prisma                                                                     |
+| Cache    | Redis                                                                                   |
+| Monorepo | Turborepo + pnpm                                                                        |
+| Testing  | Vitest (unit) + Playwright (E2E)                                                        |
+| Deploy   | Docker, Vercel (web), Railway (api), Neon (PG), Upstash (Redis)                         |
+| CI/CD    | GitHub Actions                                                                          |
 
 ## Struktur Monorepo
 
@@ -84,15 +84,15 @@ Setiap upacara adalah objek konfigurasi TypeScript. Menambah upacara baru cukup 
 
 TypeScript murni, tanpa dependensi eksternal, berjalan di browser maupun Node.js.
 
-| Fungsi | Input | Output |
-|---|---|---|
-| `getPawukonDay(date)` | Date | number (0–209) |
-| `getFullInfo(date)` | Date | BalineseDate (semua komponen) |
-| `getSasihInfo(date)` | Date | SasihInfo |
-| `detectDewasa(info, ceremonyId)` | BalineseDate, string | `{ ayuList, alaList }` |
-| `evaluate(info, ceremonyId)` | BalineseDate, string | Evaluation (rating, score, checks, dewasa) |
-| `findGoodDates(from, count, ceremonyId)` | Date, number, string | EvaluatedDate[] |
-| `getMonthEvaluation(year, month, ceremonyId)` | number, number, string | MonthData |
+| Fungsi                                        | Input                  | Output                                     |
+| --------------------------------------------- | ---------------------- | ------------------------------------------ |
+| `getPawukonDay(date)`                         | Date                   | number (0–209)                             |
+| `getFullInfo(date)`                           | Date                   | BalineseDate (semua komponen)              |
+| `getSasihInfo(date)`                          | Date                   | SasihInfo                                  |
+| `detectDewasa(info, ceremonyId)`              | BalineseDate, string   | `{ ayuList, alaList }`                     |
+| `evaluate(info, ceremonyId)`                  | BalineseDate, string   | Evaluation (rating, score, checks, dewasa) |
+| `findGoodDates(from, count, ceremonyId)`      | Date, number, string   | EvaluatedDate[]                            |
+| `getMonthEvaluation(year, month, ceremonyId)` | number, number, string | MonthData                                  |
 
 **Epoch & referensi:** Pawukon epoch = 11 Juni 2012 (Redite Sinta, hari 1); semua perhitungan = `daysDiff(epoch, date) mod 210`. Sasih = aproksimasi lunar (29,53 hari) dari referensi 9 April 2024 = Penanggal 1 Kadasa.
 
@@ -100,14 +100,14 @@ TypeScript murni, tanpa dependensi eksternal, berjalan di browser maupun Node.js
 
 Base path: `/api/v1`
 
-| Method | Endpoint | Deskripsi |
-|---|---|---|
-| GET | `/calendar/check?date=YYYY-MM-DD&ceremony=...` | Info tanggal lengkap + evaluasi spesifik upacara |
-| GET | `/calendar/month?year=...&month=...&ceremony=...` | Tampilan bulan dengan evaluasi per hari |
-| GET | `/calendar/recommend?from=...&count=...&ceremony=...` | Temukan N hari baik |
-| GET | `/calendar/range?from=...&to=...&ceremony=...` | Evaluasi rentang tanggal |
-| GET | `/ceremonies` | Daftar semua jenis upacara |
-| GET | `/dewasa?ceremony=...` | Daftar aturan dewasa untuk suatu upacara |
+| Method | Endpoint                                              | Deskripsi                                        |
+| ------ | ----------------------------------------------------- | ------------------------------------------------ |
+| GET    | `/calendar/check?date=YYYY-MM-DD&ceremony=...`        | Info tanggal lengkap + evaluasi spesifik upacara |
+| GET    | `/calendar/month?year=...&month=...&ceremony=...`     | Tampilan bulan dengan evaluasi per hari          |
+| GET    | `/calendar/recommend?from=...&count=...&ceremony=...` | Temukan N hari baik                              |
+| GET    | `/calendar/range?from=...&to=...&ceremony=...`        | Evaluasi rentang tanggal                         |
+| GET    | `/ceremonies`                                         | Daftar semua jenis upacara                       |
+| GET    | `/dewasa?ceremony=...`                                | Daftar aturan dewasa untuk suatu upacara         |
 
 ## Memulai (Getting Started)
 
@@ -132,18 +132,18 @@ Web: `http://localhost:3000` · API: `http://localhost:3001`
 
 ## Roadmap (ringkas)
 
-| Fase | Fokus |
-|---|---|
-| 0 | Setup monorepo, CI/CD, Docker, Prisma, seed |
-| 1 | `wariga-engine` + 6 konfigurasi upacara + test suite 30 tanggal |
-| 2 | API NestJS, Swagger, Redis, rate limiting |
-| 3 | Frontend inti (semua layar, selector, tema, responsif, URL state) |
-| 4 | Konten & SEO (About, halaman SEO, OG image, structured data) |
-| 5 | Aksesibilitas (font scaling, high contrast, keyboard, screen reader) |
-| 6 | PWA & offline |
-| 7 | Analytics & feedback widget |
-| 8 | Validasi (konsultasi Sulinggih), cross-validation, soft launch |
-| 9+ | Phase 2 (Otonan, Mesakapan, akun, admin, sinkronisasi kalender) |
+| Fase | Fokus                                                                |
+| ---- | -------------------------------------------------------------------- |
+| 0    | Setup monorepo, CI/CD, Docker, Prisma, seed                          |
+| 1    | `wariga-engine` + 6 konfigurasi upacara + test suite 30 tanggal      |
+| 2    | API NestJS, Swagger, Redis, rate limiting                            |
+| 3    | Frontend inti (semua layar, selector, tema, responsif, URL state)    |
+| 4    | Konten & SEO (About, halaman SEO, OG image, structured data)         |
+| 5    | Aksesibilitas (font scaling, high contrast, keyboard, screen reader) |
+| 6    | PWA & offline                                                        |
+| 7    | Analytics & feedback widget                                          |
+| 8    | Validasi (konsultasi Sulinggih), cross-validation, soft launch       |
+| 9+   | Phase 2 (Otonan, Mesakapan, akun, admin, sinkronisasi kalender)      |
 
 ## Disclaimer & Sensitivitas Budaya
 
@@ -151,7 +151,7 @@ Platform ini menyediakan **perhitungan referensi** berdasarkan pedoman Wariga um
 
 ## Referensi Utama
 
-Lontar Wariga Catur Winasa Sari; *Dasar Wariga & Tenung Wariga* (I.B. Putra Manik Aryana); *Pokok-pokok Wariga* (I.B. Supartha Ardana); [SakaCalendar](https://github.com/edysantosa/sakacalendar) (LGPL-2.1); kalenderbali.org; babadbali.com; dan sumber lain (lihat `docs/PRD.md` bagian 28).
+Lontar Wariga Catur Winasa Sari; _Dasar Wariga & Tenung Wariga_ (I.B. Putra Manik Aryana); _Pokok-pokok Wariga_ (I.B. Supartha Ardana); [SakaCalendar](https://github.com/edysantosa/sakacalendar) (LGPL-2.1); kalenderbali.org; babadbali.com; dan sumber lain (lihat `docs/PRD.md` bagian 28).
 
 ---
 

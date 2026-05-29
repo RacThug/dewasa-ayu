@@ -47,30 +47,30 @@ All constants live in `@dewasa-ayu/constants`. The engine imports and re-uses th
 
 #### Epochs
 
-| Constant | Value | Meaning |
-|----------|-------|---------|
-| `PAWUKON_EPOCH` | `Date.UTC(2012, 5, 11)` (11 June 2012) | Pawukon day 0 = Redite Sinta. Derived from kalenderbali.org: 6 Jan 2013 = Saniscara Watugunung (day 209). |
-| `SASIH_EPOCH` | `Date.UTC(2024, 3, 9)` (9 April 2024) | Reference: Penanggal 1, Sasih Kadasa. |
-| `SASIH_LUNAR_DAYS` | `29.530588` | Mean synodic month in days. |
-| `PAWUKON_CYCLE` | `210` | Pawukon cycle length. |
+| Constant           | Value                                  | Meaning                                                                                                   |
+| ------------------ | -------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `PAWUKON_EPOCH`    | `Date.UTC(2012, 5, 11)` (11 June 2012) | Pawukon day 0 = Redite Sinta. Derived from kalenderbali.org: 6 Jan 2013 = Saniscara Watugunung (day 209). |
+| `SASIH_EPOCH`      | `Date.UTC(2024, 3, 9)` (9 April 2024)  | Reference: Penanggal 1, Sasih Kadasa.                                                                     |
+| `SASIH_LUNAR_DAYS` | `29.530588`                            | Mean synodic month in days.                                                                               |
+| `PAWUKON_CYCLE`    | `210`                                  | Pawukon cycle length.                                                                                     |
 
 #### Lookup tables (names only — full data in `@dewasa-ayu/constants`)
 
-| Table | Length | Contents |
-|-------|--------|----------|
-| `WUKU_NAMES` | 30 | Sinta, Landep, …, Watugunung (PRD §13.2 has reference dates for verification). |
-| `SAPTAWARA_NAMES` | 7 | Redite, Soma, Anggara, Buda, Wraspati, Sukra, Saniscara. |
-| `PANCAWARA_NAMES` | 5 | Umanis, Paing, Pon, Wage, Kliwon. |
-| `TRIWARA_NAMES` | 3 | Pasah, Beteng, Kajeng. |
-| `SADWARA_NAMES` | 6 | Tungleh, Aryang, Urukung, Paniron, Was, Maulu. |
-| `ASTAWARA_NAMES` | 8 | Sri, Indra, Guru, Yama, Ludra, Brahma, Kala, Uma. |
-| `SANGAWARA_NAMES` | 9 | Dangu, Jangur, Gigis, Nohan, Ogan, Erangan, Urungan, Tulus, Dadi. |
-| `DASAWARA_NAMES` | 10 | Pandita, Pati, Suka, Duka, Sri, Manuh, Manusa, Eraja, Dewa, Raksasa. |
-| `SASIH_NAMES` | 12 | Kasa, Karo, Katiga, Kapat, Kalima, Kanem, Kapitu, Kawolu, Kasanga, Kadasa, Destha, Sadha. |
-| `INGKEL_NAMES` | 7 | Wong, Sato, Mina, Manuk, Taru, Buku, Kembang (one per 5 consecutive wuku weeks → cycles every 35 days). |
-| `JEJEPAN_NAMES` | 6 | Mina, Taru, Sato, Patra, Wong, Paksi. |
-| `SAPTAWARA_URIP` | 7 | `[5, 4, 3, 7, 8, 6, 9]` for Redite … Saniscara. |
-| `PANCAWARA_URIP` | 5 | `[5, 9, 7, 4, 8]` for Umanis … Kliwon. |
+| Table             | Length | Contents                                                                                                |
+| ----------------- | ------ | ------------------------------------------------------------------------------------------------------- |
+| `WUKU_NAMES`      | 30     | Sinta, Landep, …, Watugunung (PRD §13.2 has reference dates for verification).                          |
+| `SAPTAWARA_NAMES` | 7      | Redite, Soma, Anggara, Buda, Wraspati, Sukra, Saniscara.                                                |
+| `PANCAWARA_NAMES` | 5      | Umanis, Paing, Pon, Wage, Kliwon.                                                                       |
+| `TRIWARA_NAMES`   | 3      | Pasah, Beteng, Kajeng.                                                                                  |
+| `SADWARA_NAMES`   | 6      | Tungleh, Aryang, Urukung, Paniron, Was, Maulu.                                                          |
+| `ASTAWARA_NAMES`  | 8      | Sri, Indra, Guru, Yama, Ludra, Brahma, Kala, Uma.                                                       |
+| `SANGAWARA_NAMES` | 9      | Dangu, Jangur, Gigis, Nohan, Ogan, Erangan, Urungan, Tulus, Dadi.                                       |
+| `DASAWARA_NAMES`  | 10     | Pandita, Pati, Suka, Duka, Sri, Manuh, Manusa, Eraja, Dewa, Raksasa.                                    |
+| `SASIH_NAMES`     | 12     | Kasa, Karo, Katiga, Kapat, Kalima, Kanem, Kapitu, Kawolu, Kasanga, Kadasa, Destha, Sadha.               |
+| `INGKEL_NAMES`    | 7      | Wong, Sato, Mina, Manuk, Taru, Buku, Kembang (one per 5 consecutive wuku weeks → cycles every 35 days). |
+| `JEJEPAN_NAMES`   | 6      | Mina, Taru, Sato, Patra, Wong, Paksi.                                                                   |
+| `SAPTAWARA_URIP`  | 7      | `[5, 4, 3, 7, 8, 6, 9]` for Redite … Saniscara.                                                         |
+| `PANCAWARA_URIP`  | 5      | `[5, 9, 7, 4, 8]` for Umanis … Kliwon.                                                                  |
 
 All indices are **0-based** unless explicitly stated.
 
@@ -86,8 +86,27 @@ export type Pancawara = 'umanis' | 'paing' | 'pon' | 'wage' | 'kliwon';
 export type Triwara = 'pasah' | 'beteng' | 'kajeng';
 export type Sadwara = 'tungleh' | 'aryang' | 'urukung' | 'paniron' | 'was' | 'maulu';
 export type Astawara = 'sri' | 'indra' | 'guru' | 'yama' | 'ludra' | 'brahma' | 'kala' | 'uma';
-export type Sangawara = 'dangu' | 'jangur' | 'gigis' | 'nohan' | 'ogan' | 'erangan' | 'urungan' | 'tulus' | 'dadi';
-export type Dasawara = 'pandita' | 'pati' | 'suka' | 'duka' | 'sri' | 'manuh' | 'manusa' | 'eraja' | 'dewa' | 'raksasa';
+export type Sangawara =
+  | 'dangu'
+  | 'jangur'
+  | 'gigis'
+  | 'nohan'
+  | 'ogan'
+  | 'erangan'
+  | 'urungan'
+  | 'tulus'
+  | 'dadi';
+export type Dasawara =
+  | 'pandita'
+  | 'pati'
+  | 'suka'
+  | 'duka'
+  | 'sri'
+  | 'manuh'
+  | 'manusa'
+  | 'eraja'
+  | 'dewa'
+  | 'raksasa';
 export type Caturwara = 'sri' | 'laba' | 'jaya' | 'manala';
 export type Dwiwara = 'menga' | 'pepet';
 export type Ekawara = 'luang';
@@ -97,15 +116,50 @@ export type Ekawara = 'luang';
 
 ```typescript
 export type Wuku =
-  | 'sinta' | 'landep' | 'ukir' | 'kulantir' | 'tolu' | 'gumbreg'
-  | 'wariga' | 'warigadean' | 'julungwangi' | 'sungsang' | 'dunggulan' | 'kuningan'
-  | 'langkir' | 'medangsia' | 'pujut' | 'pahang' | 'krulut' | 'merakih'
-  | 'tambir' | 'medangkungan' | 'matal' | 'uye' | 'menail' | 'prangbakat'
-  | 'bala' | 'ugu' | 'wayang' | 'klawu' | 'dukut' | 'watugunung';
+  | 'sinta'
+  | 'landep'
+  | 'ukir'
+  | 'kulantir'
+  | 'tolu'
+  | 'gumbreg'
+  | 'wariga'
+  | 'warigadean'
+  | 'julungwangi'
+  | 'sungsang'
+  | 'dunggulan'
+  | 'kuningan'
+  | 'langkir'
+  | 'medangsia'
+  | 'pujut'
+  | 'pahang'
+  | 'krulut'
+  | 'merakih'
+  | 'tambir'
+  | 'medangkungan'
+  | 'matal'
+  | 'uye'
+  | 'menail'
+  | 'prangbakat'
+  | 'bala'
+  | 'ugu'
+  | 'wayang'
+  | 'klawu'
+  | 'dukut'
+  | 'watugunung';
 
 export type Sasih =
-  | 'kasa' | 'karo' | 'katiga' | 'kapat' | 'kalima' | 'kanem'
-  | 'kapitu' | 'kawolu' | 'kasanga' | 'kadasa' | 'destha' | 'sadha';
+  | 'kasa'
+  | 'karo'
+  | 'katiga'
+  | 'kapat'
+  | 'kalima'
+  | 'kanem'
+  | 'kapitu'
+  | 'kawolu'
+  | 'kasanga'
+  | 'kadasa'
+  | 'destha'
+  | 'sadha';
 
 export type Ingkel = 'wong' | 'sato' | 'mina' | 'manuk' | 'taru' | 'buku' | 'kembang';
 
@@ -123,27 +177,47 @@ export type CeremonyId =
   | 'pembangunan'
   | 'usaha';
 
-export type PancaYadnyaCategory =
-  | 'manusa_yadnya'
-  | 'dewa_yadnya'
-  | 'pitra_yadnya'
-  | 'cross';                              // for pembangunan and usaha
+export type PancaYadnyaCategory = 'manusa_yadnya' | 'dewa_yadnya' | 'pitra_yadnya' | 'cross'; // for pembangunan and usaha
 ```
 
 #### Dewasa codes (PRD §4.2, §4.3)
 
 ```typescript
 export type DewasaAyuCode =
-  | 'subacara' | 'kama_jaya' | 'dina_jaya' | 'ayu_nulus' | 'ayu_dana'
-  | 'dewa_stata' | 'amerta_dewa' | 'amerta_dewa_jaya' | 'siwa_sampurna'
-  | 'dewasa_mentas' | 'swarga_menge' | 'catur_laba' | 'derman_bagia'
-  | 'sangawara_tulus' | 'sangawara_dadi' | 'triwara_beteng';
+  | 'subacara'
+  | 'kama_jaya'
+  | 'dina_jaya'
+  | 'ayu_nulus'
+  | 'ayu_dana'
+  | 'dewa_stata'
+  | 'amerta_dewa'
+  | 'amerta_dewa_jaya'
+  | 'siwa_sampurna'
+  | 'dewasa_mentas'
+  | 'swarga_menge'
+  | 'catur_laba'
+  | 'derman_bagia'
+  | 'sangawara_tulus'
+  | 'sangawara_dadi'
+  | 'triwara_beteng';
 
 export type DewasaAlaCode =
-  | 'rangda_tiga' | 'carik_walangati' | 'uncal_balung' | 'pati_paten'
-  | 'semut_sadulur' | 'kala_gotongan' | 'ingkel_wong' | 'kala_jengking'
-  | 'sampar_wangke' | 'kala_temah' | 'kala_dangastra' | 'kala_suwung'
-  | 'kala_ngruda' | 'geni_rawana' | 'mrta_papageran' | 'kalebu_rau'
+  | 'rangda_tiga'
+  | 'carik_walangati'
+  | 'uncal_balung'
+  | 'pati_paten'
+  | 'semut_sadulur'
+  | 'kala_gotongan'
+  | 'ingkel_wong'
+  | 'kala_jengking'
+  | 'sampar_wangke'
+  | 'kala_temah'
+  | 'kala_dangastra'
+  | 'kala_suwung'
+  | 'kala_ngruda'
+  | 'geni_rawana'
+  | 'mrta_papageran'
+  | 'kalebu_rau'
   | 'pangelong';
 
 export type DewasaCode = DewasaAyuCode | DewasaAlaCode;
@@ -170,7 +244,7 @@ export interface BalineseDate {
   wuku: Wuku;
 
   /** Wewaran cycle values. All derived from pawukonDay. */
-  ekawara: Ekawara | null;                // 'luang' only when dasawara urip is odd; null otherwise
+  ekawara: Ekawara | null; // 'luang' only when dasawara urip is odd; null otherwise
   dwiwara: Dwiwara;
   triwara: Triwara;
   caturwara: Caturwara;
@@ -236,29 +310,29 @@ export interface SasihInfo {
 ```typescript
 export interface CeremonyConfig {
   id: CeremonyId;
-  name: string;                          // human-readable, Indonesian
+  name: string; // human-readable, Indonesian
   category: PancaYadnyaCategory;
   description: string;
-  icon: string;                          // emoji or icon ref
+  icon: string; // emoji or icon ref
   sasihRules: {
     /** 0-based sasih indices where this ceremony is favoured. */
     good: number[];
     /** 0-based sasih indices where this ceremony is forbidden. */
     bad: number[];
   };
-  dewasaAyu: DewasaAyuCode[];           // codes that apply to this ceremony
+  dewasaAyu: DewasaAyuCode[]; // codes that apply to this ceremony
   dewasaAla: DewasaAlaCode[];
   scoringWeights: ScoringWeights;
-  saptawaraGood: number[];               // 0-based saptawara indices considered good
-  requirePenanggal: boolean;             // if true, evaluation downgrades when in pangelong
+  saptawaraGood: number[]; // 0-based saptawara indices considered good
+  requirePenanggal: boolean; // if true, evaluation downgrades when in pangelong
 }
 
 export interface ScoringWeights {
   saptawara: number;
   wuku: number;
   sasih: number;
-  penanggal: number;                     // bonus for not being in pangelong
-  penanggalNumber: number;               // bonus based on penanggal number
+  penanggal: number; // bonus for not being in pangelong
+  penanggalNumber: number; // bonus based on penanggal number
   ingkelJejepan: number;
   sangawara: number;
   dewasaAyuBonus: number;
@@ -273,11 +347,11 @@ export interface ScoringWeights {
 ```typescript
 export interface DewasaInfo {
   code: DewasaCode;
-  name: string;                          // human-readable, Indonesian
+  name: string; // human-readable, Indonesian
   type: 'ayu' | 'ala';
   /** Required for ala; undefined for ayu. */
   severity?: Severity;
-  description: string;                   // 1-2 sentence explanation, Indonesian
+  description: string; // 1-2 sentence explanation, Indonesian
   applicableCeremonies: CeremonyId[];
 }
 
@@ -285,7 +359,7 @@ export interface Check {
   /** Identifier of the factor: 'saptawara', 'wuku', 'sasih', or 'dewasa_ayu:<code>' / 'dewasa_ala:<code>'. */
   factor: string;
   passed: boolean;
-  weight: number;                        // from ScoringWeights
+  weight: number; // from ScoringWeights
   /** Actual contribution to total score (positive for ayu, negative for ala). */
   contribution: number;
   /** Optional human-readable note (Indonesian). */
@@ -295,9 +369,9 @@ export interface Check {
 export interface Evaluation {
   ceremony: CeremonyId;
   rating: Rating;
-  score: number;                         // raw score (can be negative)
-  maxScore: number;                      // theoretical maximum for this ceremony (sum of positive weights)
-  pct: number;                           // 0-100 (negative scores clamp to 0)
+  score: number; // raw score (can be negative)
+  maxScore: number; // theoretical maximum for this ceremony (sum of positive weights)
+  pct: number; // 0-100 (negative scores clamp to 0)
   checks: Check[];
   dewasaAyu: DewasaInfo[];
   dewasaAla: DewasaInfo[];
@@ -325,7 +399,7 @@ export interface FindGoodDatesResult {
 
 export interface MonthData {
   year: number;
-  month: number;                         // 1-12 (Gregorian)
+  month: number; // 1-12 (Gregorian)
   ceremony: CeremonyId;
   /** Length matches days in month. Index 0 corresponds to day 1. */
   days: EvaluatedDate[];
@@ -371,34 +445,37 @@ export interface MesakapanResult {
 
 ```typescript
 export class WarigaError extends Error {
-  constructor(public code: WarigaErrorCode, message: string) {
+  constructor(
+    public code: WarigaErrorCode,
+    message: string,
+  ) {
     super(message);
     this.name = 'WarigaError';
   }
 }
 
 export type WarigaErrorCode =
-  | 'INVALID_DATE'                       // non-Date input or NaN
-  | 'UNKNOWN_CEREMONY'                   // CeremonyId not in registry
-  | 'OUT_OF_RANGE'                       // date before 1900 or after 2100
-  | 'INVALID_PARAM';                     // negative count, bad month/year, etc.
+  | 'INVALID_DATE' // non-Date input or NaN
+  | 'UNKNOWN_CEREMONY' // CeremonyId not in registry
+  | 'OUT_OF_RANGE' // date before 1900 or after 2100
+  | 'INVALID_PARAM'; // negative count, bad month/year, etc.
 ```
 
 ### Function signatures
 
 All functions exported from `@dewasa-ayu/wariga-engine` as the public surface.
 
-| Function | Signature | Throws | Notes |
-|----------|-----------|--------|-------|
-| `getPawukonDay` | `(date: Date) => number` | `INVALID_DATE` | Returns 0-209. |
-| `getFullInfo` | `(date: Date) => BalineseDate` | `INVALID_DATE`, `OUT_OF_RANGE` (post-2100 with non-cyclic sasih) | Full decomposition. |
-| `getSasihInfo` | `(date: Date) => SasihInfo` | `INVALID_DATE` | `isEstimated: true` when no correction data; never throws for valid dates inside 1900-2100. |
-| `detectDewasa` | `(info: BalineseDate, ceremonyId: CeremonyId) => { ayu: DewasaInfo[]; ala: DewasaInfo[] }` | `UNKNOWN_CEREMONY` | Pure derivation from `info`. |
-| `evaluate` | `(info: BalineseDate, ceremonyId: CeremonyId) => Evaluation` | `UNKNOWN_CEREMONY` | Composes dewasa detection + scoring. |
-| `findGoodDates` | `(from: Date, count: number, ceremonyId: CeremonyId) => FindGoodDatesResult` | `INVALID_DATE`, `UNKNOWN_CEREMONY`, `INVALID_PARAM` (`count <= 0`) | Scans forward up to 365 days. Returns partial results with `capReached: true` if cap hit. |
-| `getMonthEvaluation` | `(year: number, month: number, ceremonyId: CeremonyId) => MonthData` | `UNKNOWN_CEREMONY`, `INVALID_PARAM` (month outside 1-12) | `month` is 1-12 (human convention). |
-| `calculateOtonan` | `(birthdate: Date, targetYear: number) => OtonanInfo[]` | `INVALID_DATE`, `INVALID_PARAM` (year outside 1900-2100) | Returns all anniversaries in `targetYear` (typically 1-2 per year). |
-| `calculateMesakapan` | `(person1Birthdate: Date, person2Birthdate: Date) => MesakapanResult` | `INVALID_DATE` | Pure derivation from birthdates. |
+| Function             | Signature                                                                                  | Throws                                                             | Notes                                                                                       |
+| -------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| `getPawukonDay`      | `(date: Date) => number`                                                                   | `INVALID_DATE`                                                     | Returns 0-209.                                                                              |
+| `getFullInfo`        | `(date: Date) => BalineseDate`                                                             | `INVALID_DATE`, `OUT_OF_RANGE` (post-2100 with non-cyclic sasih)   | Full decomposition.                                                                         |
+| `getSasihInfo`       | `(date: Date) => SasihInfo`                                                                | `INVALID_DATE`                                                     | `isEstimated: true` when no correction data; never throws for valid dates inside 1900-2100. |
+| `detectDewasa`       | `(info: BalineseDate, ceremonyId: CeremonyId) => { ayu: DewasaInfo[]; ala: DewasaInfo[] }` | `UNKNOWN_CEREMONY`                                                 | Pure derivation from `info`.                                                                |
+| `evaluate`           | `(info: BalineseDate, ceremonyId: CeremonyId) => Evaluation`                               | `UNKNOWN_CEREMONY`                                                 | Composes dewasa detection + scoring.                                                        |
+| `findGoodDates`      | `(from: Date, count: number, ceremonyId: CeremonyId) => FindGoodDatesResult`               | `INVALID_DATE`, `UNKNOWN_CEREMONY`, `INVALID_PARAM` (`count <= 0`) | Scans forward up to 365 days. Returns partial results with `capReached: true` if cap hit.   |
+| `getMonthEvaluation` | `(year: number, month: number, ceremonyId: CeremonyId) => MonthData`                       | `UNKNOWN_CEREMONY`, `INVALID_PARAM` (month outside 1-12)           | `month` is 1-12 (human convention).                                                         |
+| `calculateOtonan`    | `(birthdate: Date, targetYear: number) => OtonanInfo[]`                                    | `INVALID_DATE`, `INVALID_PARAM` (year outside 1900-2100)           | Returns all anniversaries in `targetYear` (typically 1-2 per year).                         |
+| `calculateMesakapan` | `(person1Birthdate: Date, person2Birthdate: Date) => MesakapanResult`                      | `INVALID_DATE`                                                     | Pure derivation from birthdates.                                                            |
 
 ### Algorithms
 
@@ -416,16 +493,16 @@ function getPawukonDay(date):
 
 Index into lookup tables (mostly modulo) with a few derived from urip sums:
 
-| Cycle | Source | Formula |
-|-------|--------|---------|
-| Saptawara | direct | `pawukonDay % 7` |
-| Pancawara | direct (with offset) | `(pawukonDay + PANCAWARA_OFFSET) % 5` — `PANCAWARA_OFFSET` MUST be calibrated so day 0 (Redite Sinta) → Umanis. Verify against PRD §13.2 reference dates. |
-| Triwara | direct | `pawukonDay % 3` |
-| Sadwara | direct | `pawukonDay % 6` |
-| Astawara, Sangawara | composed | Per traditional table (see `@dewasa-ayu/constants/wewaran-tables.ts`) — based on saptawara + pancawara combination |
-| Caturwara, Dwiwara | derived | Caturwara from `(SAPTAWARA_URIP[s] + PANCAWARA_URIP[p]) % 4`. Dwiwara split on `pawukonDay % 2`. |
-| Dasawara | derived | `(SAPTAWARA_URIP[s] + PANCAWARA_URIP[p]) % 10` |
-| Wuku | direct | `floor(pawukonDay / 7)` |
+| Cycle               | Source               | Formula                                                                                                                                                   |
+| ------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Saptawara           | direct               | `pawukonDay % 7`                                                                                                                                          |
+| Pancawara           | direct (with offset) | `(pawukonDay + PANCAWARA_OFFSET) % 5` — `PANCAWARA_OFFSET` MUST be calibrated so day 0 (Redite Sinta) → Umanis. Verify against PRD §13.2 reference dates. |
+| Triwara             | direct               | `pawukonDay % 3`                                                                                                                                          |
+| Sadwara             | direct               | `pawukonDay % 6`                                                                                                                                          |
+| Astawara, Sangawara | composed             | Per traditional table (see `@dewasa-ayu/constants/wewaran-tables.ts`) — based on saptawara + pancawara combination                                        |
+| Caturwara, Dwiwara  | derived              | Caturwara from `(SAPTAWARA_URIP[s] + PANCAWARA_URIP[p]) % 4`. Dwiwara split on `pawukonDay % 2`.                                                          |
+| Dasawara            | derived              | `(SAPTAWARA_URIP[s] + PANCAWARA_URIP[p]) % 10`                                                                                                            |
+| Wuku                | direct               | `floor(pawukonDay / 7)`                                                                                                                                   |
 
 **Ekawara** (`luang`) applies only when the dasawara urip sum is **odd**. Otherwise `ekawara: null`.
 
@@ -580,20 +657,20 @@ function calculateMesakapan(p1Birth, p2Birth):
   return MesakapanResult { totalUrip, classification, detail: { person1, person2 }, notes }
 ```
 
-`classifyByUripSum` lookup table source: PRD §28 references, specifically *Pokok-pokok Wariga* (Ardana). To be filled in during implementation against that source.
+`classifyByUripSum` lookup table source: PRD §28 references, specifically _Pokok-pokok Wariga_ (Ardana). To be filled in during implementation against that source.
 
 ### Examples
 
 Reference dates from PRD §13.2 (subset). Implementation MUST match these exactly for Pawukon-derived values; Sasih values may differ by ±1 day until correction data lands and `isEstimated` flips false.
 
-| Gregorian | Wuku | Saptawara | Pancawara | Sasih (est.) | Notes |
-|-----------|------|-----------|-----------|--------------|-------|
-| 2024-01-01 | krulut | soma | pon | kapitu | PRD reference |
-| 2024-03-11 | watugunung | soma | umanis | kasanga | End of Pawukon cycle |
-| 2024-04-09 | ukir | anggara | kliwon | kadasa | **Sasih reference date**, Penanggal 1 exactly (`isEstimated: false`) |
-| 2025-01-01 | prangbakat | buda | wage | kapitu | PRD reference |
-| 2025-03-29 | watugunung | saniscara | umanis | kasanga | End-cycle Saniscara Umanis |
-| 2026-01-01 | krulut | wraspati | pon | kapitu | PRD reference |
+| Gregorian  | Wuku       | Saptawara | Pancawara | Sasih (est.) | Notes                                                                |
+| ---------- | ---------- | --------- | --------- | ------------ | -------------------------------------------------------------------- |
+| 2024-01-01 | krulut     | soma      | pon       | kapitu       | PRD reference                                                        |
+| 2024-03-11 | watugunung | soma      | umanis    | kasanga      | End of Pawukon cycle                                                 |
+| 2024-04-09 | ukir       | anggara   | kliwon    | kadasa       | **Sasih reference date**, Penanggal 1 exactly (`isEstimated: false`) |
+| 2025-01-01 | prangbakat | buda      | wage      | kapitu       | PRD reference                                                        |
+| 2025-03-29 | watugunung | saniscara | umanis    | kasanga      | End-cycle Saniscara Umanis                                           |
+| 2026-01-01 | krulut     | wraspati  | pon       | kapitu       | PRD reference                                                        |
 
 Canonical worked example for `evaluate`: `evaluate(getFullInfo(new Date('2026-04-06')), 'pawiwahan')`. Expected rating, score, and dewasa list are locked in the engine test suite alongside implementation (issue [#2](https://github.com/RacThug/dewasa-ayu/issues/2) deliverable).
 
@@ -637,7 +714,7 @@ Canonical worked example for `evaluate`: `evaluate(getFullInfo(new Date('2026-04
 - GitHub issue [#2](https://github.com/RacThug/dewasa-ayu/issues/2) — engine implementation epic
 - Sibling specs: [DB-001](./db.md), [API-001](./api.md), [UI-001](./pages.md) (drafted in parallel)
 - Lontar Wariga Catur Winasa Sari (primary traditional source — PRD §28)
-- *Pokok-pokok Wariga*, I.B. Supartha Ardana (Mesakapan classification source)
+- _Pokok-pokok Wariga_, I.B. Supartha Ardana (Mesakapan classification source)
 - kalenderbali.org (Pawukon validation reference)
 
 ## Changelog

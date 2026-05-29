@@ -4,13 +4,13 @@ This folder contains living engineering specs for Dewasa Ayu. This file is auto-
 
 ## What lives here
 
-| File | ID | Purpose |
-|------|----|---------|
-| `_template.md` | — | Starting template. Copy when creating a new spec. Do not edit. |
-| `engine.md` | ENG-001 | Wariga calculation engine: types, function signatures, algorithms. |
-| `db.md` | DB-001 | Database schema, indexes, JSONB shapes, migration strategy. |
-| `api.md` | API-001 | REST API: endpoints, auth, error envelope, rate limits. |
-| `pages.md` | UI-001 | Frontend pages: components, state strategy, wireframes. |
+| File           | ID      | Purpose                                                            |
+| -------------- | ------- | ------------------------------------------------------------------ |
+| `_template.md` | —       | Starting template. Copy when creating a new spec. Do not edit.     |
+| `engine.md`    | ENG-001 | Wariga calculation engine: types, function signatures, algorithms. |
+| `db.md`        | DB-001  | Database schema, indexes, JSONB shapes, migration strategy.        |
+| `api.md`       | API-001 | REST API: endpoints, auth, error envelope, rate limits.            |
+| `pages.md`     | UI-001  | Frontend pages: components, state strategy, wireframes.            |
 
 Specs are **living docs** — they must stay in sync with the code they describe. If implementation diverges from the spec, update the spec (with a Changelog entry); do not let code become a silent source of truth.
 
@@ -23,12 +23,12 @@ Draft ──(implementation lands)──▶ Active ──(replaced)──▶ Sup
    └──(abandoned)──▶ (delete file)
 ```
 
-| Status | Meaning |
-|--------|---------|
-| `Draft` | Design in progress; structure may still change. |
-| `Active` | Implemented (or being implemented). Spec must reflect current code. |
+| Status       | Meaning                                                                  |
+| ------------ | ------------------------------------------------------------------------ |
+| `Draft`      | Design in progress; structure may still change.                          |
+| `Active`     | Implemented (or being implemented). Spec must reflect current code.      |
 | `Superseded` | Replaced by a newer spec. The replacement points back via `supersedes:`. |
-| `Deprecated` | No longer current and not replaced. Kept for historical context. |
+| `Deprecated` | No longer current and not replaced. Kept for historical context.         |
 
 ## Writing a new spec
 
@@ -69,22 +69,22 @@ Draft ──(implementation lands)──▶ Active ──(replaced)──▶ Sup
 
 ## ID convention
 
-| Prefix | Domain |
-|--------|--------|
-| `ENG` | Wariga engine (`packages/wariga-engine`, `packages/types`) |
-| `DB` | Database schema (`prisma/`) |
-| `API` | REST API (`apps/api`) |
-| `UI` | Frontend pages and components (`apps/web`) |
+| Prefix | Domain                                                     |
+| ------ | ---------------------------------------------------------- |
+| `ENG`  | Wariga engine (`packages/wariga-engine`, `packages/types`) |
+| `DB`   | Database schema (`prisma/`)                                |
+| `API`  | REST API (`apps/api`)                                      |
+| `UI`   | Frontend pages and components (`apps/web`)                 |
 
 IDs are sequential per prefix: `ENG-001`, `ENG-002`, `ENG-003`. A new domain prefix may be added if a future area genuinely doesn't fit the existing four — document the addition here.
 
 ## Cross-reference convention
 
-| Target | Form |
-|--------|------|
-| Sibling spec | `[ENG-001 §Types](./engine.md#types)` |
-| PRD section | `[PRD §4.2](../PRD.md#42-dewasa-ayu-per-ceremony-type)` |
-| GitHub issue | `#17` (GitHub auto-links) |
+| Target                       | Form                                                                               |
+| ---------------------------- | ---------------------------------------------------------------------------------- |
+| Sibling spec                 | `[ENG-001 §Types](./engine.md#types)`                                              |
+| PRD section                  | `[PRD §4.2](../PRD.md#42-dewasa-ayu-per-ceremony-type)`                            |
+| GitHub issue                 | `#17` (GitHub auto-links)                                                          |
 | Source file (once it exists) | `[packages/wariga-engine/src/types.ts](../../packages/wariga-engine/src/types.ts)` |
 
 Avoid line-number anchors in source links — they break on refactor. Reference symbols by name in prose and let the link point to the file.
@@ -157,7 +157,7 @@ The `## Detailed Specification` section in `_template.md` is intentionally flexi
 
 ## Cultural sensitivity note
 
-Specs themselves are written in English (technical layer). However, any user-facing copy *described inside a spec* (e.g., button labels, error messages, disclaimer text in UI specs) must follow the project's cultural rules:
+Specs themselves are written in English (technical layer). However, any user-facing copy _described inside a spec_ (e.g., button labels, error messages, disclaimer text in UI specs) must follow the project's cultural rules:
 
 - Bahasa Indonesia primary.
 - Never claim religious authority — use "berdasarkan pedoman Wariga umum".

@@ -1,0 +1,11 @@
+node_modules
+dist
+build
+.next
+.turbo
+coverage
+pnpm-lock.yaml
+.husky/_
+
+# Hand-crafted design mockups — leave formatting as authored.
+mockups

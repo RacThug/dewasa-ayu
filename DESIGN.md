@@ -12,7 +12,7 @@
 
 The lontar (palm-leaf manuscript) is the canonical physical artefact of Wariga knowledge in Bali. The platform inherits its visual mood: the manuscript read **by oil-lamp light** — a warm near-black surface with ember-toned text and burnished gold ink as the default, with an aged-palm-leaf cream surface available for daytime reading. Either way: sepia/gold ink, deliberate hand-feel touches in the ornaments, generous breathing room between lines, and typography that signals "this content is to be read carefully, not skimmed."
 
-The platform is **not** a temple replica. Crucially, the default dark theme is **warm oil-lamp light, not glossy "luxury" Black + Gold**: the surface is a soft brown-black (`#181410`), the gold is muted and burnished (never high-saturation), and there is no high-gloss, no jewel tones, no mandala fields. That line matters — pure black with bright gold reads as luxury branding and risks *exotifying* Wariga; warm lamplight reads as a manuscript being read at night. The platform also avoids tropical-Bali stock photography and overt mandala motifs, which reduce Wariga to surface decoration. Instead it borrows what manuscripts give: *patience*, *reverence for the page*, *typographic hierarchy as the primary visual instrument*.
+The platform is **not** a temple replica. Crucially, the default dark theme is **warm oil-lamp light, not glossy "luxury" Black + Gold**: the surface is a soft brown-black (`#181410`), the gold is muted and burnished (never high-saturation), and there is no high-gloss, no jewel tones, no mandala fields. That line matters — pure black with bright gold reads as luxury branding and risks _exotifying_ Wariga; warm lamplight reads as a manuscript being read at night. The platform also avoids tropical-Bali stock photography and overt mandala motifs, which reduce Wariga to surface decoration. Instead it borrows what manuscripts give: _patience_, _reverence for the page_, _typographic hierarchy as the primary visual instrument_.
 
 A reader should feel that the platform was made by someone who has spent time with the source — not by a tourism brand.
 
@@ -22,7 +22,7 @@ A reader should feel that the platform was made by someone who has spent time wi
 2. **Lamplight (night) is the default; paper is the daytime variant.** The warm dark "night" theme is canonical — the manuscript read by oil lamp. The cream "paper" theme is the daytime / light-mode companion (and the basis for the high-contrast variant). Respect OS `prefers-color-scheme` for the initial theme; both are first-class and fully maintained.
 3. **Ornament is restrained and intentional.** A hand-drawn divider here, a small marginal glyph there — never decorative fields or background patterns.
 4. **Color is the smallest channel.** Sepia for normal content, ochre/gold only for emphasis. Semantic colors (ayu green, ala red, neutral blue) are muted and never saturated.
-5. **No claim to authority.** Visual gravitas is for the *source* (Wariga, Sulinggih), not the platform. Avoid imposing fonts, large headlines that "shout", or any tone that says "trust us."
+5. **No claim to authority.** Visual gravitas is for the _source_ (Wariga, Sulinggih), not the platform. Avoid imposing fonts, large headlines that "shout", or any tone that says "trust us."
 
 ## Voice & tone
 
@@ -36,12 +36,12 @@ Indonesian primary (per project cultural rules). Voice is:
 
 ### Microcopy patterns
 
-| Context | Example |
-|---------|---------|
-| Result is favourable | "Dewasa Ayu — disarankan untuk pawiwahan" (not "Hari Baik!" or "Boleh menikah!") |
-| Result is unfavourable | "Kurang ideal — pertimbangkan tanggal lain" (not "Hari Jelek!" or "Jangan!") |
-| Critical inauspicious sign | "Terdapat pantangan kuat. Disarankan untuk berkonsultasi dengan Sulinggih." |
-| Sasih estimated, no correction data | "Sasih perkiraan — dapat berbeda dengan kalender resmi tahun ini." |
+| Context                             | Example                                                                                                                              |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Result is favourable                | "Dewasa Ayu — disarankan untuk pawiwahan" (not "Hari Baik!" or "Boleh menikah!")                                                     |
+| Result is unfavourable              | "Kurang ideal — pertimbangkan tanggal lain" (not "Hari Jelek!" or "Jangan!")                                                         |
+| Critical inauspicious sign          | "Terdapat pantangan kuat. Disarankan untuk berkonsultasi dengan Sulinggih."                                                          |
+| Sasih estimated, no correction data | "Sasih perkiraan — dapat berbeda dengan kalender resmi tahun ini."                                                                   |
 | Default disclaimer (always visible) | "Platform ini memberikan perhitungan referensi berdasarkan pedoman Wariga umum, bukan pengganti konsultasi Sulinggih atau Pemangku." |
 
 ## Color palette
@@ -50,37 +50,37 @@ The Lontar palette starts from aged-palm-leaf and ink, not from a brand-color pi
 
 ### Paper theme (daytime variant — `light` in UI-001)
 
-| Token | Hex | Role |
-|-------|-----|------|
-| `paper` | `#F4ECDA` | Page background — aged palm-leaf cream |
-| `paper-deep` | `#EADFC4` | Recessed surfaces, card backgrounds |
-| `paper-edge` | `#D7C8A4` | Borders, dividers, deckle-edge feel |
-| `ink` | `#3A2E1F` | Primary text — dark sepia, never pure black |
-| `ink-soft` | `#5C4C36` | Secondary text |
-| `ink-faint` | `#8A7960` | Tertiary text, hints, metadata |
-| `ochre` | `#A87A2A` | Emphasis, headings, ornaments — burnished gold-brown |
-| `ochre-soft` | `#C8A055` | Hover states, soft highlights |
+| Token        | Hex       | Role                                                 |
+| ------------ | --------- | ---------------------------------------------------- |
+| `paper`      | `#F4ECDA` | Page background — aged palm-leaf cream               |
+| `paper-deep` | `#EADFC4` | Recessed surfaces, card backgrounds                  |
+| `paper-edge` | `#D7C8A4` | Borders, dividers, deckle-edge feel                  |
+| `ink`        | `#3A2E1F` | Primary text — dark sepia, never pure black          |
+| `ink-soft`   | `#5C4C36` | Secondary text                                       |
+| `ink-faint`  | `#8A7960` | Tertiary text, hints, metadata                       |
+| `ochre`      | `#A87A2A` | Emphasis, headings, ornaments — burnished gold-brown |
+| `ochre-soft` | `#C8A055` | Hover states, soft highlights                        |
 
 ### Night theme (default — `dark` in UI-001)
 
-| Token | Hex | Role |
-|-------|-----|------|
-| `night` | `#181410` | Page background — like reading under oil lamp |
-| `night-deep` | `#221C16` | Recessed surfaces |
-| `night-edge` | `#3A2F23` | Borders |
-| `ember` | `#E8D9B5` | Primary text — warm off-white like firelight on page |
-| `ember-soft` | `#B8A988` | Secondary text |
-| `ember-faint` | `#7A6C53` | Tertiary text |
-| `gold` | `#C4A265` | Emphasis (kept from UI-001 for continuity) |
-| `gold-soft` | `#D8BC8B` | Hover states |
+| Token         | Hex       | Role                                                 |
+| ------------- | --------- | ---------------------------------------------------- |
+| `night`       | `#181410` | Page background — like reading under oil lamp        |
+| `night-deep`  | `#221C16` | Recessed surfaces                                    |
+| `night-edge`  | `#3A2F23` | Borders                                              |
+| `ember`       | `#E8D9B5` | Primary text — warm off-white like firelight on page |
+| `ember-soft`  | `#B8A988` | Secondary text                                       |
+| `ember-faint` | `#7A6C53` | Tertiary text                                        |
+| `gold`        | `#C4A265` | Emphasis (kept from UI-001 for continuity)           |
+| `gold-soft`   | `#D8BC8B` | Hover states                                         |
 
 ### Semantic colors (both themes — muted, never saturated)
 
-| Token | Paper hex | Night hex | Role |
-|-------|-----------|-----------|------|
-| `ayu` | `#5C7A4F` | `#7DA46B` | Auspicious (sage green, not vivid) |
-| `caution` | `#6B6A4A` | `#A09B6E` | Caution (muted olive-gold) |
-| `ala` | `#8A4B47` | `#B36A66` | Inauspicious (brick, not red-alert) |
+| Token     | Paper hex | Night hex | Role                                |
+| --------- | --------- | --------- | ----------------------------------- |
+| `ayu`     | `#5C7A4F` | `#7DA46B` | Auspicious (sage green, not vivid)  |
+| `caution` | `#6B6A4A` | `#A09B6E` | Caution (muted olive-gold)          |
+| `ala`     | `#8A4B47` | `#B36A66` | Inauspicious (brick, not red-alert) |
 
 Semantic colors are accompanied by an icon and text — color is never the only signal (WCAG 1.4.1).
 
@@ -92,15 +92,15 @@ Pure black ink on pure white paper. No ochre. Borders thicker (1.5 px → 2 px).
 
 The platform leans on type more than any other channel. Two faces, used together with manuscript-style discipline.
 
-| Use | Family | Size scale (paper theme) |
-|-----|--------|-------------------------|
-| Headings (h1, h2) | **Cormorant Garamond** (serif) — variable weight 400–600, italic for emphasis | 32 / 28 / 24 |
-| Subheads (h3, h4) | **Cormorant Garamond** at smaller sizes, sometimes italic | 20 / 18 |
-| Body | **DM Sans** — regular 400, medium 500 for emphasis | 16 (base — never below; 18 in Large scale; 20 in Extra Large) |
-| Metadata, captions | DM Sans, 13 px, ink-faint | 13 |
-| Numeric data (scores, Pawukon day, Sasih number) | **Cormorant Garamond** at larger sizes — numbers carry weight | 24–48 |
-| UI labels (buttons, form fields) | DM Sans medium | 14–15 |
-| Sanskrit / Old-Javanese terms (Wariga, Sasih names, dewasa codes) | DM Sans italic OR Cormorant Italic | inherits |
+| Use                                                               | Family                                                                        | Size scale (paper theme)                                      |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Headings (h1, h2)                                                 | **Cormorant Garamond** (serif) — variable weight 400–600, italic for emphasis | 32 / 28 / 24                                                  |
+| Subheads (h3, h4)                                                 | **Cormorant Garamond** at smaller sizes, sometimes italic                     | 20 / 18                                                       |
+| Body                                                              | **DM Sans** — regular 400, medium 500 for emphasis                            | 16 (base — never below; 18 in Large scale; 20 in Extra Large) |
+| Metadata, captions                                                | DM Sans, 13 px, ink-faint                                                     | 13                                                            |
+| Numeric data (scores, Pawukon day, Sasih number)                  | **Cormorant Garamond** at larger sizes — numbers carry weight                 | 24–48                                                         |
+| UI labels (buttons, form fields)                                  | DM Sans medium                                                                | 14–15                                                         |
+| Sanskrit / Old-Javanese terms (Wariga, Sasih names, dewasa codes) | DM Sans italic OR Cormorant Italic                                            | inherits                                                      |
 
 Line height 1.55–1.65 for body (longer than web default). Letter-spacing slightly tightened on Cormorant headings (`tracking-tight`) to compensate for the wide default of serif fonts at large sizes.
 
@@ -108,7 +108,7 @@ Line height 1.55–1.65 for body (longer than web default). Letter-spacing sligh
 
 - **No heavy weights for emphasis.** Use italic Cormorant or medium DM Sans, not bold display.
 - **Drop caps for major sections in long-form pages (About, ceremony landing).** A Cormorant ochre drop cap for the first letter of each major section is the signature touch.
-- **Sanskrit/Old-Javanese terms italicised** on first appearance in a paragraph: *Wariga*, *Sasih*, *Pawukon*. Not on every recurrence — that's noise.
+- **Sanskrit/Old-Javanese terms italicised** on first appearance in a paragraph: _Wariga_, _Sasih_, _Pawukon_. Not on every recurrence — that's noise.
 - **Numbers stay serif at scale.** A score of 77 should be Cormorant 48 px, not DM Sans bold. Numbers feel inscribed, not declared.
 
 ## Layout DNA
@@ -174,19 +174,19 @@ The Sulinggih disclaimer sits at the bottom of every page in DM Sans 13 px, `ink
 
 How signature patterns appear across the components from UI-001:
 
-| Component (UI-001) | Lontar treatment |
-|--------------------|------------------|
-| `<RootLayout>` | `paper` background; centered header band; quiet disclaimer footer always visible. |
-| `<CeremonySelector>` | Horizontal text labels with Cormorant italic; underline accent in `ochre` on the active item (no pill backgrounds). |
-| `<DatePicker>` | Cream surface, ink text, `ochre` to mark today and the selected date. |
-| `<ScoreBar>` | The `pct` number is the hero (Cormorant 48 px, ochre); the bar itself is a thin 4 px line in `paper-edge` filled to the percentage in semantic colour. |
-| `<PawukonGrid>` | Definition-list style (term : value), Cormorant italic for terms, DM Sans for values. No card boxes. |
-| `<DewasaTagList>` | Inline italic Cormorant chips with a hairline border, never filled pills. |
-| `<AnalysisChecklist>` | Numbered list, Cormorant italic for the factor name, DM Sans for the pass/fail explanation. |
-| `<CalendarGrid>` | Days as numbers in Cormorant; small semantic-color underline beneath the number (NOT background fill of the cell). The cell stays cream; the underline carries the signal + a one-character marker (✓ · ×) above the number. |
-| `<ResultCard>` | Drop-cap-style opening of the rating sentence; ornamental divider between summary and detail. |
-| `<FeedbackWidget>` | Question in Cormorant italic; three text buttons in DM Sans medium with `ochre` underline. No coloured backgrounds on the buttons. |
-| `<DisclaimerBanner>` | DM Sans 13 px ink-faint, hairline top border. |
+| Component (UI-001)    | Lontar treatment                                                                                                                                                                                                             |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `<RootLayout>`        | `paper` background; centered header band; quiet disclaimer footer always visible.                                                                                                                                            |
+| `<CeremonySelector>`  | Horizontal text labels with Cormorant italic; underline accent in `ochre` on the active item (no pill backgrounds).                                                                                                          |
+| `<DatePicker>`        | Cream surface, ink text, `ochre` to mark today and the selected date.                                                                                                                                                        |
+| `<ScoreBar>`          | The `pct` number is the hero (Cormorant 48 px, ochre); the bar itself is a thin 4 px line in `paper-edge` filled to the percentage in semantic colour.                                                                       |
+| `<PawukonGrid>`       | Definition-list style (term : value), Cormorant italic for terms, DM Sans for values. No card boxes.                                                                                                                         |
+| `<DewasaTagList>`     | Inline italic Cormorant chips with a hairline border, never filled pills.                                                                                                                                                    |
+| `<AnalysisChecklist>` | Numbered list, Cormorant italic for the factor name, DM Sans for the pass/fail explanation.                                                                                                                                  |
+| `<CalendarGrid>`      | Days as numbers in Cormorant; small semantic-color underline beneath the number (NOT background fill of the cell). The cell stays cream; the underline carries the signal + a one-character marker (✓ · ×) above the number. |
+| `<ResultCard>`        | Drop-cap-style opening of the rating sentence; ornamental divider between summary and detail.                                                                                                                                |
+| `<FeedbackWidget>`    | Question in Cormorant italic; three text buttons in DM Sans medium with `ochre` underline. No coloured backgrounds on the buttons.                                                                                           |
+| `<DisclaimerBanner>`  | DM Sans 13 px ink-faint, hairline top border.                                                                                                                                                                                |
 
 ## Reconciliations with existing tokens
 
