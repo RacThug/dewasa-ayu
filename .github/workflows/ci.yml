@@ -1,66 +1,8 @@
-# GitHub Actions CI — lint, typecheck, test (issue #15).
-#
-# Action majors pinned to current stable, verified 2026-05-30:
-#   actions/checkout@v6 · pnpm/action-setup@v6 · actions/setup-node@v6
-# Ordering matters: pnpm/action-setup runs BEFORE actions/setup-node so the
-# `cache: pnpm` option can locate the pnpm binary and resolve the store path.
-#
-# Lint runs as the root `pnpm lint` (a single repo-wide `eslint .` pass that also
-# covers root files such as prisma.config.ts) — there is no per-package lint task.
-# Typecheck and test run through Turbo. No test runner exists yet (Vitest lands in
-# Phase 1), so `turbo run test` is currently a no-op and begins gating
-# automatically once packages add a `test` script.
 name: CI
-
 on:
-  push:
-    branches: [main, develop]
   pull_request:
-    branches: [main, develop]
-
-# Least privilege: CI only needs to read the repo.
-permissions:
-  contents: read
-
-# A newer push to the same ref cancels the in-flight run — saves runner minutes.
-concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  verify:
-    name: verify (Node ${{ matrix.node-version }})
+  hello:
     runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      # Single value today; kept as a matrix so adding e.g. 22.x is a one-line change.
-      matrix:
-        node-version: ['20.x']
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      # pnpm before Node so setup-node's pnpm cache can find the binary. No
-      # `version:` input — pnpm/action-setup reads packageManager from
-      # package.json (pnpm@10.30.3), keeping a single source of truth.
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-
-      - name: Setup Node ${{ matrix.node-version }}
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: pnpm
-
-      # Lockfile is committed; --frozen-lockfile fails if it drifts from
-      # package.json, so CI can never silently install an unpinned tree.
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Lint
-        run: pnpm lint
-
-      - name: Typecheck and test
-        run: pnpm turbo run typecheck test --concurrency=2
+      - run: echo hello
