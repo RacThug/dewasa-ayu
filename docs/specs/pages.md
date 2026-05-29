@@ -2,10 +2,10 @@
 id: UI-001
 title: Pages & Components — Next.js Frontend
 status: Draft
-version: 0.2.0
+version: 0.2.1
 owners: [@RacThug]
 created: 2026-05-28
-updated: 2026-05-28
+updated: 2026-05-29
 implements: [20]
 supersedes: null
 related: [ENG-001, DB-001, API-001]
@@ -17,7 +17,7 @@ external_refs: ["DESIGN.md"]
 
 ## Summary
 
-Defines the frontend of Dewasa Ayu hosted at `apps/web` (Next.js 14, App Router): design tokens, global components, and every screen with its component hierarchy, state strategy, API calls, and layout. Screens consume the contract declared in [API-001](./api.md); presentational state mirrors engine types from [ENG-001](./engine.md). Wireframes are ASCII for portability; a Figma file may be added later under `design/`.
+Defines the frontend of Dewasa Ayu hosted at `apps/web` (Next.js 16, App Router): design tokens, global components, and every screen with its component hierarchy, state strategy, API calls, and layout. Screens consume the contract declared in [API-001](./api.md); presentational state mirrors engine types from [ENG-001](./engine.md). Wireframes are ASCII for portability; a Figma file may be added later under `design/`.
 
 ## Context
 
@@ -421,7 +421,7 @@ Auth: `next-auth` session OR API key + `X-Admin-Token` (same model as API-001 ad
 
 ## Decisions & Rationale
 
-- **App Router (Next.js 14), not Pages Router.** Recorded architecture decision. RSC by default lets us serialise smaller bundles to the client; cuts initial JS budget toward the <150KB target (PRD §22.2).
+- **App Router (Next.js 16, Turbopack default), not Pages Router.** Recorded architecture decision. RSC by default lets us serialise smaller bundles to the client; cuts initial JS budget toward the <150KB target (PRD §22.2). Note: `params`/`searchParams`/`cookies` are async-only in Next 16 — write screens with the `await params` pattern from the start.
 
 - **URL state via `nuqs`, not custom hooks.** Type-safe, SSR-friendly, fewer surprises around hydration. Trade-off: extra dependency (~3KB). Worth it for sharability of links — primary acquisition vector per PRD §19.
 
@@ -465,12 +465,13 @@ Auth: `next-auth` session OR API key + `X-Admin-Token` (same model as API-001 ad
 - GitHub issue [#20](https://github.com/RacThug/dewasa-ayu/issues/20) — implementing task for this spec
 - GitHub issue [#4](https://github.com/RacThug/dewasa-ayu/issues/4) — Phase 3 Frontend Core epic (primary consumer)
 - GitHub issue [#5](https://github.com/RacThug/dewasa-ayu/issues/5) — Phase 4 Content & SEO epic
-- [Next.js 14 App Router docs](https://nextjs.org/docs/app)
+- [Next.js 16 App Router docs](https://nextjs.org/docs/app)
 - [nuqs — type-safe URL state](https://nuqs.47ng.com/)
 - [shadcn/ui](https://ui.shadcn.com/) — component primitives
 - [TanStack Query](https://tanstack.com/query) — server cache
 
 ## Changelog
 
+- v0.2.1 — 2026-05-29 — Corrected Next.js version references (14 → **16**, current stable) and noted Turbopack-default + async `params`/`searchParams`/`cookies`. Factual correction only; no screen or component contract changed.
 - v0.2.0 — 2026-05-28 — Design tokens deferred to `/DESIGN.md` (Lontar manuscript revival direction, paper theme default). UI-001 retains only the implementation expectations the Tailwind config must satisfy; concrete token literals and palette rationale moved to DESIGN.md to avoid two sources of truth. No screen or component contracts changed.
 - v0.1.0 — 2026-05-28 — Initial draft. Design tokens with three themes + font scaling. 14 global components. 9 screens documented (Home, Calendar, Recommendations, Date Detail, About, Ceremony landing, Monthly SEO, Yearly SEO, API Docs) plus 3 Phase 2 admin sub-routes. ASCII wireframes for the two most interactive screens. Cross-cutting behaviour for ceremony switch, theme switch, font scaling, share, animations. Six open questions flagged.

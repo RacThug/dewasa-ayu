@@ -204,8 +204,8 @@ Each ceremony type uses the same 10-point scale but with different weights.
 
 | Layer | Technology | Justification |
 |---|---|---|
-| Frontend | Next.js 14+ (App Router) | SSR/SSG for SEO, React Server Components, TypeScript native |
-| Backend | NestJS | Modular architecture, TypeScript, DI, guards/pipes, Swagger auto-docs |
+| Frontend | Next.js 16 (App Router, Turbopack) | SSR/SSG for SEO, React 19 Server Components, TypeScript native |
+| Backend | NestJS 11 | Modular architecture, TypeScript, DI, guards/pipes, Swagger auto-docs |
 | Database | PostgreSQL | Relational, JSONB for flexible ceremony rules |
 | ORM | Prisma | Type-safe queries, migrations, seeding, zero-cost abstractions |
 | Cache | Redis | Calculation result cache, session store |
