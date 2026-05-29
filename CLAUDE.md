@@ -133,6 +133,7 @@ Session 1 builds; Session 2 reviews with fresh eyes — no ego in the code, so i
 | 2026-05-28 | Specs = **living docs** in `docs/specs/`, English, one template + authoring guide | Consistency across engine/db/api/ui specs; AI-readable markdown | Yes (Rac) |
 | 2026-05-28 | Design = **"Lontar manuscript revival"**; `DESIGN.md` is the single source of truth for tokens | Distinct, culturally-rooted aesthetic; avoid the generic AI look | Yes (Rac) |
 | 2026-05-28 | Git = **gitflow + auto-merge** (squash + delete, skip drafts, require mergeable) | Solo-dev velocity with a safety net; codified in the `safe-git-workflow` skill | Yes (Rac) |
+| 2026-05-29 | Stack baseline = **current stable: Next.js 16 · React 19 · NestJS 11 · TypeScript 5 · Tailwind 4** | Greenfield → zero migration cost; starting on Next 14 (the PRD's original target) would ship day-one tech debt + a forced double-major upgrade. Verified against official docs (Next 16 needs Node ≥20.9). | Yes (Rac) |
 
 ---
 
@@ -141,7 +142,7 @@ Session 1 builds; Session 2 reviews with fresh eyes — no ego in the code, so i
 - **Rate (for estimates)**: Not set — internal product, no client billing. Estimate in time/effort; ask Rac before quoting any Rupiah figure (never invent rates).
 - **Stage**: Greenfield. Docs are complete (PRD + 4 engineering specs + DESIGN.md); no app code yet. Next up: **Phase 0 setup** (#10–#16).
 - **Tech stack**: Turborepo + pnpm monorepo.
-  - `apps/web` — Next.js 14 App Router, Tailwind, shadcn/ui (Radix), Framer Motion, react-query, nuqs (URL state), next-intl.
+  - `apps/web` — Next.js 16 App Router (Turbopack default, React 19), Tailwind v4, shadcn/ui (Radix), Framer Motion, react-query, nuqs (URL state), next-intl.
   - `apps/api` — NestJS + Swagger + Throttler + cache-manager.
   - `packages/wariga-engine` — pure TypeScript, **zero external deps**, runs in browser + Node (<30 KB gzipped).
   - `packages/{ceremony-rules, types, constants}` — per-ceremony config, shared Zod/TS types, static Wariga data.

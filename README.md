@@ -38,7 +38,7 @@ Fitur lanjutan (Phase 2): Kalkulator Otonan, Mesakapan/Jodoh, panel admin koreks
 
 | Layer | Teknologi |
 |---|---|
-| Frontend | Next.js 14+ (App Router), Tailwind CSS, shadcn/ui, Radix UI, Framer Motion |
+| Frontend | Next.js 16 (App Router, Turbopack), Tailwind CSS v4, shadcn/ui, Radix UI, Framer Motion |
 | Backend | NestJS (Swagger, Throttler, cache-manager) |
 | Database | PostgreSQL + Prisma |
 | Cache | Redis |
