@@ -50,7 +50,7 @@ This spec covers MVP screens plus the SEO pages (PRD §14) and Phase 2 admin sur
 
 Implementation expectations the Tailwind config must satisfy:
 
-- **Theme default: `paper`** (cream + sepia ink), not `night`. Dark variant remains available; high-contrast available via `prefers-contrast: more` and the user toggle.
+- **Theme default: `night`** (warm oil-lamp lamplight) per [DESIGN.md](../../DESIGN.md) v0.2.0 — the earlier "paper default" is superseded. `paper` is the daytime variant; high-contrast available via `prefers-contrast: more` and the user toggle. _(Implemented in the web foundation: `data-theme` = `night` \| `paper` via `next-themes`; OS `prefers-color-scheme` auto-detect is a follow-up.)_
 - **Token names follow DESIGN.md naming:** `paper`, `paper-deep`, `paper-edge`, `ink`, `ink-soft`, `ink-faint`, `ochre`, `ochre-soft` for the paper theme; `night`, `ember`, `gold`, etc. for the night theme. Do NOT keep the older `bg-light` / `bg-dark` naming from v0.1.0 — DESIGN.md is the source of truth.
 - **Semantic colors:** `ayu`, `caution`, `ala` — desaturated values from DESIGN.md (sage, olive-gold, brick), distinct per theme. Three channels (color + icon + text) per PRD §9.4.1.
 - **Typography:** Cormorant Garamond serif + DM Sans pair, with the numeric-as-inscription pattern from DESIGN.md (Cormorant ochre at 1.5–3× body for scores and Pawukon day).
