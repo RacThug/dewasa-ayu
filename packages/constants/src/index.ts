@@ -6,9 +6,12 @@
  * by the engine. Urip arrays are indexed in the same order as their name arrays.
  */
 import type {
+  Astawara,
+  Caturwara,
   Dasawara,
   Pancawara,
   Sadwara,
+  Sangawara,
   Saptawara,
   SemVer,
   Triwara,
@@ -117,3 +120,36 @@ export const DASAWARA_NAMES = [
   'dewa',
   'raksasa',
 ] as const satisfies readonly Dasawara[];
+
+/** Astawara (8-day week) names. */
+export const ASTAWARA_NAMES = [
+  'sri',
+  'indra',
+  'guru',
+  'yama',
+  'ludra',
+  'brahma',
+  'kala',
+  'uma',
+] as const satisfies readonly Astawara[];
+
+/** Sangawara (9-day week) names. */
+export const SANGAWARA_NAMES = [
+  'dangu',
+  'jangur',
+  'gigis',
+  'nohan',
+  'ogan',
+  'erangan',
+  'urungan',
+  'tulus',
+  'dadi',
+] as const satisfies readonly Sangawara[];
+
+/** Caturwara (4-day week) names. */
+export const CATURWARA_NAMES = [
+  'sri',
+  'laba',
+  'jaya',
+  'menala',
+] as const satisfies readonly Caturwara[];

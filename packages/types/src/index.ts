@@ -69,3 +69,18 @@ export type Dasawara =
   | 'raja'
   | 'dewa'
   | 'raksasa';
+
+export type Astawara = 'sri' | 'indra' | 'guru' | 'yama' | 'ludra' | 'brahma' | 'kala' | 'uma';
+
+export type Sangawara =
+  | 'dangu'
+  | 'jangur'
+  | 'gigis'
+  | 'nohan'
+  | 'ogan'
+  | 'erangan'
+  | 'urungan'
+  | 'tulus'
+  | 'dadi';
+
+export type Caturwara = 'sri' | 'laba' | 'jaya' | 'menala';

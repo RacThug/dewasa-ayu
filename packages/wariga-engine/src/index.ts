@@ -8,11 +8,14 @@ import type { SemVer } from '@dewasa-ayu/types';
 export { WarigaError, type WarigaErrorCode } from './errors';
 export { getPawukonDay, getWuku } from './pawukon';
 export {
+  getAstawara,
+  getCaturwara,
   getDasawara,
   getDwiwara,
   getEkawara,
   getPancawara,
   getSadwara,
+  getSangawara,
   getSaptawara,
   getTotalUrip,
   getTriwara,

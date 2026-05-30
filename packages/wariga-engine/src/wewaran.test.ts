@@ -3,11 +3,14 @@ import { BalineseDate } from 'balinese-date-js-lib';
 import { describe, expect, it } from 'vitest';
 
 import {
+  getAstawara,
+  getCaturwara,
   getDasawara,
   getDwiwara,
   getEkawara,
   getPancawara,
   getSadwara,
+  getSangawara,
   getSaptawara,
   getTotalUrip,
   getTriwara,
@@ -27,7 +30,7 @@ function eachDay(visit: (date: Date, oracle: BalineseDate) => void): void {
 }
 
 describe('wewaran — matches the oracle for every day in 2015–2034', () => {
-  it('saptawara, pancawara, triwara, sadwara, dasawara, dwiwara', () => {
+  it('every cycle except ekawara', () => {
     const mismatches: string[] = [];
     eachDay((date, o) => {
       const iso = date.toISOString().slice(0, 10);
@@ -39,6 +42,11 @@ describe('wewaran — matches the oracle for every day in 2015–2034', () => {
       if (getSadwara(date) !== o.sadWara.name.toLowerCase()) mismatches.push(`${iso} sadwara`);
       if (getDasawara(date) !== o.dasaWara.name.toLowerCase()) mismatches.push(`${iso} dasawara`);
       if (getDwiwara(date) !== o.dwiWara.name.toLowerCase()) mismatches.push(`${iso} dwiwara`);
+      if (getAstawara(date) !== o.astaWara.name.toLowerCase()) mismatches.push(`${iso} astawara`);
+      if (getSangawara(date) !== o.sangaWara.name.toLowerCase())
+        mismatches.push(`${iso} sangawara`);
+      if (getCaturwara(date) !== o.caturWara.name.toLowerCase())
+        mismatches.push(`${iso} caturwara`);
     });
     expect(mismatches).toEqual([]);
   });
@@ -75,5 +83,22 @@ describe('wewaran — anchors and shape', () => {
     for (let i = 0; i < 30; i++) values.add(getEkawara(new Date(2024, 0, 1 + i)));
     expect(values.has('luang')).toBe(true);
     expect(values.has(null)).toBe(true);
+  });
+
+  it('Astawara repeats Kala three times (Kala Tiga: pawukon days 70, 71, 72)', () => {
+    expect(getAstawara(new Date(2012, 5, 17 + 70))).toBe('kala');
+    expect(getAstawara(new Date(2012, 5, 17 + 71))).toBe('kala');
+    expect(getAstawara(new Date(2012, 5, 17 + 72))).toBe('kala');
+  });
+
+  it('Caturwara repeats Jaya around pawukon day 71 (Jaya Tiga)', () => {
+    expect(getCaturwara(new Date(2012, 5, 17 + 70))).toBe('jaya');
+    expect(getCaturwara(new Date(2012, 5, 17 + 71))).toBe('jaya');
+  });
+
+  it('Sangawara opens with four consecutive Dangu', () => {
+    for (let pd = 0; pd < 4; pd++) {
+      expect(getSangawara(new Date(2012, 5, 17 + pd))).toBe('dangu');
+    }
   });
 });
