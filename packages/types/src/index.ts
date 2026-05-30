@@ -43,3 +43,29 @@ export type Wuku =
   | 'klawu'
   | 'dukut'
   | 'watugunung';
+
+// --- Wewaran (parallel day cycles) ---
+
+export type Saptawara = 'redite' | 'soma' | 'anggara' | 'buda' | 'wraspati' | 'sukra' | 'saniscara';
+
+export type Pancawara = 'umanis' | 'paing' | 'pon' | 'wage' | 'kliwon';
+
+export type Triwara = 'pasah' | 'beteng' | 'kajeng';
+
+export type Sadwara = 'tungleh' | 'aryang' | 'urukung' | 'paniron' | 'was' | 'maulu';
+
+export type Dwiwara = 'menga' | 'pepet';
+
+export type Ekawara = 'luang';
+
+export type Dasawara =
+  | 'pandita'
+  | 'pati'
+  | 'suka'
+  | 'duka'
+  | 'sri'
+  | 'manuh'
+  | 'manusa'
+  | 'raja'
+  | 'dewa'
+  | 'raksasa';
