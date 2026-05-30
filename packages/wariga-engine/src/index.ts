@@ -12,6 +12,7 @@ export { getFullInfo } from './full-info';
 export { getPawukonDay, getWuku } from './pawukon';
 export { getIngkel, getJejepan } from './pawukon-derived';
 export { getSasihInfo } from './sasih';
+export { findGoodDates, getMonthEvaluation } from './search';
 export {
   getAstawara,
   getCaturwara,

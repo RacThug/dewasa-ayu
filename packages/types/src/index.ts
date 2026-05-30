@@ -313,3 +313,33 @@ export interface Evaluation {
   /** True while the verdict relies on unverified rules/data — UI shows "estimasi". */
   estimated: boolean;
 }
+
+/** A date paired with its full decomposition and evaluation (search/month results). */
+export interface EvaluatedDate {
+  date: Date;
+  info: BalineseDate;
+  evaluation: Evaluation;
+}
+
+/** Result of `findGoodDates`. */
+export interface FindGoodDatesResult {
+  dates: EvaluatedDate[];
+  /** True when the 365-day scan cap was hit before `count` ayu dates were found. */
+  capReached: boolean;
+}
+
+/** Result of `getMonthEvaluation` — one Gregorian month evaluated for a ceremony. */
+export interface MonthData {
+  year: number;
+  month: number; // 1-12 (Gregorian)
+  ceremony: CeremonyId;
+  /** One entry per day, index 0 = day 1. */
+  days: EvaluatedDate[];
+  summary: {
+    ayuCount: number;
+    cautionCount: number;
+    badCount: number;
+    /** Up to 5 highest-scored ayu dates, sorted descending by score. */
+    topDates: EvaluatedDate[];
+  };
+}
