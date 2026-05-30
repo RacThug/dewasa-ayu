@@ -13,6 +13,7 @@ import type {
   Sadwara,
   Sangawara,
   Saptawara,
+  Sasih,
   SemVer,
   Triwara,
   Wuku,
@@ -153,3 +154,22 @@ export const CATURWARA_NAMES = [
   'jaya',
   'menala',
 ] as const satisfies readonly Caturwara[];
+
+/** The 12 sasih in canonical order; index = sasih id (Kasa = 0 … Sadha = 11). */
+export const SASIH_NAMES = [
+  'kasa',
+  'karo',
+  'katiga',
+  'kapat',
+  'kalima',
+  'kanem',
+  'kapitu',
+  'kawolu',
+  'kasanga',
+  'kadasa',
+  'destha',
+  'sadha',
+] as const satisfies readonly Sasih[];
+
+// Generated Sasih lookup table (SASIH_EPOCH, SASIH_NGUNALATRI_DAYS, SASIH_MONTH_*).
+export * from './sasih-data';

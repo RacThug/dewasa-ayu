@@ -18,6 +18,7 @@ export default tseslint.config(
       '**/coverage/**',
       'mockups/**',
       'prisma/generated/**',
+      'packages/constants/src/sasih-data.ts',
     ],
   },
   js.configs.recommended,
@@ -37,6 +38,13 @@ export default tseslint.config(
           caughtErrorsIgnorePattern: '^_',
         },
       ],
+    },
+  },
+  // Node tooling scripts (generators) run in Node and use its globals.
+  {
+    files: ['**/scripts/**'],
+    languageOptions: {
+      globals: { console: 'readonly', process: 'readonly' },
     },
   },
   // Keep last: turns off stylistic rules that would conflict with Prettier.

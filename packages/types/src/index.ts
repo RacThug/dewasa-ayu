@@ -84,3 +84,41 @@ export type Sangawara =
   | 'dadi';
 
 export type Caturwara = 'sri' | 'laba' | 'jaya' | 'menala';
+
+export type Sasih =
+  | 'kasa'
+  | 'karo'
+  | 'katiga'
+  | 'kapat'
+  | 'kalima'
+  | 'kanem'
+  | 'kapitu'
+  | 'kawolu'
+  | 'kasanga'
+  | 'kadasa'
+  | 'destha'
+  | 'sadha';
+
+/** Lunar decomposition of a date (penanggal/pangelong + sasih). See ENG-001. */
+export interface SasihInfo {
+  /** 0-based index into the 12 sasih (0 = Kasa … 11 = Sadha). */
+  index: number;
+  /** Canonical sasih name. */
+  name: Sasih;
+  /** 1-15. Paro terang = penanggal; paro gelap = pangelong. */
+  penanggal: number;
+  /** True in the waning half (pangelong). */
+  isPangelong: boolean;
+  /** Full moon: penanggal 15 of the waxing half. */
+  isPurnama: boolean;
+  /** New moon: pangelong 15 of the waning half. */
+  isTilem: boolean;
+  /** Intercalary (nampih) month. */
+  isNampih: boolean;
+  /** Skipped (mala) month. */
+  isMala: boolean;
+  /** True when the value is approximate (always false for table-backed dates). */
+  isEstimated: boolean;
+  /** Tahun Saka for this sasih. */
+  tahunSaka: number;
+}
