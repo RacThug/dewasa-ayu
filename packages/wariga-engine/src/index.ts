@@ -6,7 +6,9 @@
 import type { SemVer } from '@dewasa-ayu/types';
 
 export { WarigaError, type WarigaErrorCode } from './errors';
+export { getFullInfo } from './full-info';
 export { getPawukonDay, getWuku } from './pawukon';
+export { getIngkel, getJejepan } from './pawukon-derived';
 export { getSasihInfo } from './sasih';
 export {
   getAstawara,

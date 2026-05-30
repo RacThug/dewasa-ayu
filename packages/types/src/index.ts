@@ -99,6 +99,17 @@ export type Sasih =
   | 'destha'
   | 'sadha';
 
+// --- Pawukon-derived cycles (not Wewaran) ---
+
+/**
+ * Ingkel — a 6-fold weekly category that is constant within each wuku
+ * (`wukuIndex % 6`), cycling every 6 wuku (42 days). See ENG-001.
+ */
+export type Ingkel = 'wong' | 'sato' | 'mina' | 'manuk' | 'taru' | 'buku';
+
+/** Jejepan — a 6-day cycle on the Pawukon day (`pawukonDay % 6`). See ENG-001. */
+export type Jejepan = 'mina' | 'taru' | 'sato' | 'patra' | 'wong' | 'paksi';
+
 /** Lunar decomposition of a date (penanggal/pangelong + sasih). See ENG-001. */
 export interface SasihInfo {
   /** 0-based index into the 12 sasih (0 = Kasa … 11 = Sadha). */
@@ -121,4 +132,37 @@ export interface SasihInfo {
   isEstimated: boolean;
   /** Tahun Saka for this sasih. */
   tahunSaka: number;
+}
+
+/**
+ * Full Balinese-calendar decomposition of a Gregorian date: Pawukon, every
+ * Wewaran, the Pawukon-derived cycles (Ingkel, Jejepan), Sasih, and total urip.
+ * Produced by `getFullInfo` and consumed by the dewasa/scoring layer. See ENG-001.
+ */
+export interface BalineseDate {
+  /** Original Gregorian input, normalised to UTC midnight. */
+  gregorian: Date;
+  /** Pawukon day 0-209 (mod 210 from the Pawukon epoch). */
+  pawukonDay: number;
+  /** Wuku (1 of 30). */
+  wuku: Wuku;
+  /** Ekawara: 'luang' only when total urip is odd; null otherwise. */
+  ekawara: Ekawara | null;
+  dwiwara: Dwiwara;
+  triwara: Triwara;
+  caturwara: Caturwara;
+  pancawara: Pancawara;
+  sadwara: Sadwara;
+  saptawara: Saptawara;
+  astawara: Astawara;
+  sangawara: Sangawara;
+  dasawara: Dasawara;
+  /** Lunar decomposition. */
+  sasih: SasihInfo;
+  /** Wuku-derived 6-fold weekly category. */
+  ingkel: Ingkel;
+  /** 6-day cycle on the Pawukon day. */
+  jejepan: Jejepan;
+  /** Saptawara urip + Pancawara urip for the day. */
+  totalUrip: number;
 }
