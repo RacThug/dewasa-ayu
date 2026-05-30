@@ -6,6 +6,7 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 
 import { FontToggle } from '@/components/font-toggle';
+import { PageNav } from '@/components/page-nav';
 import { ThemeProvider } from '@/components/theme-provider';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { LeafMark, SealIcon } from '@/lib/icons';
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   Dewasa Ayu<small>Pencari Hari Wariga</small>
                 </span>
               </Link>
+              <PageNav />
               <div className="tools">
                 <FontToggle />
                 <ThemeToggle />
