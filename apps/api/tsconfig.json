@@ -1,23 +1,21 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "target": "es2022",
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "../..",
     "types": ["node"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "verbatimModuleSyntax": false,
     "isolatedModules": false,
-    "noEmit": false,
     "declaration": false,
     "declarationMap": false,
     "sourceMap": true,
-    "incremental": true,
     "skipLibCheck": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "test"]
+  "exclude": ["node_modules", "dist"]
 }

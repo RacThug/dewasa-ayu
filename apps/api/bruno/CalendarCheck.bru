@@ -1,0 +1,16 @@
+meta {
+  name: Calendar Check
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/calendar/check?date=2026-06-17&ceremony=pawiwahan
+  body: none
+  auth: none
+}
+
+params:query {
+  date: 2026-06-17
+  ceremony: pawiwahan
+}
