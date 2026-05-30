@@ -29,7 +29,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Sea
 
   return (
     <>
-      <CeremonyNav active={ceremony} date={date} />
+      <CeremonyNav active={ceremony} hrefFor={(id) => `/?ceremony=${id}&date=${date}`} />
 
       <section className="ask anim d3" aria-labelledby="ask-h">
         <p className="eyebrow">Berdasarkan pedoman Wariga umum</p>

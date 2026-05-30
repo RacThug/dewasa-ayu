@@ -30,6 +30,25 @@ export function formatID(iso: string): string {
   }).format(new Date(iso));
 }
 
+/** "Oktober 2026" for a 1-based month. */
+export function monthLabel(year: number, month: number): string {
+  return new Intl.DateTimeFormat('id-ID', {
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(new Date(Date.UTC(year, month - 1, 1)));
+}
+
+/** Short verdict, e.g. "Dewasa ayu" / "Kurang ideal" / "Kurang baik". */
+export function verdictText(rating: Rating): string {
+  return `${VERDICT[rating].lead} ${VERDICT[rating].emph}`;
+}
+
+/** One-character marker carried alongside colour (WCAG 1.4.1). */
+export function ratingMark(rating: Rating): string {
+  return rating === 'ayu' ? '✓' : rating === 'bad' ? '×' : '·';
+}
+
 /** Human-readable Sasih line for the Pawukon list. */
 export function sasihLabel(info: WireInfo): string {
   const s = info.sasih;

@@ -3,10 +3,32 @@ import type { BalineseDate, CeremonyId, Evaluation } from '@dewasa-ayu/types';
 // The API serialises Dates as ISO strings; everything else matches the engine types.
 export type WireInfo = Omit<BalineseDate, 'gregorian'> & { gregorian: string };
 
-export interface CheckResult {
+export interface WireEvaluatedDate {
   date: string;
   info: WireInfo;
   evaluation: Evaluation;
+}
+
+export type CheckResult = WireEvaluatedDate;
+
+export interface MonthResult {
+  year: number;
+  month: number;
+  ceremony: CeremonyId;
+  days: WireEvaluatedDate[];
+  summary: {
+    ayuCount: number;
+    cautionCount: number;
+    badCount: number;
+    topDates: WireEvaluatedDate[];
+  };
+}
+
+export interface RecommendResult {
+  from: string;
+  count: number;
+  dates: WireEvaluatedDate[];
+  capReached: boolean;
 }
 
 /** The six ceremonies (stable presentation data for the nav + headings). */
@@ -35,13 +57,11 @@ export class ApiError extends Error {
 
 const API_BASE = process.env.API_URL ?? 'http://localhost:3001/api/v1';
 
-/** Server-side call to the Wariga API. Throws `ApiError` on a non-2xx response. */
-export async function checkDate(date: string, ceremony: CeremonyId): Promise<CheckResult> {
+/** Server-side GET against the Wariga API. Throws `ApiError` on a non-2xx response. */
+async function getJSON<T>(path: string): Promise<T> {
   let res: Response;
   try {
-    res = await fetch(`${API_BASE}/calendar/check?date=${date}&ceremony=${ceremony}`, {
-      cache: 'no-store',
-    });
+    res = await fetch(`${API_BASE}${path}`, { cache: 'no-store' });
   } catch {
     throw new ApiError('UNREACHABLE', 'Tidak dapat menghubungi layanan. Pastikan API berjalan.');
   }
@@ -53,5 +73,21 @@ export async function checkDate(date: string, ceremony: CeremonyId): Promise<Che
         : undefined;
     throw new ApiError(err?.code ?? 'INTERNAL_ERROR', err?.message ?? `HTTP ${res.status}`);
   }
-  return res.json() as Promise<CheckResult>;
+  return res.json() as Promise<T>;
+}
+
+export function checkDate(date: string, ceremony: CeremonyId): Promise<CheckResult> {
+  return getJSON(`/calendar/check?date=${date}&ceremony=${ceremony}`);
+}
+
+export function getMonth(year: number, month: number, ceremony: CeremonyId): Promise<MonthResult> {
+  return getJSON(`/calendar/month?year=${year}&month=${month}&ceremony=${ceremony}`);
+}
+
+export function getRecommend(
+  from: string,
+  count: number,
+  ceremony: CeremonyId,
+): Promise<RecommendResult> {
+  return getJSON(`/calendar/recommend?from=${from}&count=${count}&ceremony=${ceremony}`);
 }
