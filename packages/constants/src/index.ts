@@ -9,6 +9,8 @@ import type {
   Astawara,
   Caturwara,
   Dasawara,
+  Ingkel,
+  Jejepan,
   Pancawara,
   Sadwara,
   Sangawara,
@@ -154,6 +156,28 @@ export const CATURWARA_NAMES = [
   'jaya',
   'menala',
 ] as const satisfies readonly Caturwara[];
+
+// --- Pawukon-derived cycles (not Wewaran) ---
+
+/** Ingkel category names, indexed by `wukuIndex % 6` (Wong = 0 … Buku = 5). */
+export const INGKEL_NAMES = [
+  'wong',
+  'sato',
+  'mina',
+  'manuk',
+  'taru',
+  'buku',
+] as const satisfies readonly Ingkel[];
+
+/** Jejepan names, indexed by `pawukonDay % 6` (Mina = 0 … Paksi = 5). */
+export const JEJEPAN_NAMES = [
+  'mina',
+  'taru',
+  'sato',
+  'patra',
+  'wong',
+  'paksi',
+] as const satisfies readonly Jejepan[];
 
 /** The 12 sasih in canonical order; index = sasih id (Kasa = 0 … Sadha = 11). */
 export const SASIH_NAMES = [

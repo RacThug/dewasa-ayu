@@ -1,8 +1,8 @@
 ---
 id: ENG-001
 title: Wariga Engine — Types & Contract
-status: Draft
-version: 0.2.1
+status: Active
+version: 0.3.0
 owners: [@RacThug]
 created: 2026-05-28
 updated: 2026-05-30
@@ -47,30 +47,32 @@ All constants live in `@dewasa-ayu/constants`. The engine imports and re-uses th
 
 #### Epochs
 
-| Constant           | Value                                  | Meaning                                                                                                                                                       |
-| ------------------ | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PAWUKON_EPOCH`    | `Date.UTC(2012, 5, 17)` (17 June 2012) | Pawukon day 0 = Redite Sinta. Calibrated + locked against the balinese-date-js-lib oracle (0 mismatches across 2000–2030) and the Galungan 2024-02-28 anchor. |
-| `SASIH_EPOCH`      | `Date.UTC(2024, 3, 9)` (9 April 2024)  | Reference: Penanggal 1, Sasih Kadasa.                                                                                                                         |
-| `SASIH_LUNAR_DAYS` | `29.530588`                            | Mean synodic month in days.                                                                                                                                   |
-| `PAWUKON_CYCLE`    | `210`                                  | Pawukon cycle length.                                                                                                                                         |
+| Constant         | Value                                   | Meaning                                                                                                                                                       |
+| ---------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PAWUKON_EPOCH`  | `Date.UTC(2012, 5, 17)` (17 June 2012)  | Pawukon day 0 = Redite Sinta. Calibrated + locked against the balinese-date-js-lib oracle (0 mismatches across 2000–2030) and the Galungan 2024-02-28 anchor. |
+| `SASIH_EPOCH`    | `Date.UTC(2003, 0, 2)` (2 January 2003) | Lunar unit 0: the first clean Penanggal 1 at the start of the supported Sasih range. Generated (not hand-set) — see the Sasih algorithm below.                |
+| `SASIH_LAST_DAY` | `35791` (≈ 31 December 2100)            | Largest supported day-number (days since `SASIH_EPOCH`); beyond it `getSasihInfo` throws `OUT_OF_RANGE`.                                                      |
+| `PAWUKON_CYCLE`  | `210`                                   | Pawukon cycle length.                                                                                                                                         |
+
+Sasih further depends on three generated lookup arrays — `SASIH_NGUNALATRI_DAYS`, `SASIH_MONTH_SID`, `SASIH_MONTH_KIND`, `SASIH_MONTH_SAKA` — documented in the Sasih algorithm section.
 
 #### Lookup tables (names only — full data in `@dewasa-ayu/constants`)
 
-| Table             | Length | Contents                                                                                                |
-| ----------------- | ------ | ------------------------------------------------------------------------------------------------------- |
-| `WUKU_NAMES`      | 30     | Sinta, Landep, …, Watugunung (PRD §13.2 has reference dates for verification).                          |
-| `SAPTAWARA_NAMES` | 7      | Redite, Soma, Anggara, Buda, Wraspati, Sukra, Saniscara.                                                |
-| `PANCAWARA_NAMES` | 5      | Umanis, Paing, Pon, Wage, Kliwon.                                                                       |
-| `TRIWARA_NAMES`   | 3      | Pasah, Beteng, Kajeng.                                                                                  |
-| `SADWARA_NAMES`   | 6      | Tungleh, Aryang, Urukung, Paniron, Was, Maulu.                                                          |
-| `ASTAWARA_NAMES`  | 8      | Sri, Indra, Guru, Yama, Ludra, Brahma, Kala, Uma.                                                       |
-| `SANGAWARA_NAMES` | 9      | Dangu, Jangur, Gigis, Nohan, Ogan, Erangan, Urungan, Tulus, Dadi.                                       |
-| `DASAWARA_NAMES`  | 10     | Pandita, Pati, Suka, Duka, Sri, Manuh, Manusa, Eraja, Dewa, Raksasa.                                    |
-| `SASIH_NAMES`     | 12     | Kasa, Karo, Katiga, Kapat, Kalima, Kanem, Kapitu, Kawolu, Kasanga, Kadasa, Destha, Sadha.               |
-| `INGKEL_NAMES`    | 7      | Wong, Sato, Mina, Manuk, Taru, Buku, Kembang (one per 5 consecutive wuku weeks → cycles every 35 days). |
-| `JEJEPAN_NAMES`   | 6      | Mina, Taru, Sato, Patra, Wong, Paksi.                                                                   |
-| `SAPTAWARA_URIP`  | 7      | `[5, 4, 3, 7, 8, 6, 9]` for Redite … Saniscara.                                                         |
-| `PANCAWARA_URIP`  | 5      | `[5, 9, 7, 4, 8]` for Umanis … Kliwon.                                                                  |
+| Table             | Length | Contents                                                                                                                                            |
+| ----------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `WUKU_NAMES`      | 30     | Sinta, Landep, …, Watugunung (PRD §13.2 has reference dates for verification).                                                                      |
+| `SAPTAWARA_NAMES` | 7      | Redite, Soma, Anggara, Buda, Wraspati, Sukra, Saniscara.                                                                                            |
+| `PANCAWARA_NAMES` | 5      | Umanis, Paing, Pon, Wage, Kliwon.                                                                                                                   |
+| `TRIWARA_NAMES`   | 3      | Pasah, Beteng, Kajeng.                                                                                                                              |
+| `SADWARA_NAMES`   | 6      | Tungleh, Aryang, Urukung, Paniron, Was, Maulu.                                                                                                      |
+| `ASTAWARA_NAMES`  | 8      | Sri, Indra, Guru, Yama, Ludra, Brahma, Kala, Uma.                                                                                                   |
+| `SANGAWARA_NAMES` | 9      | Dangu, Jangur, Gigis, Nohan, Ogan, Erangan, Urungan, Tulus, Dadi.                                                                                   |
+| `DASAWARA_NAMES`  | 10     | Pandita, Pati, Suka, Duka, Sri, Manuh, Manusa, Raja, Dewa, Raksasa.                                                                                 |
+| `SASIH_NAMES`     | 12     | Kasa, Karo, Katiga, Kapat, Kalima, Kanem, Kapitu, Kawolu, Kasanga, Kadasa, Destha, Sadha.                                                           |
+| `INGKEL_NAMES`    | 6      | Wong, Sato, Mina, Manuk, Taru, Buku. Constant within each wuku week, keyed by `wukuIndex % 6` → cycles every 6 wuku (42 days), 5 times per Pawukon. |
+| `JEJEPAN_NAMES`   | 6      | Mina, Taru, Sato, Patra, Wong, Paksi. Keyed by `pawukonDay % 6` (parallel to Sadwara).                                                              |
+| `SAPTAWARA_URIP`  | 7      | `[5, 4, 3, 7, 8, 6, 9]` for Redite … Saniscara.                                                                                                     |
+| `PANCAWARA_URIP`  | 5      | `[5, 9, 7, 4, 8]` for Umanis … Kliwon.                                                                                                              |
 
 All indices are **0-based** unless explicitly stated.
 
@@ -104,10 +106,10 @@ export type Dasawara =
   | 'sri'
   | 'manuh'
   | 'manusa'
-  | 'eraja'
+  | 'raja'
   | 'dewa'
   | 'raksasa';
-export type Caturwara = 'sri' | 'laba' | 'jaya' | 'manala';
+export type Caturwara = 'sri' | 'laba' | 'jaya' | 'menala';
 export type Dwiwara = 'menga' | 'pepet';
 export type Ekawara = 'luang';
 ```
@@ -161,7 +163,7 @@ export type Sasih =
   | 'destha'
   | 'sadha';
 
-export type Ingkel = 'wong' | 'sato' | 'mina' | 'manuk' | 'taru' | 'buku' | 'kembang';
+export type Ingkel = 'wong' | 'sato' | 'mina' | 'manuk' | 'taru' | 'buku';
 
 export type Jejepan = 'mina' | 'taru' | 'sato' | 'patra' | 'wong' | 'paksi';
 ```
@@ -258,10 +260,10 @@ export interface BalineseDate {
   /** Lunar decomposition. */
   sasih: SasihInfo;
 
-  /** Wuku-derived 7-cycle (5 wuku per ingkel → 35-day rotation). */
+  /** Wuku-derived 6-fold weekly category (`wukuIndex % 6`), constant within a wuku. */
   ingkel: Ingkel;
 
-  /** 6-day cycle on top of pawukon. */
+  /** 6-day cycle on the pawukon day (`pawukonDay % 6`), parallel to Sadwara. */
   jejepan: Jejepan;
 
   /** Sum of saptawara urip + pancawara urip for the day. */
@@ -457,7 +459,7 @@ export class WarigaError extends Error {
 export type WarigaErrorCode =
   | 'INVALID_DATE' // non-Date input or NaN
   | 'UNKNOWN_CEREMONY' // CeremonyId not in registry
-  | 'OUT_OF_RANGE' // date before 1900 or after 2100
+  | 'OUT_OF_RANGE' // date outside a function's supported range (e.g. Sasih 2003-2100)
   | 'INVALID_PARAM'; // negative count, bad month/year, etc.
 ```
 
@@ -465,17 +467,22 @@ export type WarigaErrorCode =
 
 All functions exported from `@dewasa-ayu/wariga-engine` as the public surface.
 
-| Function             | Signature                                                                                  | Throws                                                             | Notes                                                                                       |
-| -------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
-| `getPawukonDay`      | `(date: Date) => number`                                                                   | `INVALID_DATE`                                                     | Returns 0-209.                                                                              |
-| `getFullInfo`        | `(date: Date) => BalineseDate`                                                             | `INVALID_DATE`, `OUT_OF_RANGE` (post-2100 with non-cyclic sasih)   | Full decomposition.                                                                         |
-| `getSasihInfo`       | `(date: Date) => SasihInfo`                                                                | `INVALID_DATE`                                                     | `isEstimated: true` when no correction data; never throws for valid dates inside 1900-2100. |
-| `detectDewasa`       | `(info: BalineseDate, ceremonyId: CeremonyId) => { ayu: DewasaInfo[]; ala: DewasaInfo[] }` | `UNKNOWN_CEREMONY`                                                 | Pure derivation from `info`.                                                                |
-| `evaluate`           | `(info: BalineseDate, ceremonyId: CeremonyId) => Evaluation`                               | `UNKNOWN_CEREMONY`                                                 | Composes dewasa detection + scoring.                                                        |
-| `findGoodDates`      | `(from: Date, count: number, ceremonyId: CeremonyId) => FindGoodDatesResult`               | `INVALID_DATE`, `UNKNOWN_CEREMONY`, `INVALID_PARAM` (`count <= 0`) | Scans forward up to 365 days. Returns partial results with `capReached: true` if cap hit.   |
-| `getMonthEvaluation` | `(year: number, month: number, ceremonyId: CeremonyId) => MonthData`                       | `UNKNOWN_CEREMONY`, `INVALID_PARAM` (month outside 1-12)           | `month` is 1-12 (human convention).                                                         |
-| `calculateOtonan`    | `(birthdate: Date, targetYear: number) => OtonanInfo[]`                                    | `INVALID_DATE`, `INVALID_PARAM` (year outside 1900-2100)           | Returns all anniversaries in `targetYear` (typically 1-2 per year).                         |
-| `calculateMesakapan` | `(person1Birthdate: Date, person2Birthdate: Date) => MesakapanResult`                      | `INVALID_DATE`                                                     | Pure derivation from birthdates.                                                            |
+| Function             | Signature                                                                                                                                                                                                  | Throws                                                             | Notes                                                                                       |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| `getPawukonDay`      | `(date: Date) => number`                                                                                                                                                                                   | `INVALID_DATE`                                                     | Returns 0-209.                                                                              |
+| `getWuku`            | `(date: Date) => Wuku`                                                                                                                                                                                     | `INVALID_DATE`                                                     | `floor(pawukonDay / 7)`.                                                                    |
+| Wewaran getters      | `(date: Date) => <Cycle>` — `getSaptawara`, `getPancawara`, `getTriwara`, `getSadwara`, `getAstawara`, `getSangawara`, `getCaturwara`, `getDasawara`, `getDwiwara`; `getEkawara` returns `Ekawara \| null` | `INVALID_DATE`                                                     | One per Wewaran cycle. See Algorithms.                                                      |
+| `getTotalUrip`       | `(date: Date) => number`                                                                                                                                                                                   | `INVALID_DATE`                                                     | Saptawara urip + Pancawara urip.                                                            |
+| `getIngkel`          | `(date: Date) => Ingkel`                                                                                                                                                                                   | `INVALID_DATE`                                                     | `wukuIndex % 6`.                                                                            |
+| `getJejepan`         | `(date: Date) => Jejepan`                                                                                                                                                                                  | `INVALID_DATE`                                                     | `pawukonDay % 6`.                                                                           |
+| `getFullInfo`        | `(date: Date) => BalineseDate`                                                                                                                                                                             | `INVALID_DATE`, `OUT_OF_RANGE`                                     | Full decomposition. Range bounded by Sasih (~2003-2100).                                    |
+| `getSasihInfo`       | `(date: Date) => SasihInfo`                                                                                                                                                                                | `INVALID_DATE`, `OUT_OF_RANGE`                                     | Table-backed, range ~2003-2100; `isEstimated` always false (table is exact, not estimated). |
+| `detectDewasa`       | `(info: BalineseDate, ceremonyId: CeremonyId) => { ayu: DewasaInfo[]; ala: DewasaInfo[] }`                                                                                                                 | `UNKNOWN_CEREMONY`                                                 | Pure derivation from `info`.                                                                |
+| `evaluate`           | `(info: BalineseDate, ceremonyId: CeremonyId) => Evaluation`                                                                                                                                               | `UNKNOWN_CEREMONY`                                                 | Composes dewasa detection + scoring.                                                        |
+| `findGoodDates`      | `(from: Date, count: number, ceremonyId: CeremonyId) => FindGoodDatesResult`                                                                                                                               | `INVALID_DATE`, `UNKNOWN_CEREMONY`, `INVALID_PARAM` (`count <= 0`) | Scans forward up to 365 days. Returns partial results with `capReached: true` if cap hit.   |
+| `getMonthEvaluation` | `(year: number, month: number, ceremonyId: CeremonyId) => MonthData`                                                                                                                                       | `UNKNOWN_CEREMONY`, `INVALID_PARAM` (month outside 1-12)           | `month` is 1-12 (human convention).                                                         |
+| `calculateOtonan`    | `(birthdate: Date, targetYear: number) => OtonanInfo[]`                                                                                                                                                    | `INVALID_DATE`, `INVALID_PARAM` (year outside 1900-2100)           | Returns all anniversaries in `targetYear` (typically 1-2 per year).                         |
+| `calculateMesakapan` | `(person1Birthdate: Date, person2Birthdate: Date) => MesakapanResult`                                                                                                                                      | `INVALID_DATE`                                                     | Pure derivation from birthdates.                                                            |
 
 ### Algorithms
 
@@ -491,70 +498,107 @@ function getPawukonDay(date):
 
 #### Wewaran from pawukon day
 
-Index into lookup tables (mostly modulo) with a few derived from urip sums:
+All ten Wewaran cycles derive from the Pawukon day. The offsets and anomaly positions
+below are **calibrated and locked** against the balinese-date-js-lib oracle and
+cross-checked against the printed Bali 2026 calendar — they are facts, not assumptions.
 
-| Cycle               | Source               | Formula                                                                                                                                                   |
-| ------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Saptawara           | direct               | `pawukonDay % 7`                                                                                                                                          |
-| Pancawara           | direct (with offset) | `(pawukonDay + PANCAWARA_OFFSET) % 5` — `PANCAWARA_OFFSET` MUST be calibrated so day 0 (Redite Sinta) → Umanis. Verify against PRD §13.2 reference dates. |
-| Triwara             | direct               | `pawukonDay % 3`                                                                                                                                          |
-| Sadwara             | direct               | `pawukonDay % 6`                                                                                                                                          |
-| Astawara, Sangawara | composed             | Per traditional table (see `@dewasa-ayu/constants/wewaran-tables.ts`) — based on saptawara + pancawara combination                                        |
-| Caturwara, Dwiwara  | derived              | Caturwara from `(SAPTAWARA_URIP[s] + PANCAWARA_URIP[p]) % 4`. Dwiwara split on `pawukonDay % 2`.                                                          |
-| Dasawara            | derived              | `(SAPTAWARA_URIP[s] + PANCAWARA_URIP[p]) % 10`                                                                                                            |
-| Wuku                | direct               | `floor(pawukonDay / 7)`                                                                                                                                   |
+| Cycle     | Formula                                                                |
+| --------- | ---------------------------------------------------------------------- |
+| Wuku      | `floor(pawukonDay / 7)`                                                |
+| Saptawara | `pawukonDay % 7` (Redite = 0)                                          |
+| Pancawara | `(pawukonDay + 1) % 5` — day 0 (Redite Sinta) is **Paing**, not Umanis |
+| Triwara   | `pawukonDay % 3`                                                       |
+| Sadwara   | `pawukonDay % 6`                                                       |
+| Dasawara  | `totalUrip % 10` (**no `+ 1`**)                                        |
+| Dwiwara   | `menga` when `totalUrip` is even, `pepet` when odd                     |
+| Ekawara   | `luang` only when `totalUrip` is **odd**; otherwise `null`             |
+| Astawara  | `pawukonDay % 8`, with the **Kala Tiga** anomaly (below)               |
+| Caturwara | `pawukonDay % 4`, with the **Jaya Tiga** anomaly (below)               |
+| Sangawara | `(pawukonDay + 6) % 9`, with the **four-Dangu** opening (below)        |
 
-**Ekawara** (`luang`) applies only when the urip sum (`PANCAWARA_URIP[p] + SAPTAWARA_URIP[s]`) is **odd**; otherwise `ekawara: null`.
+where `totalUrip = SAPTAWARA_URIP[pawukonDay % 7] + PANCAWARA_URIP[(pawukonDay + 1) % 5]`.
 
-> **v0.2.0 reconciliation with [`wariga-engine-reference.md`](./wariga-engine-reference.md) §6.**
-> The authoritative algorithm basis is now the `bilanganHari` method from the domain
-> reference: `bilanganHari = bilanganWuku × 7 + bilanganSaptawara` (Sinta=1…Watugunung=30,
-> Redite=0…Saniscara=6), i.e. `bilanganHari = pawukonDay + 7`. Two rows in the v0.1.0 table
-> above are draft estimates and are **superseded** by §6:
->
-> - **Caturwara** = `bilanganHari mod 4` **with the Jaya Tiga anomaly** in wuku Dungulan
->   (+2 from Redite Sinta through Redite Dungulan; +1 on Soma Dungulan) — _not_ a plain urip
->   sum. This anomaly is a classic silent-rewrite bug and gets a dedicated characterization test.
-> - **Dasawara** = `(SAPTAWARA_URIP[s] + PANCAWARA_URIP[p] + 1) mod 10` — note the **`+ 1`**.
->
-> Critically, **every cycle offset (Pancawara, Caturwara, Astawara, Sangawara, …) is a
-> calibration target, not an assumption.** None are hardcoded from prose; each is locked by
-> tests against (a) the `balinese-date-js-lib` oracle (Apache-2.0, dev-dependency only — never
-> bundled, so the clean-room rule holds) and (b) a golden set digitised from a printed Rawi/PHDI
-> calendar. Port order follows reference §10: Pawukon → wewaran → pawukon derivatives → Sasih
-> (last, per-era).
+**Anomalies (near the Sungsang/Dungulan boundary, pawukon days 70-72).** Three cycles
+deviate from a plain modulus and are pinned by characterization tests:
 
-#### Sasih (lunar approximation with correction lookup)
+- **Astawara — Kala Tiga.** Kala (index 6) lands on pawukon days 70, 71 and 72.
+  `pd <= 70 → pd % 8`; `pd === 71 → 6`; else `(pd + 6) % 8`.
+- **Caturwara — Jaya Tiga.** Jaya (index 2) repeats on pawukon day 71, shifting the tail.
+  `pd <= 70 → pd % 4`; `pd === 71 → 2`; else `(pd + 2) % 4`.
+- **Sangawara — four Dangu.** The cycle opens with four consecutive Dangu (index 0).
+  `pd < 3 → 0`; else `(pd + 6) % 9`.
+
+> **Reconciliation note (history).** An earlier draft (v0.2.0) proposed `Dasawara =
+(urip + 1) mod 10` and a urip-based Caturwara, derived from the `bilanganHari` prose in
+> [`wariga-engine-reference.md`](./wariga-engine-reference.md) §6. Empirical calibration against
+> the oracle disproved both: Dasawara is `urip % 10` (**no `+ 1`**), and Caturwara is
+> `pawukonDay`-based with the Jaya Tiga anomaly above. The formulas in this section are the
+> implemented, oracle-locked truth and supersede the draft. Lesson on record: every offset is a
+> calibration target verified against the oracle + printed calendar, never assumed from prose
+> (the clean-room rule holds — the oracle is a dev-only dependency, never bundled).
+
+#### Sasih (global lunar-unit model + precomputed table)
+
+The Balinese lunar calendar cannot be reproduced by a mean-synodic-month approximation:
+it inserts intercalary **nampih** months and doubles selected penanggal (**ngunalatri**), so
+month boundaries are irregular. A naive `floor(daysSinceEpoch / 29.53)` model was implemented
+first and measured **~90% wrong** against the oracle — abandoned. The engine instead uses a
+**global "lunar unit" count over a precomputed table**:
+
+- Each solar day advances the penanggal by one unit; a ngunalatri day advances it by two (one
+  solar day carries two penanggal — e.g. Tilem-15 of the old month and Penanggal-1 of the new
+  one share a date).
+- `firstUnit = dayNumber + (count of SASIH_NGUNALATRI_DAYS strictly before dayNumber)`.
+- `monthIndex = floor(firstUnit / 30)`; `unitInMonth = firstUnit % 30` → penanggal 1-15
+  (15 = Purnama) for units 0-14, pangelong 1-15 (15 = Tilem) for units 15-29.
+- Per-month arrays give the sasih id (`SASIH_MONTH_SID`), kind (`SASIH_MONTH_KIND`: 0 normal /
+  1 nampih / 2 mala) and Saka year (`SASIH_MONTH_SAKA`), indexed by `monthIndex`.
+- On a ngunalatri day, Purnama/Tilem are flagged if **either** carried unit is 14/29 (a
+  `[14, 15]` day is still the Purnama).
 
 ```
 function getSasihInfo(date):
-  if correction exists for date.year in sasih_corrections table:
-    use correction record   # exact tilem/purnama dates and nampih/mala flags
-    isEstimated = false
-  else:
-    dateUTC = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
-    daysSinceEpoch = (dateUTC - SASIH_EPOCH) / 86_400_000
-    cyclePosition = mod(daysSinceEpoch, SASIH_LUNAR_DAYS)   # 0 to ~29.5
-    sasihIndexOffset = floor(daysSinceEpoch / SASIH_LUNAR_DAYS) % 12
-    sasihIndex = (KADASA_INDEX + sasihIndexOffset) % 12      # KADASA_INDEX = 9
-    rawPenanggal = round(cyclePosition) + 1                  # 1..30
-    if rawPenanggal > 15:
-      penanggal = rawPenanggal - 15
-      isPangelong = true
-    else:
-      penanggal = rawPenanggal
-      isPangelong = false
-    isEstimated = true
-    isNampih = false
-    isMala = false
-
-  isPurnama = (penanggal == 15 and not isPangelong)
-  isTilem = (penanggal == 15 and isPangelong)
-  tahunSaka = computeSaka(date)             # Gregorian → Saka year mapping per kalenderbali.org
-  return SasihInfo { index, name, penanggal, isPangelong, isPurnama, isTilem, isNampih, isMala, isEstimated, tahunSaka }
+  if not valid Date: throw WarigaError('INVALID_DATE')
+  dayNumber = floor((Date.UTC(y, m, d) - SASIH_EPOCH) / 86_400_000)
+  if dayNumber < 0 or dayNumber > SASIH_LAST_DAY: throw WarigaError('OUT_OF_RANGE')
+  k           = countNgunalatriBefore(dayNumber)     # binary search in SASIH_NGUNALATRI_DAYS
+  firstUnit   = dayNumber + k
+  monthIndex  = floor(firstUnit / 30)
+  unitInMonth = firstUnit % 30
+  doubled     = SASIH_NGUNALATRI_DAYS[k] == dayNumber
+  secondUnit  = doubled ? (firstUnit + 1) % 30 : -1
+  isPangelong = unitInMonth >= 15
+  kind        = SASIH_MONTH_KIND[monthIndex]
+  return SasihInfo {
+    index:       SASIH_MONTH_SID[monthIndex],
+    name:        SASIH_NAMES[index],
+    penanggal:   isPangelong ? unitInMonth - 14 : unitInMonth + 1,
+    isPangelong,
+    isPurnama:   unitInMonth == 14 or secondUnit == 14,
+    isTilem:     unitInMonth == 29 or secondUnit == 29,
+    isNampih:    kind == 1,
+    isMala:      kind == 2,
+    isEstimated: false,
+    tahunSaka:   SASIH_MONTH_SAKA[monthIndex],
+  }
 ```
 
-Nampih (intercalary) and Mala (skipped) detection relies on the Tahun Saka cycle (every 19 years certain sasih are doubled or skipped). Pre-correction-data, the engine returns `isNampih: false, isMala: false`. Admin correction records (PRD §11 `sasih_corrections`) override estimation per year.
+**Table provenance.** `SASIH_EPOCH`, `SASIH_NGUNALATRI_DAYS`, and `SASIH_MONTH_SID/KIND/SAKA`
+live in `@dewasa-ayu/constants` (`sasih-data.ts`), **generated** by
+`packages/wariga-engine/scripts/generate-sasih-data.mjs`. The generator walks the oracle, emits
+the table, and **self-validates every day in range** against the oracle (name incl. nampih,
+penanggal/pangelong, Purnama/Tilem, Saka) — refusing to write on any mismatch. The shipped table
+is therefore plain calendar facts (clean-room; the oracle is dev-only, never bundled). Supported
+range **2003-01-02 … 2100-12-31** (the modern PHDI nampih era; pre-2003 used different
+pengalantaka rules); outside it → `OUT_OF_RANGE`. There is **no** `isEstimated: true` path — the
+table is exact; the flag exists only for forward compatibility (e.g. a future cyclic extrapolation
+beyond 2100). Validation: 0 mismatches across the full range (~36,000 days), and confirmed against
+the printed Bali 2026 calendar (Purnama/Tilem dates; Nyepi = Penanggal 1 Kadasa beginning Saka 1948).
+
+> **Note (supersedes earlier drafts).** There is no runtime `sasih_corrections` lookup in the
+> engine. The PRD §11 admin-correction concept is replaced by the generated, self-validating table
+> above. The DB spec's `sasih_corrections` table, if retained, becomes an optional override layer —
+> not a dependency of `getSasihInfo`.
 
 #### Evaluation scoring (PRD §6)
 
@@ -679,16 +723,24 @@ function calculateMesakapan(p1Birth, p2Birth):
 
 ### Examples
 
-Reference dates from PRD §13.2 (subset). Implementation MUST match these exactly for Pawukon-derived values; Sasih values may differ by ±1 day until correction data lands and `isEstimated` flips false.
+Oracle-true values, cross-checked against the printed Bali 2026 calendar and real-world hari
+raya (Nyepi, Galungan). The implementation matches these **exactly, Sasih included**.
 
-| Gregorian  | Wuku       | Saptawara | Pancawara | Sasih (est.) | Notes                                                                |
-| ---------- | ---------- | --------- | --------- | ------------ | -------------------------------------------------------------------- |
-| 2024-01-01 | krulut     | soma      | pon       | kapitu       | PRD reference                                                        |
-| 2024-03-11 | watugunung | soma      | umanis    | kasanga      | End of Pawukon cycle                                                 |
-| 2024-04-09 | ukir       | anggara   | kliwon    | kadasa       | **Sasih reference date**, Penanggal 1 exactly (`isEstimated: false`) |
-| 2025-01-01 | prangbakat | buda      | wage      | kapitu       | PRD reference                                                        |
-| 2025-03-29 | watugunung | saniscara | umanis    | kasanga      | End-cycle Saniscara Umanis                                           |
-| 2026-01-01 | krulut     | wraspati  | pon       | kapitu       | PRD reference                                                        |
+| Gregorian  | Wuku     | Saptawara | Pancawara | Sasih · Penanggal     | Ingkel | Jejepan | Notes                                    |
+| ---------- | -------- | --------- | --------- | --------------------- | ------ | ------- | ---------------------------------------- |
+| 2024-01-01 | ukir     | soma      | paing     | Kapitu · pangelong 5  | mina   | patra   | —                                        |
+| 2024-03-11 | langkir  | soma      | paing     | Kadasa · penanggal 1  | wong   | taru    | **Nyepi 2024** — begins Saka 1946        |
+| 2024-04-09 | krulut   | anggara   | umanis    | Destha · penanggal 1  | taru   | mina    | —                                        |
+| 2025-01-01 | bala     | buda      | pon       | Kapitu · penanggal 2  | wong   | patra   | —                                        |
+| 2025-03-29 | wariga   | saniscara | kliwon    | Kadasa · penanggal 1  | wong   | mina    | **Nyepi 2025** — begins Saka 1947        |
+| 2026-01-01 | krulut   | wraspati  | pon       | Kapitu · penanggal 13 | taru   | sato    | PRD reference date                       |
+| 2026-03-19 | klawu    | wraspati  | kliwon    | Kadasa · penanggal 1  | manuk  | taru    | **Nyepi 2026** — begins Saka 1948        |
+| 2026-06-17 | dungulan | buda      | kliwon    | Kasa · penanggal 3    | taru   | taru    | **Galungan 2026** — Buda Kliwon Dungulan |
+
+> ⚠️ **These supersede the PRD §13.2 example dates.** The PRD values disagree with the oracle and
+> the real calendar on Wuku/Pancawara/Sasih for most rows — e.g. the PRD placed Penanggal 1 Kadasa
+> on 2024-04-09, but Nyepi 2024 (which _is_ Penanggal 1 Kadasa) fell on 2024-03-11. Treat the
+> printed Rawi calendar + oracle as ground truth, not the PRD examples.
 
 Canonical worked example for `evaluate`: `evaluate(getFullInfo(new Date('2026-04-06')), 'pawiwahan')`. Expected rating, score, and dewasa list are locked in the engine test suite alongside implementation (issue [#2](https://github.com/RacThug/dewasa-ayu/issues/2) deliverable).
 
@@ -698,15 +750,15 @@ Canonical worked example for `evaluate`: `evaluate(getFullInfo(new Date('2026-04
 
 - **All indices 0-based; penanggal stays 1-based.** Matches PRD §10.1 (`getPawukonDay → 0-209`) and idiomatic TypeScript. Penanggal is exposed as 1-15 because that's how it's spoken about culturally — users see numbers, not array indices.
 
-- **Throw `WarigaError` for invalid input; structured returns for valid edge cases.** Bad input (NaN Date, unknown ceremony) is a programmer error and should be visible at the call site. Domain edge cases (Nampih Sasih, estimated Sasih, dates outside 1900-2100) return data with explicit flags (`isEstimated`, `isNampih`, `isMala`, `capReached`) so consumers react without try/catch. `Result<T, E>` was considered but rejected as too verbose for a calculation library where 99% of calls succeed.
+- **Throw `WarigaError` for invalid input and out-of-range dates; structured returns for valid edge cases.** Bad input (NaN Date, unknown ceremony) and dates outside a function's supported range are programmer/usage errors and should be visible at the call site (`INVALID_DATE`, `UNKNOWN_CEREMONY`, `OUT_OF_RANGE`). Valid domain edge cases (Nampih Sasih, Mala Sasih, partial `findGoodDates` results) return data with explicit flags (`isNampih`, `isMala`, `capReached`) so consumers react without try/catch. `Result<T, E>` was considered but rejected as too verbose for a calculation library where 99% of calls succeed.
 
-- **`isEstimated: true` on Sasih when no correction data exists.** Makes drift between estimation and reality visible to the API and frontend, which can render a "Sasih estimated" tag (PRD §17.2 feedback widget depends on this signal).
+- **Sasih via a generated, self-validating lookup table — not runtime estimation.** The mean-synodic-month approximation (PRD §10.2) was implemented and measured ~90% wrong (nampih + ngunalatri make month boundaries irregular), so it was rejected. Instead a table generated from the oracle and self-validated day-by-day ships as plain calendar facts (clean-room; oracle never bundled). `isEstimated` is therefore always `false`; the field is retained only for a possible future cyclic extrapolation beyond the table.
 
 - **Public surface is types + functions + error class; constants live in a sibling package.** Lets the constants package change (new ceremony, expanded lookup tables) without touching engine code. Aligns with PRD §7.4 monorepo structure.
 
 - **Otonan and Mesakapan included now despite Phase 2 timeline.** Spec is a contract; timeline is backlog. Locking Phase 2 types now prevents a future breaking change when those functions land. Functions remain unimplemented (throw `WarigaError('INVALID_PARAM', 'NOT_IMPLEMENTED')` from the engine package until their epics are scheduled).
 
-- **Sasih estimation in-engine, not just lookup.** PRD §10.2 mandates lunar approximation 29.530588 d. Admin corrections (PRD §11 `sasih_corrections`) override estimation per year. Engine prefers correction when present.
+- **Sasih bounds the full-decomposition range to 2003-2100.** Pawukon/Wewaran/Ingkel/Jejepan are cyclic and unbounded, but `getSasihInfo` (and therefore `getFullInfo`) throw `OUT_OF_RANGE` outside the table. 2003 is the start of the modern PHDI nampih era; pre-2003 pengalantaka rules differ and the oracle is unreliable there (e.g. a double-Tilem on 2000-02-02).
 
 - **`findGoodDates` returns a `FindGoodDatesResult` envelope, not bare array.** Allows the function to surface partial results when the 365-day scan cap is hit without throwing. Resolves an open question from initial draft.
 
@@ -717,9 +769,17 @@ Canonical worked example for `evaluate`: `evaluate(getFullInfo(new Date('2026-04
 ## Open Questions
 
 - [Q] Should `calculateMesakapan` accept additional `weton`-style inputs (Java/Lombok variant) for cross-tradition users, or is Bali-Wariga-only enough for v1? Owner: @RacThug. Target: when Phase 2 (PRD §F-102) is scheduled.
-- [Q] **All Wewaran cycle offsets** (Pancawara, Caturwara, Astawara, Sangawara, …) must be empirically calibrated against PRD §13.2 reference dates **and a printed Rawi/PHDI calendar**, then locked by tests — not assumed from prose. The `bilanganHari` basis ([`wariga-engine-reference.md`](./wariga-engine-reference.md) §6) is the starting hypothesis; the oracle + golden set decide the final constants. Owner: @RacThug. Target: during Phase 1 implementation (#2). Resolution records the concrete offsets here.
+- [✅ RESOLVED] **All Wewaran cycle offsets.** Calibrated against the oracle and the printed Bali
+  2026 calendar, then locked by tests (0 mismatches over 2015–2034). Concrete results recorded in
+  Algorithms §Wewaran: Pancawara offset `+1` (Redite Sinta = Paing); Dasawara `urip % 10` (no `+1`);
+  Astawara Kala Tiga, Caturwara Jaya Tiga, and the four-Dangu Sangawara opening. The PRD §13.2
+  reference dates were found unreliable and are **not** used as golden truth (see Examples).
 - [Q] **Dewasa code unions are provisional.** `DewasaAyuCode` / `DewasaAlaCode` above were drafted from the PRD and do **not** yet match the names/conditions in [`dewasa-rules.seed.json`](../research/dewasa-rules.seed.json). They will be reconciled — and likely replaced by **data-driven ids** (each rule carrying `source` + `verified`, per the reference §8 "rules as data" decision) — when `detectDewasa` is implemented. Until then no rule is treated as final; unverified rules surface as `estimasi`. Owner: @RacThug. Target: dewasa-detection step of Phase 1 (#2).
-- [Q] How should `getFullInfo` behave for dates before 1900? Currently spec says "throws `OUT_OF_RANGE`", but Pawukon is purely cyclic and would still be accurate; only Sasih estimation would be unreliable. Alternative: return data with `sasih.isEstimated = true` and emit a console warning, never throw. Owner: @RacThug. Target: before lock to v1.0.0.
+- [✅ RESOLVED] **`getFullInfo` range.** Bounded by the Sasih table (2003-2100): outside it,
+  `getFullInfo` throws `OUT_OF_RANGE` (propagated from `getSasihInfo`). The Pawukon/Wewaran/Ingkel/
+  Jejepan parts are purely cyclic and accurate for any date, but the full decomposition includes
+  Sasih, which is table-bounded. Revisit only if a cyclic Sasih extrapolation beyond the table is
+  added (the `isEstimated` flag is reserved for exactly that future path).
 - [Q] Should `getMonthEvaluation` include a `weekStart` parameter for locales where the week begins on Sunday vs Monday, or is that purely a presentation concern for the UI layer? Owner: @RacThug. Target: design discussion during UI spec authoring ([UI-001](./pages.md)).
 
 ## References
@@ -741,6 +801,7 @@ Canonical worked example for `evaluate`: `evaluate(getFullInfo(new Date('2026-04
 
 ## Changelog
 
+- v0.3.0 — 2026-05-30 — Completed the calculation layer and **synced the spec to the implemented engine**. Added `getIngkel`, `getJejepan`, and `getFullInfo` (the full `BalineseDate` decomposition), plus the previously-undocumented `getWuku`/Wewaran getters/`getTotalUrip` to the signature table. Corrected draft errors found during oracle calibration: **Ingkel is 6 categories** keyed by `wukuIndex % 6` (removed the phantom 7th `kembang` and the wrong "35-day/5-wuku" rotation); Dasawara `eraja → raja` and formula `urip % 10` (removed the erroneous `+ 1`); Caturwara `manala → menala`; Pancawara offset `+1` (Redite Sinta = Paing, not Umanis). Replaced the naive mean-synodic-month Sasih pseudocode with the implemented global lunar-unit + precomputed-table model (range 2003-2100, `OUT_OF_RANGE` outside; `isEstimated` always false; no runtime `sasih_corrections` dependency). Replaced the unreliable PRD §13.2 example table with oracle-true, calendar-cross-checked rows (added Ingkel/Jejepan columns + Nyepi/Galungan anchors). Resolved two open questions (Wewaran offsets; `getFullInfo` range). Status `Draft → Active` (calculation layer done; scoring/dewasa layer pending). Note: dropping `kembang` and renaming `eraja`/`manala` are breaking type changes, acceptable pre-1.0 while the contract is still settling and these unions are not yet consumed.
 - v0.2.1 — 2026-05-30 — Corrected `PAWUKON_EPOCH` to 17 June 2012 (the prior 11 June 2012 was 6 days early — it lands on Soma Watugunung, not Redite Sinta), calibrated and locked against the oracle (every day in 2000–2030) plus the Galungan 2024-02-28 anchor. Implemented the first engine slice — `getPawukonDay` and `getWuku` in `packages/wariga-engine` — with 100% test coverage.
 - v0.2.0 — 2026-05-30 — Reconciled the algorithm layer with the new domain reference (`wariga-engine-reference.md` §6): adopted the `bilanganHari` basis, corrected Caturwara (`mod 4` + Dungulan Jaya Tiga anomaly) and Dasawara (`+ 1`), generalised offset calibration to all cycles, and documented the oracle + golden-test strategy. Flagged the Dewasa code unions as provisional pending reconciliation with `dewasa-rules.seed.json` (likely moving to data-driven ids with `source`/`verified`). No type or signature changes — additive/clarifying only, hence a minor bump.
 - v0.1.0 — 2026-05-28 — Initial draft. Full public surface for Phase 1 (7 functions) and Phase 2 (Otonan, Mesakapan). Four open questions flagged (Mesakapan weton scope, Pancawara offset calibration, pre-1900 date handling, week-start parameter).
