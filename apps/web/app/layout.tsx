@@ -1,4 +1,5 @@
 import './globals.css';
+import 'react-day-picker/style.css';
 
 import type { Metadata } from 'next';
 import { Cormorant_Garamond, DM_Sans } from 'next/font/google';

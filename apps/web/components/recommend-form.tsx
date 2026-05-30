@@ -3,6 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { type FormEvent, useState } from 'react';
 
+import { DatePicker } from '@/components/date-picker';
+
 export function RecommendForm({
   ceremony,
   from,
@@ -23,17 +25,7 @@ export function RecommendForm({
 
   return (
     <form className="field reco-form" onSubmit={submit}>
-      <span className="date-field">
-        <input
-          className="native"
-          type="date"
-          min="2003-01-01"
-          max="2100-12-31"
-          value={fromValue}
-          onChange={(e) => setFromValue(e.target.value)}
-          aria-label="Mulai dari tanggal"
-        />
-      </span>
+      <DatePicker value={fromValue} onChange={setFromValue} label="Mulai dari tanggal" />
       <label className="count-field">
         <span className="count-label">Jumlah</span>
         <select

@@ -269,27 +269,103 @@ body {
   gap: var(--s4);
   flex-wrap: wrap;
 }
-.date-field {
+/* DATE PICKER (Radix Popover + react-day-picker, Lontar-skinned) */
+.dp-trigger {
   display: inline-flex;
   align-items: baseline;
   gap: 10px;
+  background: transparent;
+  border: none;
   border-bottom: 1.5px solid var(--edge);
   padding: 0 4px 8px;
+  cursor: pointer;
   transition: border-color 0.18s ease-out;
 }
-.date-field:focus-within,
-.date-field:hover {
+.dp-trigger:hover,
+.dp-trigger[data-state='open'] {
   border-bottom-color: var(--accent-deep);
 }
-.date-field .native {
+.dp-trigger .d {
   font-family: var(--serif);
   font-style: italic;
   font-size: 28px;
   color: var(--text);
-  background: transparent;
-  border: none;
-  outline: none;
-  color-scheme: dark light;
+  line-height: 1.1;
+}
+.dp-trigger .edit {
+  color: var(--text-faint);
+  display: inline-flex;
+}
+.dp-trigger .edit svg {
+  width: 15px;
+  height: 15px;
+}
+.dp-trigger:hover .edit {
+  color: var(--accent);
+}
+
+.dp-panel {
+  background-color: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: 4px;
+  padding: var(--s3);
+  box-shadow:
+    inset 0 1px 0 rgba(236, 221, 188, 0.08),
+    0 20px 44px -24px rgba(0, 0, 0, 0.65);
+  z-index: 60;
+}
+/* react-day-picker themed to Lontar (scoped to beat the package base styles) */
+.dp-panel .rdp-root {
+  --rdp-accent-color: var(--accent);
+  --rdp-accent-background-color: rgba(201, 169, 104, 0.16);
+  --rdp-today-color: var(--accent);
+  --rdp-day-width: 38px;
+  --rdp-day-height: 38px;
+  --rdp-day_button-width: 38px;
+  --rdp-day_button-height: 38px;
+  --rdp-day_button-border-radius: 3px;
+  --rdp-disabled-opacity: 0.28;
+  --rdp-outside-opacity: 0.4;
+  --rdp-selected-border: 1.5px solid var(--accent);
+  font-family: var(--sans);
+  color: var(--text);
+  margin: 0;
+}
+.dp-panel .rdp-month_caption {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--text);
+}
+.dp-panel .rdp-weekday {
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.dp-panel .rdp-day_button {
+  font-family: var(--serif);
+  font-size: 17px;
+  color: var(--text);
+  font-feature-settings: 'lnum' 1;
+}
+.dp-panel .rdp-today .rdp-day_button {
+  color: var(--accent);
+  font-weight: 600;
+}
+.dp-panel .rdp-selected .rdp-day_button {
+  color: var(--accent);
+  font-weight: 700;
+}
+.dp-panel .rdp-chevron {
+  fill: var(--text-soft);
+}
+.dp-panel .rdp-button_previous:hover .rdp-chevron,
+.dp-panel .rdp-button_next:hover .rdp-chevron {
+  fill: var(--accent);
 }
 .periksa {
   font-family: var(--sans);
