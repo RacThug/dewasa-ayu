@@ -3,6 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { type FormEvent, useState } from 'react';
 
+import { DatePicker } from '@/components/date-picker';
+
 export function DateField({ ceremony, date }: { ceremony: string; date: string }) {
   const router = useRouter();
   const [value, setValue] = useState(date);
@@ -14,17 +16,7 @@ export function DateField({ ceremony, date }: { ceremony: string; date: string }
 
   return (
     <form className="field" onSubmit={submit}>
-      <span className="date-field">
-        <input
-          className="native"
-          type="date"
-          min="2003-01-01"
-          max="2100-12-31"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          aria-label="Pilih tanggal"
-        />
-      </span>
+      <DatePicker value={value} onChange={setValue} />
       <button className="periksa" type="submit">
         Periksa Dewasa
       </button>
