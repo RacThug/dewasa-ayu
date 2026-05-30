@@ -2,10 +2,10 @@
 id: ENG-001
 title: Wariga Engine — Types & Contract
 status: Draft
-version: 0.1.0
+version: 0.2.0
 owners: [@RacThug]
 created: 2026-05-28
-updated: 2026-05-28
+updated: 2026-05-30
 implements: [17]
 supersedes: null
 related: [DB-001, API-001, UI-001]
@@ -504,7 +504,25 @@ Index into lookup tables (mostly modulo) with a few derived from urip sums:
 | Dasawara            | derived              | `(SAPTAWARA_URIP[s] + PANCAWARA_URIP[p]) % 10`                                                                                                            |
 | Wuku                | direct               | `floor(pawukonDay / 7)`                                                                                                                                   |
 
-**Ekawara** (`luang`) applies only when the dasawara urip sum is **odd**. Otherwise `ekawara: null`.
+**Ekawara** (`luang`) applies only when the urip sum (`PANCAWARA_URIP[p] + SAPTAWARA_URIP[s]`) is **odd**; otherwise `ekawara: null`.
+
+> **v0.2.0 reconciliation with [`wariga-engine-reference.md`](./wariga-engine-reference.md) §6.**
+> The authoritative algorithm basis is now the `bilanganHari` method from the domain
+> reference: `bilanganHari = bilanganWuku × 7 + bilanganSaptawara` (Sinta=1…Watugunung=30,
+> Redite=0…Saniscara=6), i.e. `bilanganHari = pawukonDay + 7`. Two rows in the v0.1.0 table
+> above are draft estimates and are **superseded** by §6:
+>
+> - **Caturwara** = `bilanganHari mod 4` **with the Jaya Tiga anomaly** in wuku Dungulan
+>   (+2 from Redite Sinta through Redite Dungulan; +1 on Soma Dungulan) — _not_ a plain urip
+>   sum. This anomaly is a classic silent-rewrite bug and gets a dedicated characterization test.
+> - **Dasawara** = `(SAPTAWARA_URIP[s] + PANCAWARA_URIP[p] + 1) mod 10` — note the **`+ 1`**.
+>
+> Critically, **every cycle offset (Pancawara, Caturwara, Astawara, Sangawara, …) is a
+> calibration target, not an assumption.** None are hardcoded from prose; each is locked by
+> tests against (a) the `balinese-date-js-lib` oracle (Apache-2.0, dev-dependency only — never
+> bundled, so the clean-room rule holds) and (b) a golden set digitised from a printed Rawi/PHDI
+> calendar. Port order follows reference §10: Pawukon → wewaran → pawukon derivatives → Sasih
+> (last, per-era).
 
 #### Sasih (lunar approximation with correction lookup)
 
@@ -699,7 +717,8 @@ Canonical worked example for `evaluate`: `evaluate(getFullInfo(new Date('2026-04
 ## Open Questions
 
 - [Q] Should `calculateMesakapan` accept additional `weton`-style inputs (Java/Lombok variant) for cross-tradition users, or is Bali-Wariga-only enough for v1? Owner: @RacThug. Target: when Phase 2 (PRD §F-102) is scheduled.
-- [Q] `PANCAWARA_OFFSET` value (algorithm section above) must be empirically calibrated against PRD §13.2 reference dates. Spec assumes the offset that maps `pawukonDay = 0` to Umanis (the conventional starting point), but the PRD's listed Pancawara values may imply a different offset. Owner: @RacThug. Target: during Phase 1 implementation (#2). Resolution updates this spec to a concrete offset value.
+- [Q] **All Wewaran cycle offsets** (Pancawara, Caturwara, Astawara, Sangawara, …) must be empirically calibrated against PRD §13.2 reference dates **and a printed Rawi/PHDI calendar**, then locked by tests — not assumed from prose. The `bilanganHari` basis ([`wariga-engine-reference.md`](./wariga-engine-reference.md) §6) is the starting hypothesis; the oracle + golden set decide the final constants. Owner: @RacThug. Target: during Phase 1 implementation (#2). Resolution records the concrete offsets here.
+- [Q] **Dewasa code unions are provisional.** `DewasaAyuCode` / `DewasaAlaCode` above were drafted from the PRD and do **not** yet match the names/conditions in [`dewasa-rules.seed.json`](../research/dewasa-rules.seed.json). They will be reconciled — and likely replaced by **data-driven ids** (each rule carrying `source` + `verified`, per the reference §8 "rules as data" decision) — when `detectDewasa` is implemented. Until then no rule is treated as final; unverified rules surface as `estimasi`. Owner: @RacThug. Target: dewasa-detection step of Phase 1 (#2).
 - [Q] How should `getFullInfo` behave for dates before 1900? Currently spec says "throws `OUT_OF_RANGE`", but Pawukon is purely cyclic and would still be accurate; only Sasih estimation would be unreliable. Alternative: return data with `sasih.isEstimated = true` and emit a console warning, never throw. Owner: @RacThug. Target: before lock to v1.0.0.
 - [Q] Should `getMonthEvaluation` include a `weekStart` parameter for locales where the week begins on Sunday vs Monday, or is that purely a presentation concern for the UI layer? Owner: @RacThug. Target: design discussion during UI spec authoring ([UI-001](./pages.md)).
 
@@ -716,7 +735,11 @@ Canonical worked example for `evaluate`: `evaluate(getFullInfo(new Date('2026-04
 - Lontar Wariga Catur Winasa Sari (primary traditional source — PRD §28)
 - _Pokok-pokok Wariga_, I.B. Supartha Ardana (Mesakapan classification source)
 - kalenderbali.org (Pawukon validation reference)
+- Domain reference: [`docs/specs/wariga-engine-reference.md`](./wariga-engine-reference.md) — urip tables, `bilanganHari` formulas (§6), Alahing Sasih hierarchy (§7), accuracy strategy (§10)
+- Bootstrap rule seed: [`docs/research/dewasa-rules.seed.json`](../research/dewasa-rules.seed.json) — UNVERIFIED; every entry carries `source` + `verified: false`
+- `balinese-date-js-lib` (peradnya, Apache-2.0) — calculation **oracle** for test fixtures; dev-dependency only, never bundled
 
 ## Changelog
 
+- v0.2.0 — 2026-05-30 — Reconciled the algorithm layer with the new domain reference (`wariga-engine-reference.md` §6): adopted the `bilanganHari` basis, corrected Caturwara (`mod 4` + Dungulan Jaya Tiga anomaly) and Dasawara (`+ 1`), generalised offset calibration to all cycles, and documented the oracle + golden-test strategy. Flagged the Dewasa code unions as provisional pending reconciliation with `dewasa-rules.seed.json` (likely moving to data-driven ids with `source`/`verified`). No type or signature changes — additive/clarifying only, hence a minor bump.
 - v0.1.0 — 2026-05-28 — Initial draft. Full public surface for Phase 1 (7 functions) and Phase 2 (Otonan, Mesakapan). Four open questions flagged (Mesakapan weton scope, Pancawara offset calibration, pre-1900 date handling, week-start parameter).
