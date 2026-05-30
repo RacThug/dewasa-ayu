@@ -1,9 +1,12 @@
 /**
  * Wariga calculation engine — pure TypeScript, ZERO external runtime dependencies.
- * Placeholder only; the real Pawukon / Wewaran / Sasih / scoring logic lands with
- * ENG-001. The only dependency is the workspace `@dewasa-ayu/types` (type-only).
+ * The public surface grows one ENG-001 slice at a time. Workspace type-only
+ * dependency: `@dewasa-ayu/types`; static data: `@dewasa-ayu/constants`.
  */
 import type { SemVer } from '@dewasa-ayu/types';
+
+export { WarigaError, type WarigaErrorCode } from './errors';
+export { getPawukonDay, getWuku } from './pawukon';
 
 export const ENGINE_VERSION: SemVer = '0.0.0';
 
