@@ -250,3 +250,66 @@ export interface DewasaDetection {
   ayu: DewasaInfo[];
   ala: DewasaInfo[];
 }
+
+// --- Scoring / evaluation (PRD §6) ---
+
+/** Overall verdict for a date + ceremony. */
+export type Rating = 'ayu' | 'caution' | 'bad';
+
+/**
+ * Per-ceremony scoring weights (PRD §6.1). Penalties are stored positive and
+ * subtracted. Factors the sources don't define yet (penanggal-number, a standalone
+ * ingkel/jejepan factor) are intentionally omitted rather than fabricated.
+ */
+export interface ScoringWeights {
+  saptawara: number;
+  wuku: number;
+  sasih: number;
+  penanggal: number; // bonus for not being in pangelong (when the ceremony requires it)
+  sangawara: number; // bonus for Tulus/Dadi
+  dewasaAyuBonus: number; // per detected dewasa ayu
+  /** Per critical ala. Reserved: no padewasan is classified critical yet (all minor). */
+  criticalAlaPenalty: number;
+  minorAlaPenalty: number; // per minor ala (subtracted)
+}
+
+/** One ceremony's evaluation config. Data lives in `@dewasa-ayu/ceremony-rules`. */
+export interface CeremonyConfig {
+  id: CeremonyId;
+  name: string; // Indonesian, user-facing
+  weights: ScoringWeights;
+  /** 0-based sasih indices favoured / forbidden for this ceremony (PRD §4.1). */
+  sasihGood: number[];
+  sasihBad: number[];
+  /** Wuku that are inauspicious for this ceremony (PRD §4.3). */
+  forbiddenWuku: Wuku[];
+  /** Saptawara considered generally good (reference §6 — "umum"). */
+  saptawaraGood: Saptawara[];
+  /** When true, a pangelong (waning) day is penalised / can downgrade the rating. */
+  requirePenanggal: boolean;
+}
+
+/** One scored factor in an evaluation. */
+export interface Check {
+  factor: string;
+  passed: boolean;
+  weight: number;
+  /** Actual contribution to the score (>= 0 for factors/ayu, < 0 for ala). */
+  contribution: number;
+  note?: string;
+}
+
+/** Full evaluation of a date for a ceremony (PRD §6). */
+export interface Evaluation {
+  ceremony: CeremonyId;
+  rating: Rating;
+  score: number;
+  maxScore: number;
+  /** 0-100; negative scores clamp to 0. */
+  pct: number;
+  checks: Check[];
+  dewasaAyu: DewasaInfo[];
+  dewasaAla: DewasaInfo[];
+  /** True while the verdict relies on unverified rules/data — UI shows "estimasi". */
+  estimated: boolean;
+}

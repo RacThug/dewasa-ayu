@@ -2,7 +2,7 @@
 id: ENG-001
 title: Wariga Engine — Types & Contract
 status: Active
-version: 0.4.0
+version: 0.5.0
 owners: [@RacThug]
 created: 2026-05-28
 updated: 2026-05-30
@@ -316,43 +316,38 @@ export interface SasihInfo {
 
 #### `CeremonyConfig` (one per ceremony in `@dewasa-ayu/ceremony-rules`)
 
-> ⚠️ **Provisional — finalised in Slice B (scoring).** Shape below is the draft; it will be
-> reconciled when `evaluate` lands. Note in particular that per-ceremony padewasan applicability
-> no longer needs explicit code lists — each rule in `DEWASA_RULES` already declares which
-> ceremonies it affects via its `effects` map.
+Implemented in Slice B (`CEREMONY_CONFIGS`). Each list is sourced (PRD §4.1 sasih, §4.3
+forbidden-wuku + Pangelong, §6.1 weights, reference §6 saptawara "umum") and unverified →
+the verdict is `estimated`. Per-ceremony padewasan applicability is **not** listed here —
+each rule in `DEWASA_RULES` declares which ceremonies it affects via its `effects` map.
 
 ```typescript
 export interface CeremonyConfig {
   id: CeremonyId;
   name: string; // human-readable, Indonesian
-  category: PancaYadnyaCategory;
-  description: string;
-  icon: string; // emoji or icon ref
-  sasihRules: {
-    /** 0-based sasih indices where this ceremony is favoured. */
-    good: number[];
-    /** 0-based sasih indices where this ceremony is forbidden. */
-    bad: number[];
-  };
-  // Padewasan applicability is now derived from DEWASA_RULES[].effects, not listed here.
-  scoringWeights: ScoringWeights;
-  saptawaraGood: number[]; // 0-based saptawara indices considered good
-  requirePenanggal: boolean; // if true, evaluation downgrades when in pangelong
+  weights: ScoringWeights;
+  sasihGood: number[]; // 0-based sasih indices favoured (PRD §4.1)
+  sasihBad: number[]; // 0-based sasih indices forbidden (PRD §4.1)
+  forbiddenWuku: Wuku[]; // inauspicious wuku (PRD §4.3)
+  saptawaraGood: Saptawara[]; // generally good saptawara (reference §6, "umum")
+  requirePenanggal: boolean; // when true, a pangelong day is penalised / can downgrade
 }
+// Display fields (category, description, icon) are deferred to the UI/content layer.
 
 export interface ScoringWeights {
   saptawara: number;
   wuku: number;
   sasih: number;
-  penanggal: number; // bonus for not being in pangelong
-  penanggalNumber: number; // bonus based on penanggal number
-  ingkelJejepan: number;
-  sangawara: number;
-  dewasaAyuBonus: number;
-  /** Stored as positive numbers; engine subtracts. Per critical/minor ala occurrence. */
+  penanggal: number; // bonus for not being in pangelong (when the ceremony requires it)
+  sangawara: number; // bonus for Tulus/Dadi
+  dewasaAyuBonus: number; // per detected dewasa ayu
+  /** Per critical ala (subtracted). Reserved: no padewasan is classified critical yet. */
   criticalAlaPenalty: number;
-  minorAlaPenalty: number;
+  minorAlaPenalty: number; // per minor ala (subtracted)
 }
+// Omitted vs the v0.1 draft: `penanggalNumber` and a standalone `ingkelJejepan` factor.
+// No source defines their "good set", so they are not fabricated; ingkel is scored via
+// the `ingkel_wong` padewasan instead.
 ```
 
 #### `DewasaInfo`, `Check`, `Evaluation`
@@ -375,29 +370,27 @@ export interface DewasaDetection {
 }
 
 export interface Check {
-  /** Identifier of the factor: 'saptawara', 'wuku', 'sasih', or 'dewasa_ayu:<code>' / 'dewasa_ala:<code>'. */
+  /** Factor id: 'saptawara', 'wuku', 'sasih', 'penanggal', 'sangawara', or 'dewasa_ayu:<id>' / 'dewasa_ala:<id>'. */
   factor: string;
   passed: boolean;
-  weight: number; // from ScoringWeights
-  /** Actual contribution to total score (positive for ayu, negative for ala). */
+  weight: number; // from ScoringWeights (0 for ala — penalties never raise the ceiling)
+  /** Actual contribution to total score (>= 0 for factors/ayu, < 0 for ala). */
   contribution: number;
   /** Optional human-readable note (Indonesian). */
-  notes?: string;
+  note?: string;
 }
 
 export interface Evaluation {
   ceremony: CeremonyId;
   rating: Rating;
   score: number; // raw score (can be negative)
-  maxScore: number; // theoretical maximum for this ceremony (sum of positive weights)
+  maxScore: number; // achievable maximum (sum of positive weights)
   pct: number; // 0-100 (negative scores clamp to 0)
   checks: Check[];
   dewasaAyu: DewasaInfo[];
   dewasaAla: DewasaInfo[];
-  /** True when any critical ala is present (overrides score in rating decision). */
-  hasCriticalAla: boolean;
-  /** Mirrors info.sasih.isEstimated — surfaced here for clients that hide the lunar info. */
-  sasihEstimated: boolean;
+  /** True while the verdict relies on unverified rules/data — UI shows "estimasi". */
+  estimated: boolean;
 }
 ```
 
@@ -495,7 +488,7 @@ All functions exported from `@dewasa-ayu/wariga-engine` as the public surface.
 | `getFullInfo`        | `(date: Date) => BalineseDate`                                                                                                                                                                             | `INVALID_DATE`, `OUT_OF_RANGE`                                     | Full decomposition. Range bounded by Sasih (~2003-2100).                                                            |
 | `getSasihInfo`       | `(date: Date) => SasihInfo`                                                                                                                                                                                | `INVALID_DATE`, `OUT_OF_RANGE`                                     | Table-backed, range ~2003-2100; `isEstimated` always false (table is exact, not estimated).                         |
 | `detectDewasa`       | `(info: BalineseDate, ceremonyId: CeremonyId) => DewasaDetection`                                                                                                                                          | `UNKNOWN_CEREMONY`                                                 | Implemented (Slice A). Pure derivation from `info`; reads the data-driven registry; every result `estimated: true`. |
-| `evaluate`           | `(info: BalineseDate, ceremonyId: CeremonyId) => Evaluation`                                                                                                                                               | `UNKNOWN_CEREMONY`                                                 | Composes dewasa detection + scoring.                                                                                |
+| `evaluate`           | `(info: BalineseDate, ceremonyId: CeremonyId) => Evaluation`                                                                                                                                               | `UNKNOWN_CEREMONY`                                                 | Implemented (Slice B). Composes sourced factors + `detectDewasa`; verdict `estimated: true`.                        |
 | `findGoodDates`      | `(from: Date, count: number, ceremonyId: CeremonyId) => FindGoodDatesResult`                                                                                                                               | `INVALID_DATE`, `UNKNOWN_CEREMONY`, `INVALID_PARAM` (`count <= 0`) | Scans forward up to 365 days. Returns partial results with `capReached: true` if cap hit.                           |
 | `getMonthEvaluation` | `(year: number, month: number, ceremonyId: CeremonyId) => MonthData`                                                                                                                                       | `UNKNOWN_CEREMONY`, `INVALID_PARAM` (month outside 1-12)           | `month` is 1-12 (human convention).                                                                                 |
 | `calculateOtonan`    | `(birthdate: Date, targetYear: number) => OtonanInfo[]`                                                                                                                                                    | `INVALID_DATE`, `INVALID_PARAM` (year outside 1900-2100)           | Returns all anniversaries in `targetYear` (typically 1-2 per year).                                                 |
@@ -623,70 +616,51 @@ Pseudocode showing the shape; actual weights come from the per-ceremony `Scoring
 
 ```
 function evaluate(info, ceremonyId):
-  config = lookupCeremonyConfig(ceremonyId)        # throws UNKNOWN_CEREMONY
+  if ceremonyId not in CEREMONY_IDS: throw WarigaError('UNKNOWN_CEREMONY')
+  config = CEREMONY_CONFIGS[ceremonyId]
+  w = config.weights
   checks = []
-  score = 0
 
-  # --- Factor checks ---
-  saptawaraIdx = SAPTAWARA_NAMES.indexOf(info.saptawara)
-  saptawaraPassed = config.saptawaraGood.includes(saptawaraIdx)
-  pushCheck(checks, 'saptawara', saptawaraPassed, config.scoringWeights.saptawara)
+  # --- Sourced factor checks (contribution = passed ? weight : 0) ---
+  saptawaraPassed = config.saptawaraGood.includes(info.saptawara)
+  pushFactor(checks, 'saptawara', saptawaraPassed, w.saptawara)
 
-  wukuForbidden = isForbiddenWuku(info.wuku, ceremonyId)        # from rules data
-  pushCheck(checks, 'wuku', !wukuForbidden, config.scoringWeights.wuku)
+  wukuForbidden = config.forbiddenWuku.includes(info.wuku)
+  pushFactor(checks, 'wuku', not wukuForbidden, w.wuku)
 
-  sasihGood = config.sasihRules.good.includes(info.sasih.index)
-  sasihBad  = config.sasihRules.bad.includes(info.sasih.index)
-  pushCheck(checks, 'sasih', sasihGood && !sasihBad, config.scoringWeights.sasih)
+  sasihPassed = config.sasihGood.includes(info.sasih.index) and not config.sasihBad.includes(info.sasih.index)
+  pushFactor(checks, 'sasih', sasihPassed, w.sasih)
 
-  penanggalOK = !info.sasih.isPangelong || !config.requirePenanggal
-  pushCheck(checks, 'penanggal', penanggalOK, config.scoringWeights.penanggal)
+  penanggalOK = not config.requirePenanggal or not info.sasih.isPangelong
+  pushFactor(checks, 'penanggal', penanggalOK, w.penanggal)
 
-  penanggalNumberGood = config.requirePenanggal ? info.sasih.penanggal in goodNumbers(ceremonyId) : true
-  pushCheck(checks, 'penanggal_number', penanggalNumberGood, config.scoringWeights.penanggalNumber)
+  pushFactor(checks, 'sangawara', info.sangawara in ('tulus', 'dadi'), w.sangawara)
 
-  ingkelOK = info.ingkel != 'wong' || ceremonyId in IGNORES_INGKEL_WONG
-  pushCheck(checks, 'ingkel_jejepan', ingkelOK, config.scoringWeights.ingkelJejepan)
-
-  sangawaraGood = info.sangawara in ('tulus', 'dadi')
-  pushCheck(checks, 'sangawara', sangawaraGood, config.scoringWeights.sangawara)
-
-  # --- Dewasa detection ---
-  dewasa = detectDewasa(info, ceremonyId)         # throws UNKNOWN_CEREMONY
+  # --- Padewasan (data-driven registry; ingkel is scored here via the ingkel_wong rule) ---
+  dewasa = detectDewasa(info, ceremonyId)
   for ayu in dewasa.ayu:
-    pushCheck(checks, `dewasa_ayu:${ayu.code}`, true, config.scoringWeights.dewasaAyuBonus)
-
-  hasCriticalAla = false
-  for ala in dewasa.ala:
-    penalty = ala.severity == 'critical' ? config.scoringWeights.criticalAlaPenalty
-                                          : config.scoringWeights.minorAlaPenalty
-    if ala.severity == 'critical': hasCriticalAla = true
-    pushCheck(checks, `dewasa_ala:${ala.code}`, false, -penalty)
+    checks.push({ factor: `dewasa_ayu:${ayu.id}`, passed: true,  weight: w.dewasaAyuBonus, contribution: +w.dewasaAyuBonus, note: ayu.note })
+  for ala in dewasa.ala:           # all seeded ala are 'minor'; critical handling deferred
+    checks.push({ factor: `dewasa_ala:${ala.id}`, passed: false, weight: 0,                contribution: -w.minorAlaPenalty, note: ala.note })
 
   # --- Aggregate ---
-  score = sum(c.contribution for c in checks)
+  score    = sum(c.contribution for c in checks)
   maxScore = sum(c.weight for c in checks if c.weight > 0)
-  pct = clamp(0, 100, (score / maxScore) * 100)
+  pct      = toPct(score, maxScore)              # clamp 0-100; 0 if maxScore <= 0
 
-  rating = computeRating(score, pct, hasCriticalAla, info.sasih.isPangelong,
-                         config.requirePenanggal, saptawaraPassed, wukuForbidden)
-
-  return Evaluation { ceremony, rating, score, maxScore, pct, checks, dewasaAyu, dewasaAla, hasCriticalAla, sasihEstimated: info.sasih.isEstimated }
+  rating = computeRating(pct, info.sasih.isPangelong, config.requirePenanggal, saptawaraPassed, wukuForbidden)
+  return Evaluation { ceremony, rating, score, maxScore, pct, checks, dewasaAyu, dewasaAla, estimated: true }
 ```
 
 #### Rating decision (PRD §6.2)
 
 ```
-function computeRating(score, pct, hasCriticalAla, isPangelong, requirePenanggal, saptawaraPassed, wukuForbidden):
-  if hasCriticalAla:
-    return 'bad'
+function computeRating(pct, isPangelong, requirePenanggal, saptawaraPassed, wukuForbidden):
+  # Critical-ala -> 'bad' (PRD §6.2) is deferred: no padewasan is classified critical yet,
+  # so it cannot fire. Re-add when the first critical rule is expert-verified.
   if requirePenanggal and isPangelong and not saptawaraPassed:
     return 'bad'
-  if pct >= 60
-     and saptawaraPassed
-     and not wukuForbidden
-     and (not requirePenanggal or not isPangelong)
-     and not hasCriticalAla:
+  if pct >= 60 and saptawaraPassed and not wukuForbidden and (not requirePenanggal or not isPangelong):
     return 'ayu'
   return 'caution'
 ```
@@ -818,6 +792,7 @@ Canonical worked example for `evaluate`: `evaluate(getFullInfo(new Date('2026-04
 
 ## Changelog
 
+- v0.5.0 — 2026-05-30 — **Dewasa layer, Slice B** (`evaluate`). Implemented per-ceremony scoring (PRD §6) + rating (PRD §6.2) over 6 `CeremonyConfig` (`CEREMONY_CONFIGS` in `@dewasa-ayu/ceremony-rules`), all lists sourced (weights §6.1, sasih §4.1, forbidden-wuku + Pangelong §4.3, saptawara "umum" reference §6) and unverified → `estimated: true`. Reconciled the scoring types to the implementation: `CeremonyConfig` (flat `sasihGood`/`sasihBad`/`forbiddenWuku`/`saptawaraGood: Saptawara[]`/`weights`; display fields deferred); `ScoringWeights` dropped `penanggalNumber` + standalone `ingkelJejepan` (no source — never fabricated; ingkel scored via the `ingkel_wong` padewasan); `Check.notes → note`; `Evaluation` dropped `hasCriticalAla` and renamed `sasihEstimated → estimated`. Added the pure helper `toPct`. **Deferred:** the PRD §6.2 critical-ala → "bad" rule (no padewasan is classified critical yet — all seeded ala are `minor` by conservative design; `criticalAlaPenalty` reserved in config) and the penanggal-number factor (no source). Remaining: `findGoodDates`, `getMonthEvaluation` (Slice C). 51 tests, 100% coverage.
 - v0.4.0 — 2026-05-30 — **Dewasa layer, Slice A** (`detectDewasa`). Replaced the provisional hardcoded `DewasaAyuCode`/`DewasaAlaCode` unions with a **data-driven rule registry** (`DEWASA_RULES` in `@dewasa-ayu/ceremony-rules`): each padewasan carries `source` + `verified` and a context-relative `effects` map (a rule can be ayu for one ceremony, ala for another). New types: `CeremonyId` is reused; added `DewasaPolarity`, `DewasaSeverity`, `DewasaEffect`, `DewasaRule`, `DewasaContext`, `DewasaRuleDef`, `DewasaDetection`; reshaped `DewasaInfo` (`code→id`, `description→note`, added `source`/`estimated`, dropped `applicableCeremonies`). Implemented `detectDewasa` over the 7 computable rules (`ayu_nulus`, `ingkel_wong`, `semut_sadulur`, `kala_gotongan`, `lebur_awu`, `tanpa_guru`, `was_penganten`), all `verified: false` → results flagged `estimated`. Rule conditions oracle-locked over 2024-2026. Resolved the dewasa-code-unions open question. The scoring layer (`CeremonyConfig`, `ScoringWeights`, `Check`, `Evaluation`, `evaluate`, `findGoodDates`, `getMonthEvaluation`) stays provisional pending Slice B.
 - v0.3.0 — 2026-05-30 — Completed the calculation layer and **synced the spec to the implemented engine**. Added `getIngkel`, `getJejepan`, and `getFullInfo` (the full `BalineseDate` decomposition), plus the previously-undocumented `getWuku`/Wewaran getters/`getTotalUrip` to the signature table. Corrected draft errors found during oracle calibration: **Ingkel is 6 categories** keyed by `wukuIndex % 6` (removed the phantom 7th `kembang` and the wrong "35-day/5-wuku" rotation); Dasawara `eraja → raja` and formula `urip % 10` (removed the erroneous `+ 1`); Caturwara `manala → menala`; Pancawara offset `+1` (Redite Sinta = Paing, not Umanis). Replaced the naive mean-synodic-month Sasih pseudocode with the implemented global lunar-unit + precomputed-table model (range 2003-2100, `OUT_OF_RANGE` outside; `isEstimated` always false; no runtime `sasih_corrections` dependency). Replaced the unreliable PRD §13.2 example table with oracle-true, calendar-cross-checked rows (added Ingkel/Jejepan columns + Nyepi/Galungan anchors). Resolved two open questions (Wewaran offsets; `getFullInfo` range). Status `Draft → Active` (calculation layer done; scoring/dewasa layer pending). Note: dropping `kembang` and renaming `eraja`/`manala` are breaking type changes, acceptable pre-1.0 while the contract is still settling and these unions are not yet consumed.
 - v0.2.1 — 2026-05-30 — Corrected `PAWUKON_EPOCH` to 17 June 2012 (the prior 11 June 2012 was 6 days early — it lands on Soma Watugunung, not Redite Sinta), calibrated and locked against the oracle (every day in 2000–2030) plus the Galungan 2024-02-28 anchor. Implemented the first engine slice — `getPawukonDay` and `getWuku` in `packages/wariga-engine` — with 100% test coverage.

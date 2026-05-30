@@ -7,4 +7,5 @@ import type { SemVer } from '@dewasa-ayu/types';
 
 export const CEREMONY_RULES_VERSION: SemVer = '0.0.0';
 
+export { CEREMONY_CONFIGS } from './ceremony-configs';
 export { CEREMONY_IDS, DEWASA_RULES } from './dewasa-rules';

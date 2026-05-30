@@ -7,6 +7,7 @@ import type { SemVer } from '@dewasa-ayu/types';
 
 export { detectDewasa } from './detect-dewasa';
 export { WarigaError, type WarigaErrorCode } from './errors';
+export { evaluate } from './evaluate';
 export { getFullInfo } from './full-info';
 export { getPawukonDay, getWuku } from './pawukon';
 export { getIngkel, getJejepan } from './pawukon-derived';
