@@ -166,3 +166,87 @@ export interface BalineseDate {
   /** Saptawara urip + Pancawara urip for the day. */
   totalUrip: number;
 }
+
+// --- Dewasa (auspiciousness) layer ---
+
+/** The six supported ceremony types. See ENG-001 and PRD §4. */
+export type CeremonyId =
+  | 'pawiwahan'
+  | 'manusa_yadnya'
+  | 'dewa_yadnya'
+  | 'pitra_yadnya'
+  | 'pembangunan'
+  | 'usaha';
+
+/** Effect direction of a padewasan in a given context. */
+export type DewasaPolarity = 'ayu' | 'ala';
+
+/** Ala severity: 'critical' can force a 'bad' verdict; 'minor' only deducts points. */
+export type DewasaSeverity = 'critical' | 'minor';
+
+/** A padewasan's resolved effect for one ceremony. */
+export interface DewasaEffect {
+  polarity: DewasaPolarity;
+  /** Only meaningful when polarity is 'ala'. */
+  severity?: DewasaSeverity;
+  /** Short user-facing explanation (Indonesian). */
+  note: string;
+}
+
+/**
+ * A named padewasan, stored as DATA so a wariga expert can audit it and it can be
+ * extended without touching engine code. The condition computes a mechanical fact;
+ * the effect is context-relative (a rule can be ayu for one ceremony, ala for
+ * another — see Kala Gotongan). Every seed rule is UNVERIFIED (`verified: false`)
+ * until an expert / authoritative book confirms it; consumers MUST surface that as
+ * "estimasi". Never fabricate a condition — leave a rule out until its source is known.
+ */
+export interface DewasaRule {
+  id: string;
+  /** Padewasan name (Indonesian). */
+  name: string;
+  /** General tendency only; the real effect is per-ceremony in `effects`. */
+  generalCategory: 'ayu' | 'ala' | 'contextual';
+  /** Wariga components the condition reads (documentation). */
+  basis: string[];
+  /** Human-readable condition, for audit/display (Indonesian). */
+  conditionText: string;
+  /** Effect per ceremony. A ceremony absent here = rule not applicable to it. */
+  effects: Partial<Record<CeremonyId, DewasaEffect>>;
+  source: string;
+  verified: boolean;
+}
+
+/** Precomputed facts a rule condition may need, built by the engine from a date. */
+export interface DewasaContext {
+  info: BalineseDate;
+  /** Distinct Astawara names across the current wuku's 7 days (for 'tanpa_guru'). */
+  wukuAstawara: readonly Astawara[];
+  /** Count of the current wuku's 7 days that are Sadwara 'was' (for 'was_penganten'). */
+  wukuWasCount: number;
+}
+
+/** A rule plus its condition predicate. Lives in `@dewasa-ayu/ceremony-rules`. */
+export interface DewasaRuleDef extends DewasaRule {
+  /** Pure predicate: true when the padewasan is active for the context's date. */
+  match: (ctx: DewasaContext) => boolean;
+}
+
+/** A padewasan detected as active on a date, resolved for one ceremony. */
+export interface DewasaInfo {
+  id: string;
+  name: string;
+  type: DewasaPolarity;
+  severity?: DewasaSeverity;
+  /** Why it applies (Indonesian, user-facing). */
+  note: string;
+  source: string;
+  /** True until expert-verified — UI must show an "estimasi" tag. */
+  estimated: boolean;
+}
+
+/** Active padewasan on a date, split by direction and resolved for a ceremony. */
+export interface DewasaDetection {
+  ayu: DewasaInfo[];
+  ala: DewasaInfo[];
+}

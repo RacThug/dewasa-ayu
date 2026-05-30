@@ -48,7 +48,12 @@ export function getTriwara(date: Date): Triwara {
 
 /** Sadwara (6-day week). */
 export function getSadwara(date: Date): Sadwara {
-  return SADWARA_NAMES[getPawukonDay(date) % 6]!;
+  return sadwaraAt(getPawukonDay(date));
+}
+
+/** Sadwara name at a raw Pawukon day (0-209). Used by dewasa wuku scans. */
+export function sadwaraAt(pawukonDay: number): Sadwara {
+  return SADWARA_NAMES[pawukonDay % 6]!;
 }
 
 /**
@@ -106,7 +111,12 @@ export function getCaturwara(date: Date): Caturwara {
 
 /** Astawara (8-day week), with the Kala Tiga anomaly in wuku Dungulan. */
 export function getAstawara(date: Date): Astawara {
-  return ASTAWARA_NAMES[astawaraIndex(getPawukonDay(date))]!;
+  return astawaraAt(getPawukonDay(date));
+}
+
+/** Astawara name at a raw Pawukon day (0-209). Used by dewasa wuku scans. */
+export function astawaraAt(pawukonDay: number): Astawara {
+  return ASTAWARA_NAMES[astawaraIndex(pawukonDay)]!;
 }
 
 /** Sangawara (9-day week); opens with four Dangu at the start of the cycle. */

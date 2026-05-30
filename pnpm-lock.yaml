@@ -142,6 +142,9 @@ importers:
 
   packages/wariga-engine:
     dependencies:
+      '@dewasa-ayu/ceremony-rules':
+        specifier: workspace:*
+        version: link:../ceremony-rules
       '@dewasa-ayu/constants':
         specifier: workspace:*
         version: link:../constants
