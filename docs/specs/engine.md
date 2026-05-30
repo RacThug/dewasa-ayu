@@ -2,7 +2,7 @@
 id: ENG-001
 title: Wariga Engine — Types & Contract
 status: Draft
-version: 0.2.0
+version: 0.2.1
 owners: [@RacThug]
 created: 2026-05-28
 updated: 2026-05-30
@@ -47,12 +47,12 @@ All constants live in `@dewasa-ayu/constants`. The engine imports and re-uses th
 
 #### Epochs
 
-| Constant           | Value                                  | Meaning                                                                                                   |
-| ------------------ | -------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `PAWUKON_EPOCH`    | `Date.UTC(2012, 5, 11)` (11 June 2012) | Pawukon day 0 = Redite Sinta. Derived from kalenderbali.org: 6 Jan 2013 = Saniscara Watugunung (day 209). |
-| `SASIH_EPOCH`      | `Date.UTC(2024, 3, 9)` (9 April 2024)  | Reference: Penanggal 1, Sasih Kadasa.                                                                     |
-| `SASIH_LUNAR_DAYS` | `29.530588`                            | Mean synodic month in days.                                                                               |
-| `PAWUKON_CYCLE`    | `210`                                  | Pawukon cycle length.                                                                                     |
+| Constant           | Value                                  | Meaning                                                                                                                                                       |
+| ------------------ | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PAWUKON_EPOCH`    | `Date.UTC(2012, 5, 17)` (17 June 2012) | Pawukon day 0 = Redite Sinta. Calibrated + locked against the balinese-date-js-lib oracle (0 mismatches across 2000–2030) and the Galungan 2024-02-28 anchor. |
+| `SASIH_EPOCH`      | `Date.UTC(2024, 3, 9)` (9 April 2024)  | Reference: Penanggal 1, Sasih Kadasa.                                                                                                                         |
+| `SASIH_LUNAR_DAYS` | `29.530588`                            | Mean synodic month in days.                                                                                                                                   |
+| `PAWUKON_CYCLE`    | `210`                                  | Pawukon cycle length.                                                                                                                                         |
 
 #### Lookup tables (names only — full data in `@dewasa-ayu/constants`)
 
@@ -741,5 +741,6 @@ Canonical worked example for `evaluate`: `evaluate(getFullInfo(new Date('2026-04
 
 ## Changelog
 
+- v0.2.1 — 2026-05-30 — Corrected `PAWUKON_EPOCH` to 17 June 2012 (the prior 11 June 2012 was 6 days early — it lands on Soma Watugunung, not Redite Sinta), calibrated and locked against the oracle (every day in 2000–2030) plus the Galungan 2024-02-28 anchor. Implemented the first engine slice — `getPawukonDay` and `getWuku` in `packages/wariga-engine` — with 100% test coverage.
 - v0.2.0 — 2026-05-30 — Reconciled the algorithm layer with the new domain reference (`wariga-engine-reference.md` §6): adopted the `bilanganHari` basis, corrected Caturwara (`mod 4` + Dungulan Jaya Tiga anomaly) and Dasawara (`+ 1`), generalised offset calibration to all cycles, and documented the oracle + golden-test strategy. Flagged the Dewasa code unions as provisional pending reconciliation with `dewasa-rules.seed.json` (likely moving to data-driven ids with `source`/`verified`). No type or signature changes — additive/clarifying only, hence a minor bump.
 - v0.1.0 — 2026-05-28 — Initial draft. Full public surface for Phase 1 (7 functions) and Phase 2 (Otonan, Mesakapan). Four open questions flagged (Mesakapan weton scope, Pancawara offset calibration, pre-1900 date handling, week-start parameter).

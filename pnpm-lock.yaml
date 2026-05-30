@@ -142,6 +142,9 @@ importers:
 
   packages/wariga-engine:
     dependencies:
+      '@dewasa-ayu/constants':
+        specifier: workspace:*
+        version: link:../constants
       '@dewasa-ayu/types':
         specifier: workspace:*
         version: link:../types
