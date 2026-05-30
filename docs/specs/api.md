@@ -1,11 +1,11 @@
 ---
 id: API-001
 title: REST API — Endpoints, Schemas, Errors
-status: Draft
-version: 0.1.0
+status: Active
+version: 0.2.0
 owners: [@RacThug]
 created: 2026-05-28
-updated: 2026-05-28
+updated: 2026-05-30
 implements: [19]
 supersedes: null
 related: [ENG-001, DB-001, UI-001]
@@ -17,6 +17,18 @@ prd_refs: ["§8", "§16.4", "§17", "§22.3", "§25"]
 ## Summary
 
 Defines the public REST API hosted at `apps/api` (NestJS). Specifies authentication, the standard error envelope, every endpoint with Zod request/response schemas, cache TTLs, and rate-limit tiers. Response shapes mirror engine types from [ENG-001](./engine.md) so the API is a thin transport over the engine; persistence shapes match [DB-001](./db.md).
+
+> **Implementation status (2026-05-30, Slice 1).** Live in `apps/api`: the engine-backed
+> read endpoints — `GET /calendar/check`, `/calendar/month`, `/calendar/recommend`,
+> `/calendar/range`, `/ceremonies`, `/dewasa`, `/health` — with Zod validation, the error
+> envelope, OpenAPI at `/api/docs`, a committed Bruno collection (`apps/api/bruno/`), and a
+> basic in-memory throttle. **Deferred** (need infrastructure): Redis caching + tiered
+> rate limits (Slice 2); API-key auth, `POST /feedback`, `/admin/*`, and full DB/Redis
+> health checks (Slice 3 — need Prisma/DB #14). `OUT_OF_RANGE` currently means the Sasih
+> range (~2003-2100). A bad `ceremony` value is rejected by Zod as `INVALID_PARAM` (the
+> envelope lists the valid options) rather than `UNKNOWN_CEREMONY`, since validation runs
+> before the engine. The `/dewasa` response is data-driven (rule id + `verified` flag), not
+> the old `DewasaCode` shape — see ENG-001 v0.4.0.
 
 ## Context
 
@@ -557,7 +569,15 @@ Rate-limited (429):
 
 - **Successful responses are NOT wrapped in `{ success: true, data: … }`.** Error envelope is fine because errors are rare and need machine-readable codes. Success responses are read by code paths that already know what shape to expect; wrapping doubles the JSON size and reduces ergonomics. Errors follow PRD §16.4 verbatim.
 
-- **Zod schemas live in `@dewasa-ayu/types` and are imported by NestJS controllers AND the frontend client.** Single source of truth, no DTO drift. NestJS uses Zod via `nestjs-zod` or a custom pipe; the frontend uses the same schemas in react-query mutations.
+- **Zod schemas live in `@dewasa-ayu/types` and are imported by NestJS controllers AND the frontend client.** Single source of truth, no DTO drift. NestJS uses Zod via `nestjs-zod`; the frontend uses the same schemas in react-query mutations.
+
+- **Schemas sit behind the `@dewasa-ayu/types/schemas` subpath (not the root entry).** The root `@dewasa-ayu/types` stays pure types so the zero-dependency engine — which type-imports only the root — never pulls in Zod. The API/web import the `/schemas` subpath; `@dewasa-ayu/types` gains a `zod` dependency that the engine's bundle never includes. Enum members are duplicated from the unions (not imported from `@dewasa-ayu/constants`) to avoid a types↔constants cycle, with `satisfies` drift-guards keeping them in sync.
+
+- **`nestjs-zod` v5 + Zod 4 + `createZodDto`; OpenAPI via `cleanupOpenApiDoc`.** Global `ZodValidationPipe` validates query DTOs; the global exception filter maps every error to the envelope (engine `WarigaError` → its own code; Zod validation failure → `INVALID_PARAM` with the issues; `ThrottlerException` → `RATE_LIMITED`). v5 (not v4) is required for `@nestjs/swagger` 11 compatibility.
+
+- **`apps/api` is built with the NestJS webpack builder, bundling the `@dewasa-ayu/*` source.** The workspace packages ship raw `.ts` (no prebuilt dist) and NestJS needs `emitDecoratorMetadata`, so `ts-loader` compiles + bundles them into one `dist/main.js`. E2E tests get metadata via `unplugin-swc`.
+
+- **Bruno is the committed API client; OpenAPI/Swagger remains the contract + docs.** They are complementary, not substitutes: OpenAPI (`/api/docs`, generated from Zod) is the machine-readable contract for the FE and third parties; the git-friendly `apps/api/bruno/` collection is the interactive dev/test client (replacing Postman). Refines the 2026-05-25 "REST + Swagger" decision.
 
 - **Per-endpoint cache TTL > universal TTL.** Different endpoints have different staleness tolerance (`/health` is never cached, `/calendar/month` for 24h, `/feedback` never). Specifying per-endpoint avoids a tempting "just cache everything" rule that breaks the feedback widget.
 
@@ -598,4 +618,5 @@ Rate-limited (429):
 
 ## Changelog
 
+- v0.2.0 — 2026-05-30 — **Slice 1 implemented** (`apps/api`, NestJS 11). Shipped the seven engine-backed read endpoints with Zod validation (`nestjs-zod` v5 + Zod 4), the error envelope via a global exception filter, OpenAPI at `/api/docs`, a committed Bruno collection, and a basic in-memory throttle. Schemas live at the `@dewasa-ayu/types/schemas` subpath (keeps the engine zero-dep). Built with the NestJS webpack builder (bundles the workspace source); e2e tests via Vitest + supertest + `unplugin-swc` (11 tests). Status `Draft → Active` (partial). Deferred to later slices: Redis caching, tiered rate limits, API-key auth, `POST /feedback`, `/admin/*` (need Prisma/DB + Redis). Recorded the schema-subpath, nestjs-zod-v5, webpack-build, and Bruno decisions.
 - v0.1.0 — 2026-05-28 — Initial draft. Eight Phase 1 endpoints (`/calendar/check`, `/calendar/month`, `/calendar/recommend`, `/calendar/range`, `/ceremonies`, `/dewasa`, `/health`, `POST /feedback`) and Phase 2 placeholders (`/otonan`, `/admin/*`). Error envelope per PRD §16.4. Per-endpoint cache TTLs and rate-limit tiers documented. Auth: public for GETs, API key for POST/PUT/DELETE, two-layer for admin. Five open questions flagged.

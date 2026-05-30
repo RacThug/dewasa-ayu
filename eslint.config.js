@@ -47,6 +47,17 @@ export default tseslint.config(
       globals: { console: 'readonly', process: 'readonly' },
     },
   },
+  // CommonJS tooling configs (e.g. webpack.config.cjs) use require/module.exports.
+  {
+    files: ['**/*.cjs'],
+    languageOptions: {
+      sourceType: 'commonjs',
+      globals: { require: 'readonly', module: 'writable', __dirname: 'readonly' },
+    },
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
   // Keep last: turns off stylistic rules that would conflict with Prettier.
   eslintConfigPrettier,
 );
