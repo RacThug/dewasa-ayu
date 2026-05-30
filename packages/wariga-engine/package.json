@@ -10,12 +10,18 @@
   },
   "scripts": {
     "build": "tsc",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@dewasa-ayu/types": "workspace:*"
   },
   "devDependencies": {
-    "typescript": "^6.0.3"
+    "@vitest/coverage-v8": "^4.1.7",
+    "balinese-date-js-lib": "^0.4.3",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
   }
 }
