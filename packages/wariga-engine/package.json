@@ -16,6 +16,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@dewasa-ayu/ceremony-rules": "workspace:*",
     "@dewasa-ayu/constants": "workspace:*",
     "@dewasa-ayu/types": "workspace:*"
   },

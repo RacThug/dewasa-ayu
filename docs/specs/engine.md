@@ -2,7 +2,7 @@
 id: ENG-001
 title: Wariga Engine — Types & Contract
 status: Active
-version: 0.3.0
+version: 0.4.0
 owners: [@RacThug]
 created: 2026-05-28
 updated: 2026-05-30
@@ -182,48 +182,55 @@ export type CeremonyId =
 export type PancaYadnyaCategory = 'manusa_yadnya' | 'dewa_yadnya' | 'pitra_yadnya' | 'cross'; // for pembangunan and usaha
 ```
 
-#### Dewasa codes (PRD §4.2, §4.3)
+#### Dewasa rules (data-driven — supersedes the v0.1.0 code unions)
+
+Named padewasan are **data, not a fixed type union**. The earlier `DewasaAyuCode` /
+`DewasaAlaCode` unions are dropped: the authoritative rule set lives in
+`@dewasa-ayu/ceremony-rules` as a registry (`DEWASA_RULES`), each entry carrying its
+`source` and a `verified` flag — the "rules as data" decision (reference §8). A padewasan's
+effect is **context-relative**: it can be ayu for one ceremony and ala for another (e.g. Kala
+Gotongan — ala for ngaben, ayu for starting a business), so a rule has no global polarity; it
+maps each applicable ceremony to an effect.
 
 ```typescript
-export type DewasaAyuCode =
-  | 'subacara'
-  | 'kama_jaya'
-  | 'dina_jaya'
-  | 'ayu_nulus'
-  | 'ayu_dana'
-  | 'dewa_stata'
-  | 'amerta_dewa'
-  | 'amerta_dewa_jaya'
-  | 'siwa_sampurna'
-  | 'dewasa_mentas'
-  | 'swarga_menge'
-  | 'catur_laba'
-  | 'derman_bagia'
-  | 'sangawara_tulus'
-  | 'sangawara_dadi'
-  | 'triwara_beteng';
+export type DewasaPolarity = 'ayu' | 'ala';
+export type DewasaSeverity = 'critical' | 'minor';
 
-export type DewasaAlaCode =
-  | 'rangda_tiga'
-  | 'carik_walangati'
-  | 'uncal_balung'
-  | 'pati_paten'
-  | 'semut_sadulur'
-  | 'kala_gotongan'
-  | 'ingkel_wong'
-  | 'kala_jengking'
-  | 'sampar_wangke'
-  | 'kala_temah'
-  | 'kala_dangastra'
-  | 'kala_suwung'
-  | 'kala_ngruda'
-  | 'geni_rawana'
-  | 'mrta_papageran'
-  | 'kalebu_rau'
-  | 'pangelong';
+export interface DewasaEffect {
+  polarity: DewasaPolarity;
+  severity?: DewasaSeverity; // only meaningful for ala
+  note: string; // user-facing (Indonesian)
+}
 
-export type DewasaCode = DewasaAyuCode | DewasaAlaCode;
+export interface DewasaRule {
+  id: string;
+  name: string; // Indonesian
+  generalCategory: 'ayu' | 'ala' | 'contextual';
+  basis: string[]; // wariga components the condition reads
+  conditionText: string; // human-readable condition, for audit
+  effects: Partial<Record<CeremonyId, DewasaEffect>>; // ceremony -> effect; absent = N/A
+  source: string;
+  verified: boolean; // false for every seed rule until expert-confirmed
+}
+
+// In @dewasa-ayu/ceremony-rules: a rule plus its pure condition predicate.
+export interface DewasaContext {
+  info: BalineseDate;
+  wukuAstawara: readonly Astawara[]; // distinct Astawara across the wuku's 7 days
+  wukuWasCount: number; // count of Sadwara 'was' days in the wuku
+}
+export interface DewasaRuleDef extends DewasaRule {
+  match: (ctx: DewasaContext) => boolean;
+}
 ```
+
+**Status (Slice A).** Seven computable rules are seeded — `ayu_nulus`, `ingkel_wong`,
+`semut_sadulur`, `kala_gotongan`, `lebur_awu`, `tanpa_guru`, `was_penganten` — all
+`verified: false`. ~38 further padewasan are catalogued by name only (no known condition) and
+stay inactive; conditions are **never fabricated**. `was_penganten` is computable but maps to
+none of the six ceremonies yet (its sourced effect — sharp objects / walls / meetings — is
+unrelated to them). All `ala` effects are seeded as `minor` so no unverified rule alone forces
+a "bad" verdict; severity tuning and `verified: true` are expert-gated.
 
 #### Rating and severity
 
@@ -309,6 +316,11 @@ export interface SasihInfo {
 
 #### `CeremonyConfig` (one per ceremony in `@dewasa-ayu/ceremony-rules`)
 
+> ⚠️ **Provisional — finalised in Slice B (scoring).** Shape below is the draft; it will be
+> reconciled when `evaluate` lands. Note in particular that per-ceremony padewasan applicability
+> no longer needs explicit code lists — each rule in `DEWASA_RULES` already declares which
+> ceremonies it affects via its `effects` map.
+
 ```typescript
 export interface CeremonyConfig {
   id: CeremonyId;
@@ -322,8 +334,7 @@ export interface CeremonyConfig {
     /** 0-based sasih indices where this ceremony is forbidden. */
     bad: number[];
   };
-  dewasaAyu: DewasaAyuCode[]; // codes that apply to this ceremony
-  dewasaAla: DewasaAlaCode[];
+  // Padewasan applicability is now derived from DEWASA_RULES[].effects, not listed here.
   scoringWeights: ScoringWeights;
   saptawaraGood: number[]; // 0-based saptawara indices considered good
   requirePenanggal: boolean; // if true, evaluation downgrades when in pangelong
@@ -347,14 +358,20 @@ export interface ScoringWeights {
 #### `DewasaInfo`, `Check`, `Evaluation`
 
 ```typescript
+// A padewasan detected as active on a date, resolved for one ceremony.
 export interface DewasaInfo {
-  code: DewasaCode;
+  id: string; // rule id from DEWASA_RULES
   name: string; // human-readable, Indonesian
-  type: 'ayu' | 'ala';
-  /** Required for ala; undefined for ayu. */
-  severity?: Severity;
-  description: string; // 1-2 sentence explanation, Indonesian
-  applicableCeremonies: CeremonyId[];
+  type: DewasaPolarity; // 'ayu' | 'ala' — the effect for the queried ceremony
+  severity?: DewasaSeverity; // only for ala
+  note: string; // 1-2 sentence explanation, Indonesian
+  source: string;
+  estimated: boolean; // true until the rule is expert-verified → UI shows "estimasi"
+}
+
+export interface DewasaDetection {
+  ayu: DewasaInfo[];
+  ala: DewasaInfo[];
 }
 
 export interface Check {
@@ -467,22 +484,22 @@ export type WarigaErrorCode =
 
 All functions exported from `@dewasa-ayu/wariga-engine` as the public surface.
 
-| Function             | Signature                                                                                                                                                                                                  | Throws                                                             | Notes                                                                                       |
-| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
-| `getPawukonDay`      | `(date: Date) => number`                                                                                                                                                                                   | `INVALID_DATE`                                                     | Returns 0-209.                                                                              |
-| `getWuku`            | `(date: Date) => Wuku`                                                                                                                                                                                     | `INVALID_DATE`                                                     | `floor(pawukonDay / 7)`.                                                                    |
-| Wewaran getters      | `(date: Date) => <Cycle>` — `getSaptawara`, `getPancawara`, `getTriwara`, `getSadwara`, `getAstawara`, `getSangawara`, `getCaturwara`, `getDasawara`, `getDwiwara`; `getEkawara` returns `Ekawara \| null` | `INVALID_DATE`                                                     | One per Wewaran cycle. See Algorithms.                                                      |
-| `getTotalUrip`       | `(date: Date) => number`                                                                                                                                                                                   | `INVALID_DATE`                                                     | Saptawara urip + Pancawara urip.                                                            |
-| `getIngkel`          | `(date: Date) => Ingkel`                                                                                                                                                                                   | `INVALID_DATE`                                                     | `wukuIndex % 6`.                                                                            |
-| `getJejepan`         | `(date: Date) => Jejepan`                                                                                                                                                                                  | `INVALID_DATE`                                                     | `pawukonDay % 6`.                                                                           |
-| `getFullInfo`        | `(date: Date) => BalineseDate`                                                                                                                                                                             | `INVALID_DATE`, `OUT_OF_RANGE`                                     | Full decomposition. Range bounded by Sasih (~2003-2100).                                    |
-| `getSasihInfo`       | `(date: Date) => SasihInfo`                                                                                                                                                                                | `INVALID_DATE`, `OUT_OF_RANGE`                                     | Table-backed, range ~2003-2100; `isEstimated` always false (table is exact, not estimated). |
-| `detectDewasa`       | `(info: BalineseDate, ceremonyId: CeremonyId) => { ayu: DewasaInfo[]; ala: DewasaInfo[] }`                                                                                                                 | `UNKNOWN_CEREMONY`                                                 | Pure derivation from `info`.                                                                |
-| `evaluate`           | `(info: BalineseDate, ceremonyId: CeremonyId) => Evaluation`                                                                                                                                               | `UNKNOWN_CEREMONY`                                                 | Composes dewasa detection + scoring.                                                        |
-| `findGoodDates`      | `(from: Date, count: number, ceremonyId: CeremonyId) => FindGoodDatesResult`                                                                                                                               | `INVALID_DATE`, `UNKNOWN_CEREMONY`, `INVALID_PARAM` (`count <= 0`) | Scans forward up to 365 days. Returns partial results with `capReached: true` if cap hit.   |
-| `getMonthEvaluation` | `(year: number, month: number, ceremonyId: CeremonyId) => MonthData`                                                                                                                                       | `UNKNOWN_CEREMONY`, `INVALID_PARAM` (month outside 1-12)           | `month` is 1-12 (human convention).                                                         |
-| `calculateOtonan`    | `(birthdate: Date, targetYear: number) => OtonanInfo[]`                                                                                                                                                    | `INVALID_DATE`, `INVALID_PARAM` (year outside 1900-2100)           | Returns all anniversaries in `targetYear` (typically 1-2 per year).                         |
-| `calculateMesakapan` | `(person1Birthdate: Date, person2Birthdate: Date) => MesakapanResult`                                                                                                                                      | `INVALID_DATE`                                                     | Pure derivation from birthdates.                                                            |
+| Function             | Signature                                                                                                                                                                                                  | Throws                                                             | Notes                                                                                                               |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| `getPawukonDay`      | `(date: Date) => number`                                                                                                                                                                                   | `INVALID_DATE`                                                     | Returns 0-209.                                                                                                      |
+| `getWuku`            | `(date: Date) => Wuku`                                                                                                                                                                                     | `INVALID_DATE`                                                     | `floor(pawukonDay / 7)`.                                                                                            |
+| Wewaran getters      | `(date: Date) => <Cycle>` — `getSaptawara`, `getPancawara`, `getTriwara`, `getSadwara`, `getAstawara`, `getSangawara`, `getCaturwara`, `getDasawara`, `getDwiwara`; `getEkawara` returns `Ekawara \| null` | `INVALID_DATE`                                                     | One per Wewaran cycle. See Algorithms.                                                                              |
+| `getTotalUrip`       | `(date: Date) => number`                                                                                                                                                                                   | `INVALID_DATE`                                                     | Saptawara urip + Pancawara urip.                                                                                    |
+| `getIngkel`          | `(date: Date) => Ingkel`                                                                                                                                                                                   | `INVALID_DATE`                                                     | `wukuIndex % 6`.                                                                                                    |
+| `getJejepan`         | `(date: Date) => Jejepan`                                                                                                                                                                                  | `INVALID_DATE`                                                     | `pawukonDay % 6`.                                                                                                   |
+| `getFullInfo`        | `(date: Date) => BalineseDate`                                                                                                                                                                             | `INVALID_DATE`, `OUT_OF_RANGE`                                     | Full decomposition. Range bounded by Sasih (~2003-2100).                                                            |
+| `getSasihInfo`       | `(date: Date) => SasihInfo`                                                                                                                                                                                | `INVALID_DATE`, `OUT_OF_RANGE`                                     | Table-backed, range ~2003-2100; `isEstimated` always false (table is exact, not estimated).                         |
+| `detectDewasa`       | `(info: BalineseDate, ceremonyId: CeremonyId) => DewasaDetection`                                                                                                                                          | `UNKNOWN_CEREMONY`                                                 | Implemented (Slice A). Pure derivation from `info`; reads the data-driven registry; every result `estimated: true`. |
+| `evaluate`           | `(info: BalineseDate, ceremonyId: CeremonyId) => Evaluation`                                                                                                                                               | `UNKNOWN_CEREMONY`                                                 | Composes dewasa detection + scoring.                                                                                |
+| `findGoodDates`      | `(from: Date, count: number, ceremonyId: CeremonyId) => FindGoodDatesResult`                                                                                                                               | `INVALID_DATE`, `UNKNOWN_CEREMONY`, `INVALID_PARAM` (`count <= 0`) | Scans forward up to 365 days. Returns partial results with `capReached: true` if cap hit.                           |
+| `getMonthEvaluation` | `(year: number, month: number, ceremonyId: CeremonyId) => MonthData`                                                                                                                                       | `UNKNOWN_CEREMONY`, `INVALID_PARAM` (month outside 1-12)           | `month` is 1-12 (human convention).                                                                                 |
+| `calculateOtonan`    | `(birthdate: Date, targetYear: number) => OtonanInfo[]`                                                                                                                                                    | `INVALID_DATE`, `INVALID_PARAM` (year outside 1900-2100)           | Returns all anniversaries in `targetYear` (typically 1-2 per year).                                                 |
+| `calculateMesakapan` | `(person1Birthdate: Date, person2Birthdate: Date) => MesakapanResult`                                                                                                                                      | `INVALID_DATE`                                                     | Pure derivation from birthdates.                                                                                    |
 
 ### Algorithms
 
@@ -774,7 +791,7 @@ Canonical worked example for `evaluate`: `evaluate(getFullInfo(new Date('2026-04
   Algorithms §Wewaran: Pancawara offset `+1` (Redite Sinta = Paing); Dasawara `urip % 10` (no `+1`);
   Astawara Kala Tiga, Caturwara Jaya Tiga, and the four-Dangu Sangawara opening. The PRD §13.2
   reference dates were found unreliable and are **not** used as golden truth (see Examples).
-- [Q] **Dewasa code unions are provisional.** `DewasaAyuCode` / `DewasaAlaCode` above were drafted from the PRD and do **not** yet match the names/conditions in [`dewasa-rules.seed.json`](../research/dewasa-rules.seed.json). They will be reconciled — and likely replaced by **data-driven ids** (each rule carrying `source` + `verified`, per the reference §8 "rules as data" decision) — when `detectDewasa` is implemented. Until then no rule is treated as final; unverified rules surface as `estimasi`. Owner: @RacThug. Target: dewasa-detection step of Phase 1 (#2).
+- [✅ RESOLVED] **Dewasa code unions → data-driven rules.** The `DewasaAyuCode` / `DewasaAlaCode` unions are dropped. Padewasan are now a data registry (`DEWASA_RULES` in `@dewasa-ayu/ceremony-rules`), each rule carrying `source` + `verified` and a context-relative `effects` map (reference §8 "rules as data"). `detectDewasa` is implemented (Slice A) over the 7 computable rules; all `verified: false` → results surface as `estimasi`. Remaining: the **scoring layer** (`CeremonyConfig`, `ScoringWeights`, `Check`, `Evaluation`, `evaluate`, `findGoodDates`, `getMonthEvaluation`) is still provisional and reconciled in Slice B. Owner: @RacThug. Target: scoring step of Phase 1 (#2).
 - [✅ RESOLVED] **`getFullInfo` range.** Bounded by the Sasih table (2003-2100): outside it,
   `getFullInfo` throws `OUT_OF_RANGE` (propagated from `getSasihInfo`). The Pawukon/Wewaran/Ingkel/
   Jejepan parts are purely cyclic and accurate for any date, but the full decomposition includes
@@ -801,6 +818,7 @@ Canonical worked example for `evaluate`: `evaluate(getFullInfo(new Date('2026-04
 
 ## Changelog
 
+- v0.4.0 — 2026-05-30 — **Dewasa layer, Slice A** (`detectDewasa`). Replaced the provisional hardcoded `DewasaAyuCode`/`DewasaAlaCode` unions with a **data-driven rule registry** (`DEWASA_RULES` in `@dewasa-ayu/ceremony-rules`): each padewasan carries `source` + `verified` and a context-relative `effects` map (a rule can be ayu for one ceremony, ala for another). New types: `CeremonyId` is reused; added `DewasaPolarity`, `DewasaSeverity`, `DewasaEffect`, `DewasaRule`, `DewasaContext`, `DewasaRuleDef`, `DewasaDetection`; reshaped `DewasaInfo` (`code→id`, `description→note`, added `source`/`estimated`, dropped `applicableCeremonies`). Implemented `detectDewasa` over the 7 computable rules (`ayu_nulus`, `ingkel_wong`, `semut_sadulur`, `kala_gotongan`, `lebur_awu`, `tanpa_guru`, `was_penganten`), all `verified: false` → results flagged `estimated`. Rule conditions oracle-locked over 2024-2026. Resolved the dewasa-code-unions open question. The scoring layer (`CeremonyConfig`, `ScoringWeights`, `Check`, `Evaluation`, `evaluate`, `findGoodDates`, `getMonthEvaluation`) stays provisional pending Slice B.
 - v0.3.0 — 2026-05-30 — Completed the calculation layer and **synced the spec to the implemented engine**. Added `getIngkel`, `getJejepan`, and `getFullInfo` (the full `BalineseDate` decomposition), plus the previously-undocumented `getWuku`/Wewaran getters/`getTotalUrip` to the signature table. Corrected draft errors found during oracle calibration: **Ingkel is 6 categories** keyed by `wukuIndex % 6` (removed the phantom 7th `kembang` and the wrong "35-day/5-wuku" rotation); Dasawara `eraja → raja` and formula `urip % 10` (removed the erroneous `+ 1`); Caturwara `manala → menala`; Pancawara offset `+1` (Redite Sinta = Paing, not Umanis). Replaced the naive mean-synodic-month Sasih pseudocode with the implemented global lunar-unit + precomputed-table model (range 2003-2100, `OUT_OF_RANGE` outside; `isEstimated` always false; no runtime `sasih_corrections` dependency). Replaced the unreliable PRD §13.2 example table with oracle-true, calendar-cross-checked rows (added Ingkel/Jejepan columns + Nyepi/Galungan anchors). Resolved two open questions (Wewaran offsets; `getFullInfo` range). Status `Draft → Active` (calculation layer done; scoring/dewasa layer pending). Note: dropping `kembang` and renaming `eraja`/`manala` are breaking type changes, acceptable pre-1.0 while the contract is still settling and these unions are not yet consumed.
 - v0.2.1 — 2026-05-30 — Corrected `PAWUKON_EPOCH` to 17 June 2012 (the prior 11 June 2012 was 6 days early — it lands on Soma Watugunung, not Redite Sinta), calibrated and locked against the oracle (every day in 2000–2030) plus the Galungan 2024-02-28 anchor. Implemented the first engine slice — `getPawukonDay` and `getWuku` in `packages/wariga-engine` — with 100% test coverage.
 - v0.2.0 — 2026-05-30 — Reconciled the algorithm layer with the new domain reference (`wariga-engine-reference.md` §6): adopted the `bilanganHari` basis, corrected Caturwara (`mod 4` + Dungulan Jaya Tiga anomaly) and Dasawara (`+ 1`), generalised offset calibration to all cycles, and documented the oracle + golden-test strategy. Flagged the Dewasa code unions as provisional pending reconciliation with `dewasa-rules.seed.json` (likely moving to data-driven ids with `source`/`verified`). No type or signature changes — additive/clarifying only, hence a minor bump.
