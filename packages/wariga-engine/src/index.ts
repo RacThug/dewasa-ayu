@@ -7,6 +7,16 @@ import type { SemVer } from '@dewasa-ayu/types';
 
 export { WarigaError, type WarigaErrorCode } from './errors';
 export { getPawukonDay, getWuku } from './pawukon';
+export {
+  getDasawara,
+  getDwiwara,
+  getEkawara,
+  getPancawara,
+  getSadwara,
+  getSaptawara,
+  getTotalUrip,
+  getTriwara,
+} from './wewaran';
 
 export const ENGINE_VERSION: SemVer = '0.0.0';
 

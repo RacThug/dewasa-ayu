@@ -1,8 +1,19 @@
 /**
- * Static Wariga reference data (Wuku, Wewaran, Sasih names, epochs, urip tables).
+ * Static Wariga reference data (Wuku, Wewaran names, urip tables, epochs).
  * The engine imports these but does not own the data. See ENG-001 §Constants.
+ *
+ * Array order is the canonical order; the array index is the cycle position used
+ * by the engine. Urip arrays are indexed in the same order as their name arrays.
  */
-import type { SemVer, Wuku } from '@dewasa-ayu/types';
+import type {
+  Dasawara,
+  Pancawara,
+  Sadwara,
+  Saptawara,
+  SemVer,
+  Triwara,
+  Wuku,
+} from '@dewasa-ayu/types';
 
 export const CONSTANTS_VERSION: SemVer = '0.0.0';
 
@@ -53,3 +64,56 @@ export const WUKU_NAMES = [
   'dukut',
   'watugunung',
 ] as const satisfies readonly Wuku[];
+
+/** Saptawara (7-day week) names, Redite = index 0. */
+export const SAPTAWARA_NAMES = [
+  'redite',
+  'soma',
+  'anggara',
+  'buda',
+  'wraspati',
+  'sukra',
+  'saniscara',
+] as const satisfies readonly Saptawara[];
+
+/** Saptawara urip (neptu), indexed Redite … Saniscara. */
+export const SAPTAWARA_URIP = [5, 4, 3, 7, 8, 6, 9] as const;
+
+/** Pancawara (5-day week) names, Umanis = index 0. */
+export const PANCAWARA_NAMES = [
+  'umanis',
+  'paing',
+  'pon',
+  'wage',
+  'kliwon',
+] as const satisfies readonly Pancawara[];
+
+/** Pancawara urip (neptu), indexed Umanis … Kliwon. */
+export const PANCAWARA_URIP = [5, 9, 7, 4, 8] as const;
+
+/** Triwara (3-day week) names. */
+export const TRIWARA_NAMES = ['pasah', 'beteng', 'kajeng'] as const satisfies readonly Triwara[];
+
+/** Sadwara (6-day week) names. */
+export const SADWARA_NAMES = [
+  'tungleh',
+  'aryang',
+  'urukung',
+  'paniron',
+  'was',
+  'maulu',
+] as const satisfies readonly Sadwara[];
+
+/** Dasawara (10-day week) names, indexed by (total urip mod 10). */
+export const DASAWARA_NAMES = [
+  'pandita',
+  'pati',
+  'suka',
+  'duka',
+  'sri',
+  'manuh',
+  'manusa',
+  'raja',
+  'dewa',
+  'raksasa',
+] as const satisfies readonly Dasawara[];
