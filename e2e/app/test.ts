@@ -1,10 +1,12 @@
 import { expect, test as base } from '../core/fixtures';
 import { HomePage } from './pages/home.page';
 import { KalenderPage } from './pages/kalender.page';
+import { RekomendasiPage } from './pages/rekomendasi.page';
 
 export interface Pages {
   home: HomePage;
   kalender: KalenderPage;
+  rekomendasi: RekomendasiPage;
 }
 
 export const test = base.extend<Pages>({
@@ -13,6 +15,9 @@ export const test = base.extend<Pages>({
   },
   kalender: async ({ page }, use) => {
     await use(new KalenderPage(page));
+  },
+  rekomendasi: async ({ page }, use) => {
+    await use(new RekomendasiPage(page));
   },
 });
 
