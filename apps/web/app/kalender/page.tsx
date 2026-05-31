@@ -95,7 +95,7 @@ function CalendarGrid({ month }: { month: MonthResult }) {
           return (
             <Link
               key={d.date}
-              href={`/?ceremony=${month.ceremony}&date=${d.date}`}
+              href={`/?ceremony=${month.ceremony}&date=${d.date.slice(0, 10)}`}
               className={`cal-cell r-${rating}${d.date === today ? ' is-today' : ''}`}
               role="listitem"
               aria-label={`${dayNum} — ${verdictText(rating)}`}
