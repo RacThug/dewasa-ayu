@@ -845,6 +845,24 @@ body {
 .about-cta {
   margin-top: var(--s6);
 }
+.up-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s4);
+  margin-top: var(--s6);
+}
+.up-link {
+  font-family: var(--sans);
+  font-size: 14px;
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent-deep);
+  padding-bottom: 2px;
+}
+.up-link:hover {
+  color: var(--accent-soft);
+}
 
 .divider {
   display: flex;

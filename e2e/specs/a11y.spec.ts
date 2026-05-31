@@ -6,6 +6,7 @@ const ROUTES: { name: string; path: string }[] = [
   { name: 'Kalender', path: `/kalender?ceremony=${CEREMONY}&year=2026&month=9` },
   { name: 'Rekomendasi', path: `/rekomendasi?ceremony=${CEREMONY}&from=2026-01-01&count=5` },
   { name: 'About', path: '/about' },
+  { name: 'Upacara', path: '/upacara/pawiwahan' },
 ];
 
 for (const route of ROUTES) {
