@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+
 import { CeremonyNav } from '@/components/ceremony-nav';
 import { DateField } from '@/components/date-field';
 import { Share } from '@/components/share';
@@ -11,6 +13,21 @@ const ISO = /^\d{4}-\d{2}-\d{2}$/;
 interface SearchParams {
   ceremony?: string;
   date?: string;
+}
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}): Promise<Metadata> {
+  const sp = await searchParams;
+  const ceremony = sp.ceremony && isCeremonyId(sp.ceremony) ? sp.ceremony : 'pawiwahan';
+  const cer = CEREMONIES.find((c) => c.id === ceremony)!;
+  return {
+    title: { absolute: `Cek hari baik ${cer.label} — Dewasa Ayu` },
+    description: `Apakah hari baik untuk ${cer.forText}? Cek dewasa ayu berdasarkan pedoman Wariga umum — rincian kalender Bali lengkap per tanggal.`,
+    alternates: { canonical: '/' },
+  };
 }
 
 export default async function Home({ searchParams }: { searchParams: Promise<SearchParams> }) {

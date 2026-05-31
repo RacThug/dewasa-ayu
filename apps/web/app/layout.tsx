@@ -28,16 +28,50 @@ const dmSans = DM_Sans({
   display: 'swap',
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+
 export const metadata: Metadata = {
-  title: 'Dewasa Ayu — Cek Hari Baik Upacara',
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'Dewasa Ayu — Cek Hari Baik Upacara Hindu Bali',
+    template: '%s — Dewasa Ayu',
+  },
   description:
     'Cek hari baik (dewasa ayu) untuk upacara Hindu Bali berdasarkan pedoman Wariga umum. Perhitungan referensi, bukan pengganti konsultasi Sulinggih.',
+  applicationName: 'Dewasa Ayu',
+  openGraph: {
+    type: 'website',
+    siteName: 'Dewasa Ayu',
+    locale: 'id_ID',
+    title: 'Dewasa Ayu — Cek Hari Baik Upacara Hindu Bali',
+    description:
+      'Cek hari baik (dewasa ayu) untuk upacara Hindu Bali berdasarkan pedoman Wariga umum.',
+  },
+  twitter: { card: 'summary_large_image' },
+  robots: { index: true, follow: true },
+};
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'Dewasa Ayu',
+  url: SITE_URL,
+  applicationCategory: 'LifestyleApplication',
+  operatingSystem: 'Web',
+  inLanguage: 'id-ID',
+  isAccessibleForFree: true,
+  description:
+    'Pencari hari baik (dewasa ayu) untuk upacara Hindu Bali berdasarkan pedoman Wariga umum.',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="id" suppressHydrationWarning className={`${cormorant.variable} ${dmSans.variable}`}>
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <ThemeProvider>
           <div className="wrap">
             <header className="site-header anim d1">

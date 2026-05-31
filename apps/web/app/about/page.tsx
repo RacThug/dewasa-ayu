@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { DividerOrnament, SealIcon } from '@/lib/icons';
 
 export const metadata: Metadata = {
-  title: 'Tentang — Dewasa Ayu',
+  title: 'Tentang',
   description:
     'Apa itu Dewasa Ayu, cara kerjanya, dan posisinya sebagai rujukan berdasarkan pedoman Wariga umum — bukan pengganti konsultasi Sulinggih atau Pemangku.',
 };
