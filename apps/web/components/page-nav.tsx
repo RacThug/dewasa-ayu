@@ -7,6 +7,7 @@ const LINKS = [
   { href: '/', label: 'Cek Hari' },
   { href: '/kalender', label: 'Kalender' },
   { href: '/rekomendasi', label: 'Rekomendasi' },
+  { href: '/about', label: 'Tentang' },
 ];
 
 export function PageNav() {
