@@ -71,7 +71,10 @@ export default async function Rekomendasi({
           <ol className="reco-list anim d4">
             {data.dates.map((d) => (
               <li key={d.date}>
-                <Link href={`/?ceremony=${ceremony}&date=${d.date}`} className="reco-card">
+                <Link
+                  href={`/?ceremony=${ceremony}&date=${d.date.slice(0, 10)}`}
+                  className="reco-card"
+                >
                   <span className="reco-date">{formatID(d.date)}</span>
                   <span className={`reco-verdict v-${d.evaluation.rating}`}>
                     {verdictText(d.evaluation.rating)}

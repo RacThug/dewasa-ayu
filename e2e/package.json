@@ -1,0 +1,21 @@
+{
+  "name": "@dewasa-ayu/e2e",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "report": "playwright show-report",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4",
+    "@dewasa-ayu/api": "workspace:*",
+    "@dewasa-ayu/types": "workspace:*",
+    "@dewasa-ayu/wariga-engine": "workspace:*",
+    "@dewasa-ayu/web": "workspace:*",
+    "@playwright/test": "^1",
+    "@types/node": "^24"
+  }
+}

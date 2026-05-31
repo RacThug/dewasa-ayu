@@ -18,6 +18,7 @@
     "format:check": "prettier --check .",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
+    "e2e": "turbo run e2e",
     "clean": "turbo run clean",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
