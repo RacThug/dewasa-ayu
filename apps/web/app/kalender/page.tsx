@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { CeremonyNav } from '@/components/ceremony-nav';
@@ -13,6 +14,24 @@ interface SearchParams {
 }
 
 const clampYear = (y: number): number => Math.min(2100, Math.max(2003, y));
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}): Promise<Metadata> {
+  const sp = await searchParams;
+  const now = new Date();
+  const ceremony = sp.ceremony && isCeremonyId(sp.ceremony) ? sp.ceremony : 'pawiwahan';
+  const year = clampYear(Number(sp.year) || now.getFullYear());
+  const month = Math.min(12, Math.max(1, Number(sp.month) || now.getMonth() + 1));
+  const cer = CEREMONIES.find((c) => c.id === ceremony)!;
+  return {
+    title: `Kalender ${cer.label} — ${monthLabel(year, month)}`,
+    description: `Kalender dewasa ayu ${cer.forText} untuk ${monthLabel(year, month)} — hari baik & kurang baik berdasarkan pedoman Wariga umum.`,
+    alternates: { canonical: '/kalender' },
+  };
+}
 
 export default async function Kalender({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const sp = await searchParams;

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { CeremonyNav } from '@/components/ceremony-nav';
@@ -11,6 +12,21 @@ interface SearchParams {
   ceremony?: string;
   from?: string;
   count?: string;
+}
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}): Promise<Metadata> {
+  const sp = await searchParams;
+  const ceremony = sp.ceremony && isCeremonyId(sp.ceremony) ? sp.ceremony : 'pawiwahan';
+  const cer = CEREMONIES.find((c) => c.id === ceremony)!;
+  return {
+    title: `Hari baik terdekat untuk ${cer.forText}`,
+    description: `Daftar hari baik (dewasa ayu) terdekat untuk ${cer.forText}, berdasarkan pedoman Wariga umum.`,
+    alternates: { canonical: '/rekomendasi' },
+  };
 }
 
 export default async function Rekomendasi({
