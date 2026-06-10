@@ -57,6 +57,17 @@ export class ApiError extends Error {
 
 const API_BASE = process.env.API_URL ?? 'http://localhost:3001/api/v1';
 
+/** User-facing copy per API error code (Bahasa Indonesia — never show the raw
+ *  English engine/API message to users; the code is the stable contract). */
+const ERROR_COPY: Record<string, string> = {
+  OUT_OF_RANGE: 'Tanggal di luar rentang yang didukung (3 Januari 2003 – 31 Desember 2100).',
+  INVALID_DATE: 'Tanggal tidak valid — periksa kembali tanggal yang dimasukkan.',
+  INVALID_PARAM: 'Permintaan tidak valid — periksa kembali tanggal yang dimasukkan.',
+  UNKNOWN_CEREMONY: 'Jenis upacara tidak dikenali.',
+  RATE_LIMITED: 'Terlalu banyak permintaan — coba lagi sebentar lagi.',
+};
+const ERROR_FALLBACK = 'Terjadi kesalahan pada layanan. Silakan coba lagi.';
+
 /** Server-side GET against the Wariga API. Throws `ApiError` on a non-2xx response. */
 async function getJSON<T>(path: string): Promise<T> {
   let res: Response;
@@ -71,7 +82,8 @@ async function getJSON<T>(path: string): Promise<T> {
       typeof body === 'object' && body !== null
         ? (body as { error?: { code?: string; message?: string } }).error
         : undefined;
-    throw new ApiError(err?.code ?? 'INTERNAL_ERROR', err?.message ?? `HTTP ${res.status}`);
+    const code = err?.code ?? 'INTERNAL_ERROR';
+    throw new ApiError(code, ERROR_COPY[code] ?? ERROR_FALLBACK);
   }
   return res.json() as Promise<T>;
 }

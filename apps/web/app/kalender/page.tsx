@@ -14,7 +14,16 @@ interface SearchParams {
   month?: string;
 }
 
-const clampYear = (y: number): number => Math.min(2100, Math.max(2003, y));
+// Full months the engine's Sasih table covers (the table itself starts
+// 2003-01-03, so January 2003 is partial and not navigable).
+const CAL_MIN = { y: 2003, m: 2 };
+const CAL_MAX = { y: 2100, m: 12 };
+
+const clampMonth = (y: number, m: number): { y: number; m: number } => {
+  if (y < CAL_MIN.y || (y === CAL_MIN.y && m < CAL_MIN.m)) return { ...CAL_MIN };
+  if (y > CAL_MAX.y || (y === CAL_MAX.y && m > CAL_MAX.m)) return { ...CAL_MAX };
+  return { y, m };
+};
 
 export async function generateMetadata({
   searchParams,
@@ -24,8 +33,10 @@ export async function generateMetadata({
   const sp = await searchParams;
   const now = new Date();
   const ceremony = sp.ceremony && isCeremonyId(sp.ceremony) ? sp.ceremony : 'pawiwahan';
-  const year = clampYear(Number(sp.year) || now.getFullYear());
-  const month = Math.min(12, Math.max(1, Number(sp.month) || now.getMonth() + 1));
+  const { y: year, m: month } = clampMonth(
+    Number(sp.year) || now.getFullYear(),
+    Math.min(12, Math.max(1, Number(sp.month) || now.getMonth() + 1)),
+  );
   const cer = CEREMONIES.find((c) => c.id === ceremony)!;
   return {
     title: `Kalender ${cer.label} — ${monthLabel(year, month)}`,
@@ -38,9 +49,10 @@ export default async function Kalender({ searchParams }: { searchParams: Promise
   const sp = await searchParams;
   const now = new Date();
   const ceremony = sp.ceremony && isCeremonyId(sp.ceremony) ? sp.ceremony : 'pawiwahan';
-  const year = clampYear(Number(sp.year) || now.getFullYear());
-  const monthRaw = Number(sp.month) || now.getMonth() + 1;
-  const month = Math.min(12, Math.max(1, monthRaw));
+  const { y: year, m: month } = clampMonth(
+    Number(sp.year) || now.getFullYear(),
+    Math.min(12, Math.max(1, Number(sp.month) || now.getMonth() + 1)),
+  );
   const cer = CEREMONIES.find((c) => c.id === ceremony)!;
 
   let data: MonthResult | null = null;
@@ -51,6 +63,8 @@ export default async function Kalender({ searchParams }: { searchParams: Promise
     errorMessage = e instanceof ApiError ? e.message : 'Terjadi kesalahan saat memuat kalender.';
   }
 
+  const atMin = year === CAL_MIN.y && month === CAL_MIN.m;
+  const atMax = year === CAL_MAX.y && month === CAL_MAX.m;
   const prev = month === 1 ? { y: year - 1, m: 12 } : { y: year, m: month - 1 };
   const next = month === 12 ? { y: year + 1, m: 1 } : { y: year, m: month + 1 };
   const navHref = (y: number, m: number): string =>
@@ -71,13 +85,25 @@ export default async function Kalender({ searchParams }: { searchParams: Promise
       </section>
 
       <nav className="cal-nav anim d4" aria-label="Navigasi bulan">
-        <Link href={navHref(prev.y, prev.m)} aria-label="Bulan sebelumnya" className="cal-arrow">
-          ‹
-        </Link>
+        {atMin ? (
+          <span className="cal-arrow is-end" aria-hidden="true">
+            ‹
+          </span>
+        ) : (
+          <Link href={navHref(prev.y, prev.m)} aria-label="Bulan sebelumnya" className="cal-arrow">
+            ‹
+          </Link>
+        )}
         <span className="cal-month">{monthLabel(year, month)}</span>
-        <Link href={navHref(next.y, next.m)} aria-label="Bulan berikutnya" className="cal-arrow">
-          ›
-        </Link>
+        {atMax ? (
+          <span className="cal-arrow is-end" aria-hidden="true">
+            ›
+          </span>
+        ) : (
+          <Link href={navHref(next.y, next.m)} aria-label="Bulan berikutnya" className="cal-arrow">
+            ›
+          </Link>
+        )}
       </nav>
 
       {errorMessage && <p className="state-note">{errorMessage}</p>}

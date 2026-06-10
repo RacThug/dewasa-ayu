@@ -200,8 +200,23 @@ export const EvaluatedDateSchema = z.object({
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
+/** Strict `YYYY-MM-DD` that is also a REAL calendar date — rejects 2026-02-31
+ *  and friends, which `new Date()` would otherwise silently roll over into the
+ *  next month (the response would then claim a date it never evaluated). */
+export const IsoDateSchema = z
+  .string()
+  .regex(ISO_DATE)
+  .refine(
+    (iso) => {
+      const [y, m, d] = iso.split('-').map(Number);
+      const date = new Date(y!, m! - 1, d!);
+      return date.getFullYear() === y && date.getMonth() === m! - 1 && date.getDate() === d;
+    },
+    { message: 'Not a real calendar date' },
+  );
+
 export const CheckQuerySchema = z.object({
-  date: z.string().regex(ISO_DATE),
+  date: IsoDateSchema,
   ceremony: CeremonyIdSchema,
 });
 
@@ -212,15 +227,15 @@ export const MonthQuerySchema = z.object({
 });
 
 export const RecommendQuerySchema = z.object({
-  from: z.string().regex(ISO_DATE),
+  from: IsoDateSchema,
   count: z.coerce.number().int().min(1).max(20),
   ceremony: CeremonyIdSchema,
 });
 
 export const RangeQuerySchema = z
   .object({
-    from: z.string().regex(ISO_DATE),
-    to: z.string().regex(ISO_DATE),
+    from: IsoDateSchema,
+    to: IsoDateSchema,
     ceremony: CeremonyIdSchema,
   })
   .refine(({ from, to }) => new Date(to).getTime() - new Date(from).getTime() <= 90 * 86_400_000, {

@@ -8,7 +8,8 @@ import { id } from 'react-day-picker/locale';
 import { formatID } from '@/lib/display';
 import { EditIcon } from '@/lib/icons';
 
-const MIN = new Date(2003, 0, 1);
+// The engine's supported Sasih range (see wariga-engine getSupportedRange()).
+const MIN = new Date(2003, 0, 3);
 const MAX = new Date(2100, 11, 31);
 
 function toDate(iso: string): Date {

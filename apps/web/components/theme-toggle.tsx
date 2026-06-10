@@ -14,7 +14,7 @@ export function ThemeToggle() {
   return (
     <button
       type="button"
-      className="tool"
+      className="tool theme"
       aria-label={isPaper ? 'Ganti ke tema malam' : 'Ganti ke tema siang'}
       onClick={() => setTheme(isPaper ? 'dark' : 'light')}
     >
