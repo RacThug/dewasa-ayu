@@ -106,7 +106,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 <ThemeToggle />
               </div>
             </header>
-            <main id="konten">{children}</main>
+            <main id="konten" tabIndex={-1}>
+              {children}
+            </main>
           </div>
 
           <footer className="site-footer">

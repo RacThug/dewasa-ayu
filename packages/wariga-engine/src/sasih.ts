@@ -13,6 +13,21 @@ import { WarigaError } from './errors';
 
 const MS_PER_DAY = 86_400_000;
 
+/**
+ * The inclusive date range the Sasih table covers (2003-01-03 .. 2100-12-31),
+ * as local-component dates (the engine reads local Y/M/D everywhere).
+ * Dates outside this range make `getSasihInfo` (and everything built on it)
+ * throw `OUT_OF_RANGE`.
+ */
+export function getSupportedRange(): { min: Date; max: Date } {
+  const epoch = new Date(SASIH_EPOCH);
+  const last = new Date(SASIH_EPOCH + SASIH_LAST_DAY * MS_PER_DAY);
+  return {
+    min: new Date(epoch.getUTCFullYear(), epoch.getUTCMonth(), epoch.getUTCDate()),
+    max: new Date(last.getUTCFullYear(), last.getUTCMonth(), last.getUTCDate()),
+  };
+}
+
 /** Count of ngunalatri (doubled-penanggal) days strictly before `dayNumber`. */
 function ngunalatriBefore(dayNumber: number): number {
   let lo = 0;

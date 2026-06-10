@@ -127,6 +127,10 @@
 :root[data-contrast='high'] .inscription .hole {
   display: none;
 }
+/* Theme choice is irrelevant while high-contrast overrides both themes. */
+:root[data-contrast='high'] .tool.theme {
+  display: none;
+}
 
 * {
   box-sizing: border-box;
@@ -180,8 +184,12 @@ body {
   border-radius: 0 0 4px 0;
   text-decoration: none;
 }
-.skip-link:focus-visible {
+.skip-link:focus {
   left: 0;
+}
+/* The skip-link target receives programmatic focus; no ring around the page. */
+main:focus-visible {
+  outline: none;
 }
 
 .wrap {
@@ -399,6 +407,9 @@ body {
 /* react-day-picker themed to Lontar (scoped to beat the package base styles) */
 .dp-panel .rdp-root {
   --rdp-accent-color: var(--accent);
+  /* Plain-color fallback first: color-mix needs 2023+ browsers, and part of our
+   * audience (elderly users) is on older Android WebViews. Same pattern below. */
+  --rdp-accent-background-color: rgba(201, 169, 104, 0.16);
   --rdp-accent-background-color: color-mix(in srgb, var(--accent) 16%, transparent);
   --rdp-today-color: var(--accent);
   --rdp-day-width: 38px;
@@ -461,6 +472,9 @@ body {
   padding: 11px 22px;
   cursor: pointer;
   box-shadow:
+    0 0 0 1px rgba(201, 169, 104, 0.2),
+    0 8px 22px -10px var(--accent-glow);
+  box-shadow:
     0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent),
     0 8px 22px -10px var(--accent-glow);
   transition:
@@ -475,6 +489,10 @@ body {
 .periksa[aria-busy='true'] {
   cursor: progress;
   opacity: 0.85;
+}
+/* Reserve width inside forms so the label swap ("Memeriksa…") doesn't shift layout. */
+.field .periksa {
+  min-width: 160px;
 }
 .periksa:active {
   transform: translateY(1px);
@@ -508,7 +526,8 @@ body {
   position: absolute;
   inset: 3px;
   border-radius: 3px;
-  border: 1px solid color-mix(in srgb, var(--accent) 12%, transparent);
+  border: 1px solid rgba(201, 169, 104, 0.1);
+  border-color: color-mix(in srgb, var(--accent) 12%, transparent);
   pointer-events: none;
 }
 .inscription .hole {
@@ -618,6 +637,7 @@ body {
 .meter {
   position: relative;
   height: 3px;
+  background: rgba(127, 112, 88, 0.3);
   background: color-mix(in srgb, var(--text-faint) 32%, transparent);
   border-radius: 2px;
 }
@@ -802,6 +822,7 @@ body {
   border: var(--bw) solid var(--edge);
   border-radius: 3px;
   padding: 6px 13px;
+  background: rgba(127, 112, 88, 0.06);
   background: color-mix(in srgb, var(--text-faint) 8%, transparent);
   transition:
     border-color 0.18s ease-out,
@@ -1084,6 +1105,13 @@ body {
 .cal-arrow:hover {
   color: var(--accent);
 }
+.cal-arrow.is-end {
+  opacity: 0.25;
+  cursor: default;
+}
+.cal-arrow.is-end:hover {
+  color: var(--text-soft);
+}
 .cal-month {
   font-family: var(--serif);
   font-style: italic;
@@ -1130,6 +1158,7 @@ body {
     background 0.18s ease-out;
 }
 .cal-cell:hover {
+  background: rgba(127, 112, 88, 0.08);
   background: color-mix(in srgb, var(--text-faint) 10%, transparent);
   border-top-color: var(--edge);
 }
@@ -1225,6 +1254,7 @@ body {
   border: var(--bw) solid var(--edge);
   border-radius: 4px;
   text-decoration: none;
+  background: rgba(127, 112, 88, 0.03);
   background: color-mix(in srgb, var(--text-faint) 5%, transparent);
   transition:
     border-color 0.18s ease-out,
