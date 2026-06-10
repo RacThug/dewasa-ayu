@@ -22,7 +22,8 @@
     },
     "e2e": {
       "dependsOn": ["^build"],
-      "cache": false
+      "cache": false,
+      "env": ["E2E_WEB_PORT", "E2E_API_PORT", "CI"]
     },
     "clean": {
       "cache": false

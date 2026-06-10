@@ -10,7 +10,7 @@ test.describe('Tentang (/about)', () => {
   test('the CTA links back to Cek Hari (home)', async ({ page }) => {
     await page.goto('/about');
     await page.locator('.about-cta').getByRole('link', { name: 'Cek Hari' }).click();
-    await expect(page).toHaveURL(/localhost:3000\/$/);
+    await expect(page).toHaveURL(/localhost:\d+\/$/);
     await expect(page.locator('#verdict-h')).toBeVisible();
   });
 });

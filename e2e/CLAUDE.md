@@ -11,6 +11,7 @@ Auto-loaded when working in `e2e/`. Conventions for writing/running E2E tests he
 ## Running
 
 - `pnpm e2e` (repo root) — builds web + API, starts them, runs every spec on desktop + mobile. The canonical command.
+- Ports 3000/3001 taken (e.g. another project's containers)? Override: `$env:E2E_WEB_PORT='3100'; $env:E2E_API_PORT='3101'; pnpm e2e`.
 - `pnpm --filter @dewasa-ayu/e2e e2e:ui` — Playwright UI mode for authoring/debugging. Run `pnpm build` first, or have `pnpm dev` running (the config reuses already-running servers locally).
 - `pnpm --filter @dewasa-ayu/e2e report` — open the last HTML report.
 - One-time: `pnpm --filter @dewasa-ayu/e2e exec playwright install chromium`.

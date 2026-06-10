@@ -6,11 +6,25 @@ import { Cormorant_Garamond, DM_Sans } from 'next/font/google';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
+import { ContrastToggle } from '@/components/contrast-toggle';
 import { FontToggle } from '@/components/font-toggle';
 import { PageNav } from '@/components/page-nav';
 import { ThemeProvider } from '@/components/theme-provider';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { LeafMark, SealIcon } from '@/lib/icons';
+
+// Runs before paint so saved (or OS-preferred) contrast and font-scale apply
+// without a flash. next-themes does the same for the color theme.
+const PREFS_SCRIPT = `(function () {
+  try {
+    var d = document.documentElement;
+    var c = localStorage.getItem('contrast');
+    if (c === 'high' || (c === null && window.matchMedia('(prefers-contrast: more)').matches))
+      d.setAttribute('data-contrast', 'high');
+    var f = localStorage.getItem('font-scale');
+    if (f === 'large' || f === 'xlarge') d.setAttribute('data-font-scale', f);
+  } catch (e) {}
+})();`;
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -68,11 +82,15 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="id" suppressHydrationWarning className={`${cormorant.variable} ${dmSans.variable}`}>
       <body>
+        <script dangerouslySetInnerHTML={{ __html: PREFS_SCRIPT }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <ThemeProvider>
+          <a className="skip-link" href="#konten">
+            Lewati ke konten
+          </a>
           <div className="wrap">
             <header className="site-header anim d1">
               <Link className="brand" href="/" aria-label="Dewasa Ayu — beranda">
@@ -84,10 +102,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <PageNav />
               <div className="tools">
                 <FontToggle />
+                <ContrastToggle />
                 <ThemeToggle />
               </div>
             </header>
-            {children}
+            <main id="konten">{children}</main>
           </div>
 
           <footer className="site-footer">

@@ -15,12 +15,11 @@ export function FontToggle() {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    const saved = localStorage.getItem('font-scale') as Scale | null;
-    const i = saved ? SCALES.indexOf(saved) : 0;
-    if (i > 0) {
-      setIndex(i);
-      apply(SCALES[i]!);
-    }
+    // The layout's inline script already applied the saved scale before paint;
+    // here we only sync component state with the attribute it set.
+    const applied = document.documentElement.getAttribute('data-font-scale') as Scale | null;
+    const i = applied ? SCALES.indexOf(applied) : 0;
+    if (i > 0) setIndex(i);
   }, []);
 
   const cycle = (): void => {

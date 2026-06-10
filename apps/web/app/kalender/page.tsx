@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { CeremonyNav } from '@/components/ceremony-nav';
 import { ApiError, CEREMONIES, getMonth, isCeremonyId, type MonthResult } from '@/lib/api';
 import { monthLabel, ratingMark, todayISO, verdictText } from '@/lib/display';
+import { DividerOrnament } from '@/lib/icons';
 
 const HEADS = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 
@@ -87,6 +88,8 @@ export default async function Kalender({ searchParams }: { searchParams: Promise
           {data.summary.cautionCount} &nbsp;·&nbsp; kurang baik: {data.summary.badCount}
         </p>
       )}
+
+      <DividerOrnament />
     </>
   );
 }
