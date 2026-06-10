@@ -9,9 +9,25 @@ const ROUTES: { name: string; path: string }[] = [
   { name: 'Upacara', path: '/upacara/pawiwahan' },
 ];
 
-for (const route of ROUTES) {
-  test(`${route.name} has no serious/critical WCAG violations`, async ({ page, a11y }) => {
-    await page.goto(route.path);
-    await a11y.check();
-  });
+// Every appearance variant must pass — night, paper, and high-contrast.
+// Keys mirror what the app persists: next-themes' `theme` and our `contrast`.
+const VARIANTS: { name: string; storage: [string, string][] }[] = [
+  { name: 'night', storage: [['theme', 'dark']] },
+  { name: 'paper', storage: [['theme', 'light']] },
+  { name: 'high contrast', storage: [['contrast', 'high']] },
+];
+
+for (const variant of VARIANTS) {
+  for (const route of ROUTES) {
+    test(`${route.name} [${variant.name}] has no serious/critical WCAG violations`, async ({
+      page,
+      a11y,
+    }) => {
+      await page.addInitScript((entries) => {
+        for (const [key, value] of entries) localStorage.setItem(key, value);
+      }, variant.storage);
+      await page.goto(route.path);
+      await a11y.check();
+    });
+  }
 }

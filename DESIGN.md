@@ -50,16 +50,16 @@ The Lontar palette starts from aged-palm-leaf and ink, not from a brand-color pi
 
 ### Paper theme (daytime variant — `light` in UI-001)
 
-| Token        | Hex       | Role                                                 |
-| ------------ | --------- | ---------------------------------------------------- |
-| `paper`      | `#F4ECDA` | Page background — aged palm-leaf cream               |
-| `paper-deep` | `#EADFC4` | Recessed surfaces, card backgrounds                  |
-| `paper-edge` | `#D7C8A4` | Borders, dividers, deckle-edge feel                  |
-| `ink`        | `#3A2E1F` | Primary text — dark sepia, never pure black          |
-| `ink-soft`   | `#5C4C36` | Secondary text                                       |
-| `ink-faint`  | `#8A7960` | Tertiary text, hints, metadata                       |
-| `ochre`      | `#A87A2A` | Emphasis, headings, ornaments — burnished gold-brown |
-| `ochre-soft` | `#C8A055` | Hover states, soft highlights                        |
+| Token        | Hex       | Role                                                                                               |
+| ------------ | --------- | -------------------------------------------------------------------------------------------------- |
+| `paper`      | `#F4ECDA` | Page background — aged palm-leaf cream                                                             |
+| `paper-deep` | `#EADFC4` | Recessed surfaces, card backgrounds                                                                |
+| `paper-edge` | `#D7C8A4` | Borders, dividers, deckle-edge feel                                                                |
+| `ink`        | `#3A2E1F` | Primary text — dark sepia, never pure black                                                        |
+| `ink-soft`   | `#5C4C36` | Secondary text                                                                                     |
+| `ink-faint`  | `#73654D` | Tertiary text, hints, metadata (AA on `paper`)                                                     |
+| `ochre`      | `#84601F` | Emphasis, headings, ornaments — burnished gold-brown (darkened from `#A87A2A` for WCAG AA as text) |
+| `ochre-soft` | `#A87A2A` | Borders, large-text accents (not body-size text)                                                   |
 
 ### Night theme (default — `dark` in UI-001)
 
@@ -70,17 +70,17 @@ The Lontar palette starts from aged-palm-leaf and ink, not from a brand-color pi
 | `night-edge`  | `#3A2F23` | Borders                                              |
 | `ember`       | `#E8D9B5` | Primary text — warm off-white like firelight on page |
 | `ember-soft`  | `#B8A988` | Secondary text                                       |
-| `ember-faint` | `#7A6C53` | Tertiary text                                        |
+| `ember-faint` | `#998A6F` | Tertiary text (AA on `night`)                        |
 | `gold`        | `#C4A265` | Emphasis (kept from UI-001 for continuity)           |
 | `gold-soft`   | `#D8BC8B` | Hover states                                         |
 
 ### Semantic colors (both themes — muted, never saturated)
 
-| Token     | Paper hex | Night hex | Role                                |
-| --------- | --------- | --------- | ----------------------------------- |
-| `ayu`     | `#5C7A4F` | `#7DA46B` | Auspicious (sage green, not vivid)  |
-| `caution` | `#6B6A4A` | `#A09B6E` | Caution (muted olive-gold)          |
-| `ala`     | `#8A4B47` | `#B36A66` | Inauspicious (brick, not red-alert) |
+| Token     | Paper hex | Night hex | Role                                                            |
+| --------- | --------- | --------- | --------------------------------------------------------------- |
+| `ayu`     | `#527046` | `#7DA46B` | Auspicious (sage green, not vivid; paper value darkened for AA) |
+| `caution` | `#6B6A4A` | `#A09B6E` | Caution (muted olive-gold)                                      |
+| `ala`     | `#8A4B47` | `#B36A66` | Inauspicious (brick, not red-alert)                             |
 
 Semantic colors are accompanied by an icon and text — color is never the only signal (WCAG 1.4.1).
 
@@ -215,5 +215,6 @@ Do not invoke `frontend-design` to make decisions for this file. This file is th
 
 ## Changelog
 
+- v0.2.1 — 2026-06-10 — **WCAG AA pass + high-contrast variant implemented.** Tertiary text lightened/darkened per theme (`ember-faint #998A6F`, `ink-faint #73654D`); paper `ochre` darkened to `#84601F` (old value fails 4.5:1 as text/button background — kept as `ochre-soft` for borders and large-text accents); paper `ayu` darkened to `#527046`. High-contrast variant (pure ink on pure paper, no ochre, 2 px borders, no texture/glow) shipped with a header toggle + automatic `prefers-contrast: more`. OS `prefers-color-scheme` now picks the initial theme. Functional motion added per the Motion section: 600 ms score-meter fill, submit pending feedback, consistent `:focus-visible` ring, skip link.
 - v0.2.0 — 2026-05-29 — **Night (lamplight) theme promoted to default**; paper demoted to the daytime / light-mode variant (re-aligns with UI-001's original dark-first default). Clarified the Black + Gold guardrail: the default dark is warm oil-lamp (soft brown-black + muted burnished gold), explicitly **not** glossy luxury Black + Gold. Updated core principle 2, the aesthetic-philosophy opening, palette section labels, and the reconciliations note. Decision made after reviewing two home-screen mockups (paper vs. night, in `mockups/`); the lamplight direction is more distinctive and memorable for a consumer product while staying inside the cultural guardrail.
 - v0.1.0 — 2026-05-28 — Initial DESIGN.md drafted from brainstorm. Lontar manuscript revival direction chosen. Defines aesthetic philosophy, voice, full color palette (paper + night + high-contrast), typography rules, layout DNA, five signature patterns, imagery rules, motion, component map, and reconciliations needed against UI-001 tokens.

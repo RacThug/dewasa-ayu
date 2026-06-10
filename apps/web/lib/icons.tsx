@@ -58,6 +58,15 @@ export function MoonIcon({ className }: IconProps) {
   );
 }
 
+export function ContrastIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.3" />
+      <path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 export function EditIcon({ className }: IconProps) {
   return (
     <svg

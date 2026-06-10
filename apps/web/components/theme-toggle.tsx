@@ -6,17 +6,17 @@ import { useEffect, useState } from 'react';
 import { MoonIcon, SunIcon } from '@/lib/icons';
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  const isPaper = mounted && theme === 'paper';
+  const isPaper = mounted && resolvedTheme === 'light';
   return (
     <button
       type="button"
       className="tool"
       aria-label={isPaper ? 'Ganti ke tema malam' : 'Ganti ke tema siang'}
-      onClick={() => setTheme(isPaper ? 'night' : 'paper')}
+      onClick={() => setTheme(isPaper ? 'dark' : 'light')}
     >
       {isPaper ? <MoonIcon /> : <SunIcon />}
     </button>

@@ -5,6 +5,7 @@ import { CeremonyNav } from '@/components/ceremony-nav';
 import { RecommendForm } from '@/components/recommend-form';
 import { ApiError, CEREMONIES, getRecommend, isCeremonyId, type RecommendResult } from '@/lib/api';
 import { formatID, todayISO, verdictText } from '@/lib/display';
+import { DividerOrnament } from '@/lib/icons';
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -105,6 +106,8 @@ export default async function Rekomendasi({
           </ol>
         </>
       )}
+
+      <DividerOrnament />
     </>
   );
 }

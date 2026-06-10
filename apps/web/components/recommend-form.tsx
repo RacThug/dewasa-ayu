@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, useState, useTransition } from 'react';
 
 import { DatePicker } from '@/components/date-picker';
 
@@ -17,10 +17,13 @@ export function RecommendForm({
   const router = useRouter();
   const [fromValue, setFromValue] = useState(from);
   const [countValue, setCountValue] = useState(count);
+  const [pending, startTransition] = useTransition();
 
   const submit = (e: FormEvent): void => {
     e.preventDefault();
-    router.push(`/rekomendasi?ceremony=${ceremony}&from=${fromValue}&count=${countValue}`);
+    startTransition(() => {
+      router.push(`/rekomendasi?ceremony=${ceremony}&from=${fromValue}&count=${countValue}`);
+    });
   };
 
   return (
@@ -40,8 +43,8 @@ export function RecommendForm({
           ))}
         </select>
       </label>
-      <button className="periksa" type="submit">
-        Cari Hari Baik
+      <button className="periksa" type="submit" aria-busy={pending || undefined}>
+        {pending ? 'Mencari…' : 'Cari Hari Baik'}
       </button>
     </form>
   );
