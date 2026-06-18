@@ -8,9 +8,8 @@ import type { ReactNode } from 'react';
 
 import { ContrastToggle } from '@/components/contrast-toggle';
 import { FontToggle } from '@/components/font-toggle';
-import { PageNav } from '@/components/page-nav';
+import { ThemeCycle } from '@/components/theme-cycle';
 import { ThemeProvider } from '@/components/theme-provider';
-import { ThemeToggle } from '@/components/theme-toggle';
 import { LeafMark, SealIcon } from '@/lib/icons';
 
 // Runs before paint so saved (or OS-preferred) contrast and font-scale apply
@@ -99,11 +98,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   Dewasa Ayu<small>Pencari Hari Wariga</small>
                 </span>
               </Link>
-              <PageNav />
               <div className="tools">
                 <FontToggle />
                 <ContrastToggle />
-                <ThemeToggle />
+                <ThemeCycle />
               </div>
             </header>
             <main id="konten" tabIndex={-1}>

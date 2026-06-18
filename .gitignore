@@ -42,3 +42,9 @@ coverage/
 
 # Next.js generated type shim (regenerated on build)
 next-env.d.ts
+
+# design-sync (Claude Design) — build artifacts & staged scripts (durable inputs under .design-sync/ ARE tracked)
+/ds-bundle/
+/.ds-sync/
+/.design-sync/.cache/
+/.design-sync/node_modules

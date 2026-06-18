@@ -17,6 +17,10 @@ export default tseslint.config(
       '**/.turbo/**',
       '**/coverage/**',
       'mockups/**',
+      // Design-process assets, not app source: the Claude Design handoff (raw
+      // browser-global HTML/JS artifacts) and the design-sync re-sync tooling.
+      'docs/design/handoff-senja/**',
+      '.design-sync/**',
       'prisma/generated/**',
       'packages/constants/src/sasih-data.ts',
     ],

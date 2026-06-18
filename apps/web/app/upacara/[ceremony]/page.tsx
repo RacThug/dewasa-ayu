@@ -116,10 +116,10 @@ export default async function Upacara({ params }: { params: Promise<{ ceremony: 
           <Link className="periksa" href={`/?ceremony=${cer.id}`}>
             Cek Hari
           </Link>
-          <Link className="up-link" href={`/kalender?ceremony=${cer.id}`}>
+          <Link className="up-link" href={`/?ceremony=${cer.id}&scrollTo=kalender`}>
             Lihat kalender
           </Link>
-          <Link className="up-link" href={`/rekomendasi?ceremony=${cer.id}`}>
+          <Link className="up-link" href={`/?ceremony=${cer.id}&scrollTo=rekomendasi`}>
             Cari hari baik
           </Link>
         </div>

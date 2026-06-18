@@ -174,6 +174,87 @@ export function VerdictGlyph({ className }: IconProps) {
   );
 }
 
+export function ShareUpIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M12 3v12M12 3 8 7M12 3l4 4" />
+      <path d="M5 12v7h14v-7" />
+    </svg>
+  );
+}
+
+/** Auto (follow system) — a half-filled disc. */
+export function AutoThemeIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" />
+    </svg>
+  );
+}
+
+/** Per-ceremony glyph (decorative) for the filter chips. */
+export function CeremonyIcon({ id, className }: IconProps & { id: string }) {
+  const common = {
+    className,
+    viewBox: '0 0 24 24',
+    'aria-hidden': true as const,
+  };
+  switch (id) {
+    case 'pawiwahan': // two rings
+      return (
+        <svg {...common} fill="none" stroke="currentColor" strokeWidth="1.7">
+          <circle cx="9" cy="12" r="5.5" />
+          <circle cx="15" cy="12" r="5.5" />
+        </svg>
+      );
+    case 'manusa_yadnya': // sun / life
+      return (
+        <svg {...common} fill="none" stroke="currentColor" strokeWidth="1.7">
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2.5v2.4M12 19.1V21.5M2.5 12h2.4M19.1 12H21.5M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19" />
+        </svg>
+      );
+    case 'dewa_yadnya': // triangle (meru / temple)
+      return (
+        <svg {...common} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round">
+          <path d="M12 3 21 20H3z" />
+        </svg>
+      );
+    case 'pitra_yadnya': // leaf (ancestral)
+      return (
+        <svg {...common} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round">
+          <path d="M5 19C5 10 11 5 19 5c0 8-5 14-14 14z" />
+          <path d="M5 19C9 15 12 12 16 9" />
+        </svg>
+      );
+    case 'pembangunan': // diamond (foundation)
+      return (
+        <svg {...common} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round">
+          <path d="M12 3 21 12 12 21 3 12z" />
+        </svg>
+      );
+    case 'usaha': // three dots (commerce / all)
+    default:
+      return (
+        <svg {...common} fill="currentColor">
+          <circle cx="6" cy="12" r="2.1" />
+          <circle cx="12" cy="12" r="2.1" />
+          <circle cx="18" cy="12" r="2.1" />
+        </svg>
+      );
+  }
+}
+
 export function DividerOrnament() {
   return (
     <div className="divider" aria-hidden="true">
