@@ -1,113 +1,25 @@
-import type { Metadata } from 'next';
-import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
-import { CeremonyNav } from '@/components/ceremony-nav';
-import { RecommendForm } from '@/components/recommend-form';
-import { ApiError, CEREMONIES, getRecommend, isCeremonyId, type RecommendResult } from '@/lib/api';
-import { formatID, todayISO, verdictText } from '@/lib/display';
-import { DividerOrnament } from '@/lib/icons';
+import { isCeremonyId } from '@/lib/api';
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
 
 interface SearchParams {
   ceremony?: string;
   from?: string;
-  count?: string;
 }
 
-export async function generateMetadata({
-  searchParams,
-}: {
-  searchParams: Promise<SearchParams>;
-}): Promise<Metadata> {
-  const sp = await searchParams;
-  const ceremony = sp.ceremony && isCeremonyId(sp.ceremony) ? sp.ceremony : 'pawiwahan';
-  const cer = CEREMONIES.find((c) => c.id === ceremony)!;
-  return {
-    title: `Hari baik terdekat untuk ${cer.forText}`,
-    description: `Daftar hari baik (dewasa ayu) terdekat untuk ${cer.forText}, berdasarkan pedoman Wariga umum.`,
-    alternates: { canonical: '/rekomendasi' },
-  };
-}
-
-export default async function Rekomendasi({
+// Recommendations now live on the consolidated home view (nearest good days are
+// derived from the selected date). Preserve ceremony + start date for old links.
+export default async function RekomendasiRedirect({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>;
 }) {
   const sp = await searchParams;
-  const ceremony = sp.ceremony && isCeremonyId(sp.ceremony) ? sp.ceremony : 'pawiwahan';
-  const from = sp.from && ISO.test(sp.from) ? sp.from : todayISO();
-  const count = Math.min(20, Math.max(1, Number(sp.count) || 5));
-  const cer = CEREMONIES.find((c) => c.id === ceremony)!;
-
-  let data: RecommendResult | null = null;
-  let errorMessage: string | null = null;
-  try {
-    data = await getRecommend(from, count, ceremony);
-  } catch (e) {
-    errorMessage = e instanceof ApiError ? e.message : 'Terjadi kesalahan saat mencari hari baik.';
-  }
-
-  const noneFound = data !== null && data.dates.length === 0;
-  const partial = data !== null && data.capReached && data.dates.length > 0;
-
-  return (
-    <>
-      <CeremonyNav
-        active={ceremony}
-        hrefFor={(id) => `/rekomendasi?ceremony=${id}&from=${from}&count=${count}`}
-      />
-
-      <section className="ask anim d3" aria-labelledby="reco-h">
-        <p className="eyebrow">Berdasarkan pedoman Wariga umum</p>
-        <h1 id="reco-h">
-          Hari baik terdekat
-          <br />
-          untuk <span className="pick">{cer.forText}</span>
-        </h1>
-        <RecommendForm ceremony={ceremony} from={from} count={count} />
-      </section>
-
-      {errorMessage && <p className="state-note">{errorMessage}</p>}
-
-      {noneFound && (
-        <p className="state-note">
-          Tidak ditemukan hari ayu dalam 365 hari ke depan untuk {cer.forText}.
-        </p>
-      )}
-
-      {data && data.dates.length > 0 && (
-        <>
-          {partial && (
-            <p className="note" style={{ marginBottom: 'var(--s4)' }}>
-              Hanya ditemukan {data.dates.length} hari ayu dari {count} yang diminta dalam setahun
-              ke depan.
-            </p>
-          )}
-          <ol className="reco-list anim d4">
-            {data.dates.map((d) => (
-              <li key={d.date}>
-                <Link
-                  href={`/?ceremony=${ceremony}&date=${d.date.slice(0, 10)}`}
-                  className="reco-card"
-                >
-                  <span className="reco-date">{formatID(d.date)}</span>
-                  <span className={`reco-verdict v-${d.evaluation.rating}`}>
-                    {verdictText(d.evaluation.rating)}
-                  </span>
-                  <span className="reco-score">
-                    {Math.round(d.evaluation.pct)}
-                    <sup>%</sup>
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ol>
-        </>
-      )}
-
-      <DividerOrnament />
-    </>
-  );
+  const params = new URLSearchParams();
+  if (sp.ceremony && isCeremonyId(sp.ceremony)) params.set('ceremony', sp.ceremony);
+  if (sp.from && ISO.test(sp.from)) params.set('date', sp.from);
+  params.set('scrollTo', 'rekomendasi');
+  redirect(`/?${params.toString()}`);
 }

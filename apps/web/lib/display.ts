@@ -2,7 +2,18 @@ import type { Check, Rating } from '@dewasa-ayu/types';
 
 import type { WireInfo } from './api';
 
-const cap = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
+/** Capitalize the first letter (Wariga values are lowercase in the engine). */
+export const cap = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
+
+/**
+ * Compact verdict for the consolidated home view: traditional word (Ayu/Madya/Ala)
+ * + a humble sub-label that keeps the "disarankan/dihindari" voice (never larangan).
+ */
+export const SENJA_VERDICT: Record<Rating, { word: string; sub: string; cls: string }> = {
+  ayu: { word: 'Ayu', sub: 'Baik · disarankan', cls: 'is-ayu' },
+  caution: { word: 'Madya', sub: 'Netral · perlu pertimbangan', cls: 'is-caution' },
+  bad: { word: 'Ala', sub: 'Kurang baik · dihindari', cls: 'is-bad' },
+};
 
 /** Verdict presentation per rating. Humble wording (DESIGN.md voice & tone). */
 export const VERDICT: Record<Rating, { lead: string; emph: string; sub: string; cls: string }> = {
