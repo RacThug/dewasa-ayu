@@ -86,7 +86,7 @@
   --ayu: #527046; /* darkened from #5c7a4f — AA as text on paper */
   --caution: #6b6a4a;
   --ala: #8a4b47;
-  --grain-opacity: 0.03;
+  --grain-opacity: 0.04;
   --glow: rgba(168, 122, 42, 0.07);
   --band: rgba(58, 46, 31, 0.02);
   --accent-glow: rgba(168, 122, 42, 0.22);
@@ -2198,4 +2198,17 @@ main:focus-visible {
   .app-controls .dp-trigger .d {
     font-size: 22px;
   }
+}
+
+/* UX Polish: Drop Cap Utility */
+.drop-cap::first-letter {
+  float: left;
+  font-family: var(--serif);
+  font-size: 3.8em;
+  line-height: 0.8;
+  padding-top: 0.1em;
+  padding-right: 0.15em;
+  padding-left: 0.05em;
+  color: var(--accent);
+  font-weight: 500;
 }

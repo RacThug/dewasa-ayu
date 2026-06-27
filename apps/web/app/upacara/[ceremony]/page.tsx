@@ -74,7 +74,7 @@ export default async function Upacara({ params }: { params: Promise<{ ceremony: 
       </section>
 
       <article className="about anim d3">
-        <p className="about-lead">
+        <p className="about-lead drop-cap">
           {info.lead} {info.body}
         </p>
 

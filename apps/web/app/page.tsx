@@ -79,7 +79,7 @@ export default async function Home(props: {
           <div className="sub-grid">
             {checkR.status === 'fulfilled' ? (
               <>
-                <Rincian result={checkR.value} />
+                <Rincian result={checkR.value} date={date} />
                 <Padewasan result={checkR.value} />
               </>
             ) : null}

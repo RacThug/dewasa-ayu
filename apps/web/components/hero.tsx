@@ -1,3 +1,7 @@
+'use client';
+
+import { motion } from 'framer-motion';
+
 import { ShareButton } from '@/components/share-button';
 import { CEREMONIES, type CheckResult } from '@/lib/api';
 import { cap, formatID, SENJA_VERDICT } from '@/lib/display';
@@ -29,7 +33,14 @@ export function Hero({
   ];
 
   return (
-    <section className={`hero ${v.cls}`} aria-labelledby="verdict-h">
+    <motion.section
+      key={date + cer.id}
+      initial={{ opacity: 0, y: 4 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.22, ease: 'easeOut' }}
+      className={`hero ${v.cls}`}
+      aria-labelledby="verdict-h"
+    >
       <div className="hero-top">
         <div className="hero-when">
           <span className="hero-eyebrow">{formatID(date)}</span>
@@ -51,7 +62,12 @@ export function Hero({
           </div>
           <div className="hero-sub">{v.sub}</div>
           <div className="hero-bar" role="img" aria-label={`${pct} dari 100`}>
-            <span className="hero-fill" style={{ width: `${pct}%` }} />
+            <motion.span
+              className="hero-fill"
+              initial={{ width: 0 }}
+              animate={{ width: `${pct}%` }}
+              transition={{ duration: 0.6, ease: 'easeOut', delay: 0.1 }}
+            />
           </div>
         </div>
       </div>
@@ -71,6 +87,6 @@ export function Hero({
         Skor adalah tingkat kecocokan menurut pedoman Wariga umum — bersifat <em>estimasi</em>,
         bukan ketentuan mutlak.
       </p>
-    </section>
+    </motion.section>
   );
 }
