@@ -1,10 +1,11 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useQueryStates } from 'nuqs';
 import { useTransition } from 'react';
 
 import { DatePicker } from '@/components/date-picker';
 import { todayISO } from '@/lib/display';
+import { searchParamsParsers } from '@/lib/search-params';
 
 // The engine's supported Sasih range (see wariga-engine getSupportedRange()).
 const MIN = '2003-01-03';
@@ -25,18 +26,18 @@ function shift(iso: string, days: number): string {
 }
 
 /**
- * Date stepper for the consolidated home view. Every change navigates (URL state):
- * `date` is the selected day and `view` follows it so the calendar tracks the day.
+ * Date stepper for the consolidated home view.
+ * Utilizes `nuqs` useQueryStates for type-safe and shallow URL updates.
  */
 export function DateControls({ ceremony, date }: { ceremony: string; date: string }) {
-  const router = useRouter();
+  const [, setQuery] = useQueryStates(searchParamsParsers, { shallow: false }); // Disable shallow to let server re-fetch Data
   const [pending, startTransition] = useTransition();
 
   const go = (iso: string): void => {
     const clamped = clampISO(iso);
     const view = clamped.slice(0, 7); // YYYY-MM
     startTransition(() => {
-      router.push(`/?ceremony=${ceremony}&date=${clamped}&view=${view}`);
+      setQuery({ ceremony, date: clamped, view });
     });
   };
 
