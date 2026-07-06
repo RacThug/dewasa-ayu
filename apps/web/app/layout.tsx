@@ -2,7 +2,7 @@ import './globals.css';
 import 'react-day-picker/style.css';
 
 import type { Metadata } from 'next';
-import { Cormorant_Garamond, DM_Sans } from 'next/font/google';
+import { Besley, Libre_Franklin } from 'next/font/google';
 import Link from 'next/link';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import type { ReactNode } from 'react';
@@ -11,7 +11,7 @@ import { ContrastToggle } from '@/components/contrast-toggle';
 import { FontToggle } from '@/components/font-toggle';
 import { ThemeCycle } from '@/components/theme-cycle';
 import { ThemeProvider } from '@/components/theme-provider';
-import { LeafMark, SealIcon } from '@/lib/icons';
+import { SealIcon } from '@/lib/icons';
 
 // Runs before paint so saved (or OS-preferred) contrast and font-scale apply
 // without a flash. next-themes does the same for the color theme.
@@ -26,19 +26,18 @@ const PREFS_SCRIPT = `(function () {
   } catch (e) {}
 })();`;
 
-const cormorant = Cormorant_Garamond({
+const besley = Besley({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  style: ['normal', 'italic'],
-  variable: '--font-cormorant',
+  weight: ['700', '800'],
+  variable: '--font-besley',
   display: 'swap',
 });
 
-const dmSans = DM_Sans({
+const franklin = Libre_Franklin({
   subsets: ['latin'],
-  weight: ['400', '500', '600'],
+  weight: ['400', '600'],
   style: ['normal', 'italic'],
-  variable: '--font-dmsans',
+  variable: '--font-franklin',
   display: 'swap',
 });
 
@@ -80,7 +79,7 @@ const jsonLd = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="id" suppressHydrationWarning className={`${cormorant.variable} ${dmSans.variable}`}>
+    <html lang="id" suppressHydrationWarning className={`${besley.variable} ${franklin.variable}`}>
       <body>
         <script dangerouslySetInnerHTML={{ __html: PREFS_SCRIPT }} />
         <script
@@ -92,12 +91,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <a className="skip-link" href="#konten">
               Lewati ke konten
             </a>
+            {/* The calendar's binding strip — signature pattern #4. */}
+            <div className="redband" aria-hidden="true" />
             <div className="wrap">
-              <header className="site-header anim d1">
+              <header className="masthead anim d1">
                 <Link className="brand" href="/" aria-label="Dewasa Ayu — beranda">
-                  <LeafMark className="leaf-mark" />
                   <span className="name">
-                    Dewasa Ayu<small>Pencari Hari Wariga</small>
+                    Dewasa <em>Ayu</em>
+                    <small>Pencari Hari Wariga</small>
                   </span>
                 </Link>
                 <div className="tools">

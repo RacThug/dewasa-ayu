@@ -2,7 +2,7 @@ import type { CeremonyId } from '@dewasa-ayu/types';
 import { createSearchParamsCache, parseAsString } from 'nuqs/server';
 
 import { CEREMONIES } from './api';
-import { todayISO } from './display';
+import { clampMonth, todayISO } from './display';
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
 const VIEW = /^\d{4}-\d{2}$/;
@@ -27,7 +27,13 @@ export function getValidatedSearchParams(
     CEREMONIES.some((c) => c.id === sp.ceremony) ? sp.ceremony : 'pawiwahan'
   ) as CeremonyId;
   const date = sp.date && ISO.test(sp.date) ? sp.date : todayISO();
-  const rawView = sp.view && VIEW.test(sp.view) ? sp.view : date.slice(0, 7);
+  const requested = sp.view && VIEW.test(sp.view) ? sp.view : date.slice(0, 7);
+
+  // Clamp the viewed month into the engine's supported Sasih range so an
+  // out-of-range ?view= (old bookmarks, hand-edited URLs) degrades gracefully.
+  const [vy, vm] = requested.split('-').map(Number);
+  const clamped = clampMonth(vy!, vm!);
+  const rawView = `${clamped.y}-${String(clamped.m).padStart(2, '0')}`;
 
   return { ceremony, date, rawView };
 }

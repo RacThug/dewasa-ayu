@@ -89,9 +89,10 @@ export default function About() {
             Cara membaca hasil
           </h2>
           <p>
-            Hasil ditampilkan dalam tiga tingkat: <span className="v-ayu">Dewasa ayu</span>{' '}
-            (disarankan), <span className="v-caution">Kurang ideal</span> (perlu pertimbangan), dan{' '}
-            <span className="v-bad">Kurang baik</span> (pertimbangkan tanggal lain).
+            Hasil ditampilkan dalam tiga tingkat: <span className="v-ayu">Ayu</span> (disarankan),{' '}
+            <span className="v-caution">Madya</span> (perlu pertimbangan), dan{' '}
+            <span className="v-bad">Ala</span> (sebaiknya dihindari) — mengikuti penanda ●, ◐, dan ✕
+            pada kalender.
           </p>
           <p>
             Angka skor hanyalah ringkasan dari faktor-faktor di bawahnya — yang selalu kami

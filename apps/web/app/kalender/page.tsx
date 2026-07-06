@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 
 import { isCeremonyId } from '@/lib/api';
+import { clampMonth } from '@/lib/display';
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -24,8 +25,10 @@ export default async function KalenderRedirect({
   if (sp.date && ISO.test(sp.date)) params.set('date', sp.date);
   const y = Number(sp.year);
   const m = Number(sp.month);
-  if (y >= 2003 && y <= 2100 && m >= 1 && m <= 12) {
-    params.set('view', `${y}-${String(m).padStart(2, '0')}`);
+  if (Number.isInteger(y) && Number.isInteger(m) && m >= 1 && m <= 12) {
+    // Clamp into the supported range (restores the pre-consolidation #62 behaviour).
+    const v = clampMonth(y, m);
+    params.set('view', `${v.y}-${String(v.m).padStart(2, '0')}`);
   }
   params.set('scrollTo', 'kalender');
   redirect(`/?${params.toString()}`);

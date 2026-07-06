@@ -6,13 +6,14 @@ import type { WireInfo } from './api';
 export const cap = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
 
 /**
- * Compact verdict for the consolidated home view: traditional word (Ayu/Madya/Ala)
- * + a humble sub-label that keeps the "disarankan/dihindari" voice (never larangan).
+ * Verdict for the Pananggalan view: traditional word (Ayu/Madya/Ala) + the
+ * stamp line (rendered uppercase by CSS) keeping the humble
+ * "disarankan/dihindari" voice (never larangan).
  */
-export const SENJA_VERDICT: Record<Rating, { word: string; sub: string; cls: string }> = {
-  ayu: { word: 'Ayu', sub: 'Baik · disarankan', cls: 'is-ayu' },
-  caution: { word: 'Madya', sub: 'Netral · perlu pertimbangan', cls: 'is-caution' },
-  bad: { word: 'Ala', sub: 'Kurang baik · dihindari', cls: 'is-bad' },
+export const PRINT_VERDICT: Record<Rating, { word: string; stamp: string; cls: string }> = {
+  ayu: { word: 'Ayu', stamp: 'Ayu — disarankan', cls: 'is-ayu' },
+  caution: { word: 'Madya', stamp: 'Madya — perlu pertimbangan', cls: 'is-caution' },
+  bad: { word: 'Ala', stamp: 'Ala — sebaiknya dihindari', cls: 'is-bad' },
 };
 
 /** Verdict presentation per rating. Humble wording (DESIGN.md voice & tone). */
@@ -20,6 +21,16 @@ export const VERDICT: Record<Rating, { lead: string; emph: string; sub: string; 
   ayu: { lead: 'Dewasa', emph: 'ayu', sub: 'Disarankan untuk', cls: 'is-ayu' },
   caution: { lead: 'Kurang', emph: 'ideal', sub: 'Perlu pertimbangan untuk', cls: 'is-caution' },
   bad: { lead: 'Kurang', emph: 'baik', sub: 'Pertimbangkan tanggal lain untuk', cls: 'is-bad' },
+};
+
+// Full months the engine's Sasih table covers.
+export const CAL_MIN = { y: 2003, m: 2 };
+export const CAL_MAX = { y: 2100, m: 12 };
+
+export const clampMonth = (y: number, m: number): { y: number; m: number } => {
+  if (y < CAL_MIN.y || (y === CAL_MIN.y && m < CAL_MIN.m)) return { ...CAL_MIN };
+  if (y > CAL_MAX.y || (y === CAL_MAX.y && m > CAL_MAX.m)) return { ...CAL_MAX };
+  return { y, m };
 };
 
 /** Local today as YYYY-MM-DD (timezone-independent calendar day). */
