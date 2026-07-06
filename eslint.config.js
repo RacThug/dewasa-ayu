@@ -21,6 +21,9 @@ export default tseslint.config(
       // browser-global HTML/JS artifacts) and the design-sync re-sync tooling.
       'docs/design/handoff-senja/**',
       '.design-sync/**',
+      // Git-ignored design-sync scratch dirs (see .gitignore) — not app source.
+      '.ds-sync/**',
+      'ds-bundle/**',
       'prisma/generated/**',
       'packages/constants/src/sasih-data.ts',
     ],

@@ -1,6 +1,6 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
-/** Page object for the Home "Cek Hari" page. Selectors live here only. */
+/** Page object for the consolidated Home page (Pananggalan). Selectors live here only. */
 export class HomePage {
   constructor(private readonly page: Page) {}
 
@@ -11,23 +11,23 @@ export class HomePage {
     await this.page.goto(qs.toString() ? `/?${qs.toString()}` : '/');
   }
 
-  /** Verdict heading, e.g. "Dewasa ayu" / "Kurang ideal" / "Kurang baik". */
+  /** The stamp verdict, e.g. "Ayu — disarankan" (rendered uppercase by CSS). */
   verdict(): Locator {
-    return this.page.locator('#verdict-h');
+    return this.page.locator('.stamp');
   }
 
-  /** The big integer score percent. */
+  /** The slab score fraction's integer part (e.g. 60 from "60/100"). */
   async scorePct(): Promise<number> {
-    const text = await this.page.locator('.score').first().innerText();
-    return Number(text.replace(/[^0-9]/g, ''));
+    const text = await this.page.locator('.score-frac').first().innerText();
+    return Number(/^\d+/.exec(text.trim())?.[0]);
   }
 
-  /** The pass/fail mark of an analysis factor row, by its label (e.g. "Wuku"). */
-  factorMark(label: string): Locator {
+  /** The ✓/✗ badge of a factor row in "Rincian Wariga", by its label (e.g. "Wuku"). */
+  factorBadge(label: string): Locator {
     return this.page
-      .locator('.analysis li')
-      .filter({ has: this.page.locator('.name', { hasText: label }) })
-      .locator('.mark');
+      .locator('.rule')
+      .filter({ has: this.page.locator('.rule-name', { hasText: label }) })
+      .locator('.rule-badge');
   }
 
   /** The always-visible Sulinggih disclaimer (site footer). */
@@ -35,7 +35,8 @@ export class HomePage {
     return this.page.locator('.site-footer');
   }
 
-  /** Open the date picker and choose a day-of-month in the currently shown month. */
+  /** Open the date picker and choose a day-of-month in the currently shown month.
+   *  Choosing a day navigates immediately (no separate submit since the Senja fold-in). */
   async pickDayOfMonth(day: number): Promise<void> {
     await this.page.locator('.dp-trigger').first().click();
     const panel = this.page.locator('.dp-panel');
@@ -49,10 +50,5 @@ export class HomePage {
   /** Current text of the date-picker trigger (shows the chosen date). */
   pickerTrigger(): Locator {
     return this.page.locator('.dp-trigger').first();
-  }
-
-  /** Submit the Home date form. */
-  async submit(): Promise<void> {
-    await this.page.getByRole('button', { name: 'Periksa Dewasa' }).click();
   }
 }

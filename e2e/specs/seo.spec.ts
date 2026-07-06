@@ -11,9 +11,11 @@ test.describe('SEO infra', () => {
     expect(ld).toContain('WebApplication');
   });
 
-  test('per-page titles differ', async ({ page }) => {
+  test('per-page titles differ (about vs home; /kalender redirects home)', async ({ page }) => {
+    // /kalender folded into the consolidated home (PR #63) — old links redirect.
     await page.goto('/kalender?ceremony=pawiwahan&year=2026&month=9');
-    await expect(page).toHaveTitle(/Kalender Pawiwahan — September 2026/);
+    await expect(page).toHaveURL(/[?&]view=2026-09(&|$)/);
+    await expect(page).toHaveTitle(/Cek hari baik Pawiwahan/);
     await page.goto('/about');
     await expect(page).toHaveTitle(/^Tentang — Dewasa Ayu$/);
   });
@@ -26,13 +28,16 @@ test.describe('SEO infra', () => {
     expect(body.toLowerCase()).toContain('sitemap:');
   });
 
-  test('sitemap.xml lists the real pages', async ({ request }) => {
+  test('sitemap.xml lists the real pages (and not the folded-in redirects)', async ({
+    request,
+  }) => {
     const res = await request.get('/sitemap.xml');
     expect(res.ok()).toBeTruthy();
     const xml = await res.text();
-    expect(xml).toContain('/kalender');
-    expect(xml).toContain('/rekomendasi');
     expect(xml).toContain('/about');
+    expect(xml).toContain('/upacara/pawiwahan');
+    expect(xml).not.toContain('/kalender');
+    expect(xml).not.toContain('/rekomendasi');
   });
 
   test('the OG image route actually renders an image', async ({ page, request }) => {

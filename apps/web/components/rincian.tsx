@@ -14,7 +14,7 @@ export function Rincian({ result, date }: { result: CheckResult; date: string })
       initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.22, ease: 'easeOut', delay: 0.05 }}
-      className="panel-card rules-card"
+      className="factors"
     >
       <h2 className="card-title">Rincian Wariga</h2>
       <ul className="rules">

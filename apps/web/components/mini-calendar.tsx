@@ -1,19 +1,22 @@
 import Link from 'next/link';
 
 import { type MonthResult } from '@/lib/api';
-import { monthLabel, SENJA_VERDICT, todayISO } from '@/lib/display';
+import { CAL_MAX, CAL_MIN, PRINT_VERDICT, todayISO } from '@/lib/display';
 
-// Full months the engine's Sasih table covers
-export const CAL_MIN = { y: 2003, m: 2 };
-export const CAL_MAX = { y: 2100, m: 12 };
+// Gregorian + Balinese day-name pairs, Sunday-first like the printed calendar.
+const HEADS: Array<[string, string]> = [
+  ['Min', 'Redite'],
+  ['Sen', 'Soma'],
+  ['Sel', 'Anggara'],
+  ['Rab', 'Buda'],
+  ['Kam', 'Wraspati'],
+  ['Jum', 'Sukra'],
+  ['Sab', 'Saniscara'],
+];
 
-export const clampMonth = (y: number, m: number): { y: number; m: number } => {
-  if (y < CAL_MIN.y || (y === CAL_MIN.y && m < CAL_MIN.m)) return { ...CAL_MIN };
-  if (y > CAL_MAX.y || (y === CAL_MAX.y && m > CAL_MAX.m)) return { ...CAL_MAX };
-  return { y, m };
-};
-
-const HEADS = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+// Tika-style notation (DESIGN.md signature pattern #1) — always paired with
+// the legend below the grid; color is never the only signal.
+const MARK: Record<string, string> = { ayu: '●', caution: '◐', bad: '✕' };
 
 export function CalNav({
   ceremony,
@@ -34,7 +37,7 @@ export function CalNav({
     `/?ceremony=${ceremony}&date=${date}&view=${y}-${String(m).padStart(2, '0')}`;
 
   return (
-    <div className="cal-head">
+    <div className="cal-nav">
       {atMin ? (
         <span className="cal-arrow is-end" aria-hidden="true">
           ‹
@@ -44,7 +47,6 @@ export function CalNav({
           ‹
         </Link>
       )}
-      <span className="cal-title">{monthLabel(viewY, viewM)}</span>
       {atMax ? (
         <span className="cal-arrow is-end" aria-hidden="true">
           ›
@@ -55,6 +57,18 @@ export function CalNav({
         </Link>
       )}
     </div>
+  );
+}
+
+/** "2 hari ayu · 20 madya · 9 sebaiknya dihindari" — the month at a glance. */
+export function MonthTally({ summary }: { summary: MonthResult['summary'] }) {
+  return (
+    <p className="tally">
+      <b>
+        {summary.ayuCount} hari <em>ayu</em>
+      </b>{' '}
+      · {summary.cautionCount} madya · {summary.badCount} sebaiknya dihindari
+    </p>
   );
 }
 
@@ -73,64 +87,84 @@ export function MiniCalendar({
   const today = todayISO();
   const view = `${month.year}-${String(month.month).padStart(2, '0')}`;
 
+  // Chunk lead blanks + days into table rows of 7.
+  type Cell = (typeof days)[number] | null;
+  const cells: Cell[] = [...Array.from({ length: lead }, () => null), ...days];
+  while (cells.length % 7 !== 0) cells.push(null);
+  const weeks: Cell[][] = [];
+  for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
+
   return (
-    <>
-      <div className="mcal-heads" aria-hidden="true">
-        {HEADS.map((h) => (
-          <span key={h}>{h}</span>
+    <table className="cal">
+      <thead>
+        <tr>
+          {HEADS.map(([greg, bali]) => (
+            <th key={greg} scope="col">
+              {greg}
+              <em aria-hidden="true">{bali}</em>
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {weeks.map((week, wi) => (
+          <tr key={wi}>
+            {week.map((d, di) => {
+              if (d === null) return <td key={`blank-${wi}-${di}`} className="blank" />;
+              const iso = d.date.slice(0, 10);
+              const dayNum = Number(iso.slice(8, 10));
+              const rating = d.evaluation.rating;
+              const sasih = d.info.sasih;
+              const moon = sasih.isPurnama ? 'PUR' : sasih.isTilem ? 'TIL' : '';
+              const isSel = iso === selected;
+              const isToday = iso === today;
+              const cls = [
+                'day',
+                `r-${rating}`,
+                isSel ? 'is-selected' : '',
+                isToday ? 'is-today' : '',
+              ]
+                .filter(Boolean)
+                .join(' ');
+              return (
+                <td key={iso}>
+                  <Link
+                    href={`/?ceremony=${ceremony}&date=${iso}&view=${view}`}
+                    className={cls}
+                    aria-label={`${dayNum} — ${PRINT_VERDICT[rating].word}${moon ? `, ${moon === 'PUR' ? 'purnama' : 'tilem'}` : ''}`}
+                    aria-current={isSel ? 'date' : undefined}
+                  >
+                    <span className="num">{dayNum}</span>
+                    <span className="pw">{d.info.pancawara}</span>
+                    {moon ? <span className="moon">{moon}</span> : null}
+                    <span className="mark" aria-hidden="true">
+                      {MARK[rating]}
+                    </span>
+                  </Link>
+                </td>
+              );
+            })}
+          </tr>
         ))}
-      </div>
-      <div className="mcal-grid" role="list">
-        {Array.from({ length: lead }).map((_, i) => (
-          <span key={`blank-${i}`} aria-hidden="true" />
-        ))}
-        {days.map((d) => {
-          const iso = d.date.slice(0, 10);
-          const dayNum = Number(iso.slice(8, 10));
-          const rating = d.evaluation.rating;
-          const isSel = iso === selected;
-          const isToday = iso === today;
-          const cls = [
-            'mcal-cell',
-            `r-${rating}`,
-            isSel ? 'is-selected' : '',
-            isToday ? 'is-today' : '',
-          ]
-            .filter(Boolean)
-            .join(' ');
-          return (
-            <Link
-              key={iso}
-              href={`/?ceremony=${ceremony}&date=${iso}&view=${view}`}
-              className={cls}
-              role="listitem"
-              aria-label={`${dayNum} — ${SENJA_VERDICT[rating].word}`}
-              aria-current={isSel ? 'date' : undefined}
-            >
-              <span className="mcal-num">{dayNum}</span>
-              <span className="mcal-dot" aria-hidden="true" />
-            </Link>
-          );
-        })}
-      </div>
-    </>
+      </tbody>
+    </table>
   );
 }
 
 export function CalLegend() {
   return (
-    <div className="mcal-legend" aria-hidden="true">
-      <span>
-        <i className="dot-ayu" />
-        Ayu
+    <div className="cal-legend" aria-hidden="true">
+      <span className="l-ayu">
+        <b>●</b>Ayu — disarankan
       </span>
       <span>
-        <i className="dot-caution" />
-        Madya
+        <b>◐</b>Madya — dengan catatan
       </span>
-      <span>
-        <i className="dot-ala" />
-        Ala
+      <span className="l-bad">
+        <b>✕</b>Ala — sebaiknya dihindari
+      </span>
+      <span className="l-moon">
+        <b>PUR·TIL</b>Purnama · Tilem
       </span>
     </div>
   );

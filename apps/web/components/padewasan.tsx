@@ -5,7 +5,7 @@ export function Padewasan({ result }: { result: CheckResult }) {
   const none = dewasaAyu.length === 0 && dewasaAla.length === 0;
 
   return (
-    <div className="panel-card tags-card">
+    <div className="padew">
       <h2 className="card-title">Padewasan</h2>
       {none && (
         <p className="tags-empty">Tidak ada padewasan khusus terdeteksi pada tanggal ini.</p>

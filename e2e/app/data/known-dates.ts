@@ -17,23 +17,34 @@ export function utcToISO(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
-/** Verdict labels — mirror apps/web/lib/display.ts VERDICT (user-facing copy). */
-export const VERDICT_LABEL: Record<Rating, string> = {
-  ayu: 'Dewasa ayu',
-  caution: 'Kurang ideal',
-  bad: 'Kurang baik',
+/** Verdict copy — mirror apps/web/lib/display.ts PRINT_VERDICT (user-facing copy). */
+export const VERDICT_WORD: Record<Rating, string> = {
+  ayu: 'Ayu',
+  caution: 'Madya',
+  bad: 'Ala',
+};
+export const VERDICT_STAMP: Record<Rating, string> = {
+  ayu: 'Ayu — disarankan',
+  caution: 'Madya — perlu pertimbangan',
+  bad: 'Ala — sebaiknya dihindari',
 };
 
 export interface ExpectedVerdict {
   rating: Rating;
-  label: string;
+  word: string;
+  stamp: string;
   pct: number;
 }
 
 /** What the engine says for (date, ceremony) — the UI must match this. */
 export function expectedVerdict(iso: string, ceremony: CeremonyId): ExpectedVerdict {
   const ev = evaluate(getFullInfo(isoToDate(iso)), ceremony);
-  return { rating: ev.rating, label: VERDICT_LABEL[ev.rating], pct: Math.round(ev.pct) };
+  return {
+    rating: ev.rating,
+    word: VERDICT_WORD[ev.rating],
+    stamp: VERDICT_STAMP[ev.rating],
+    pct: Math.round(ev.pct),
+  };
 }
 
 /** First "ayu" date on/after `fromISO`, chosen by the engine. */
