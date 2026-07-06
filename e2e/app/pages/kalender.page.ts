@@ -1,6 +1,6 @@
 import { type Locator, type Page } from '@playwright/test';
 
-/** Page object for the /kalender month grid. */
+/** Page object for the month grid (lives on Home; /kalender redirects there). */
 export class KalenderPage {
   constructor(private readonly page: Page) {}
 
@@ -13,20 +13,20 @@ export class KalenderPage {
   }
 
   grid(): Locator {
-    return this.page.locator('.cal-grid');
+    return this.page.locator('table.cal');
   }
 
   monthLabel(): Locator {
-    return this.page.locator('.cal-month');
+    return this.page.locator('.month-name .mn');
   }
 
   summary(): Locator {
-    return this.page.locator('.cal-summary');
+    return this.page.locator('.tally');
   }
 
-  /** A day cell by day-of-month (matched on its aria-label, e.g. "1 — Dewasa ayu"). */
+  /** A day cell by day-of-month (matched on its aria-label, e.g. "1 — Madya"). */
   cell(day: number): Locator {
-    return this.page.locator('.cal-grid').getByRole('listitem', { name: new RegExp(`^${day} `) });
+    return this.page.locator('table.cal').getByRole('link', { name: new RegExp(`^${day} `) });
   }
 
   nextMonth(): Locator {

@@ -11,13 +11,13 @@ test.describe('Kalender', () => {
     await expect(kalender.monthLabel()).toHaveText('September 2026');
     await expect(kalender.summary()).toBeVisible();
     const exp = expectedVerdict('2026-09-01', CEREMONY);
-    await expect(kalender.cell(1)).toHaveAttribute('aria-label', new RegExp(`${exp.label}$`));
+    await expect(kalender.cell(1)).toHaveAttribute('aria-label', new RegExp(`— ${exp.word}`));
   });
 
   test('month navigation moves forward', async ({ kalender, page }) => {
     await kalender.goto({ ceremony: CEREMONY, year: YEAR, month: MONTH });
     await kalender.nextMonth().click();
-    await expect(page).toHaveURL(/month=10(&|$)/);
+    await expect(page).toHaveURL(/[?&]view=2026-10(&|$)/);
     await expect(kalender.monthLabel()).toHaveText('Oktober 2026');
   });
 
