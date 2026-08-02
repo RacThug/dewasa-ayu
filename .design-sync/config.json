@@ -1,0 +1,8 @@
+{
+  "projectId": "346ba37f-0ef5-49a8-a3c0-4b9931075ed2",
+  "shape": "package",
+  "offScript": true,
+  "buildCmd": "node .design-sync/build-bundle.mjs",
+  "readmeHeader": ".design-sync/conventions.md",
+  "notes": "CSS/token design system (no React component lib). Built off-script by .design-sync/build-bundle.mjs from apps/web/app/globals.css. The standard component-centric converter does not apply."
+}

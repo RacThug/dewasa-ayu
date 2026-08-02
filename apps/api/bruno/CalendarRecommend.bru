@@ -1,0 +1,17 @@
+meta {
+  name: Calendar Recommend
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/calendar/recommend?from=2026-01-01&count=5&ceremony=usaha
+  body: none
+  auth: none
+}
+
+params:query {
+  from: 2026-01-01
+  count: 5
+  ceremony: usaha
+}

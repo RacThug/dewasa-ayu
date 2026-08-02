@@ -1,0 +1,15 @@
+node_modules
+dist
+build
+.next
+.turbo
+coverage
+pnpm-lock.yaml
+prisma/generated
+.husky/_
+
+# Generated Sasih lookup table — large data arrays, formatted by the generator.
+packages/constants/src/sasih-data.ts
+
+# Hand-crafted design mockups — leave formatting as authored.
+mockups

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Dewasa Ayu — App" description="Prototipe cek hari baik (Wariga) mobile-first: tema auto/terang/gelap, date picker, filter jenis upacara, kalender & rekomendasi ceremony-aware, share." -->
+<helmet>
+<script src="./ds-base.js"></script>
+<style>
+  *{box-sizing:border-box}
+  @keyframes daRise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  @keyframes daToast{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
+  @media (prefers-reduced-motion: reduce){.da-shell{animation:none!important}}
+</style>
+</helmet>
+<div style="background:#E7E4DD;min-width:100%;width:max-content;min-height:100vh;padding:52px 56px;box-sizing:border-box;font-family:var(--sans),system-ui,sans-serif;">
+  <div style="max-width:760px;margin:0 0 34px;">
+    <div style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#8c8c84;font-weight:700;">Prototipe · Arah Senja</div>
+    <h1 style="font-size:30px;line-height:1.14;margin:.3em 0 0;color:#23231f;font-weight:700;letter-spacing:-.022em;">Dewasa Ayu — penanggalan hari baik</h1>
+    <p style="font-size:15px;line-height:1.6;color:#56564f;margin:.6em 0 0;">Satu desain, responsif untuk <b>desktop &amp; mobile</b>, dan keduanya <b>berbagi state</b> — ubah tanggal, upacara, atau tema di salah satu, yang lain ikut berubah. Mode <b>Auto / Terang / Gelap</b> ikut setelan sistem.</p>
+  </div>
+
+  <div style="font-size:13px;font-weight:700;color:#3a3a36;letter-spacing:.03em;margin:0 0 13px 4px;">DESKTOP <span style="color:#8c8c84;font-weight:500;">— 1180px</span></div>
+  <div style="width:1180px;border-radius:14px;overflow:hidden;box-shadow:0 36px 80px -30px rgba(0,0,0,.45);border:1px solid #d4d0c7;background:#fff;animation:daRise .6s ease both;">
+    <div style="height:44px;background:#e7e3db;display:flex;align-items:center;gap:8px;padding:0 16px;border-bottom:1px solid #d4d0c7;">
+      <span style="width:12px;height:12px;border-radius:50%;background:#e1857d;"></span>
+      <span style="width:12px;height:12px;border-radius:50%;background:#d8b85f;"></span>
+      <span style="width:12px;height:12px;border-radius:50%;background:#9bbf85;"></span>
+      <div style="flex:1;max-width:440px;margin:0 auto;height:26px;background:#f4f1ea;border:1px solid #ddd8cf;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8c8c84;font-weight:500;">dewasa-ayu.app</div>
+    </div>
+    <div style="position:relative;height:740px;overflow-y:auto;">
+      <dc-import name="FrameDesktop" data="{{ app }}" style="display:block;min-height:100%" hint-size="100%,100%"></dc-import>
+      <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+        <div style="position:sticky;bottom:24px;float:right;margin-right:30px;background:#26241d;color:#f3ecda;padding:10px 18px;border-radius:999px;font-size:13px;font-weight:600;box-shadow:0 10px 28px rgba(0,0,0,.35);z-index:40;white-space:nowrap;animation:daToast .25s ease both;">{{ toast }}</div>
+      </sc-if>
+    </div>
+  </div>
+
+  <div style="font-size:13px;font-weight:700;color:#3a3a36;letter-spacing:.03em;margin:42px 0 13px 4px;">MOBILE <span style="color:#8c8c84;font-weight:500;">— 430px</span></div>
+  <div class="da-shell" style="width:430px;height:864px;border-radius:48px;background:#0f0f0e;padding:13px;box-shadow:0 34px 70px -24px rgba(0,0,0,.42);animation:daRise .6s ease both;">
+    <div style="position:relative;width:100%;height:100%;border-radius:36px;overflow:hidden;">
+      <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:148px;height:25px;background:#0f0f0e;border-radius:0 0 18px 18px;z-index:30;"></div>
+      <dc-import name="FrameSenja" data="{{ app }}" style="display:block;height:100%" hint-size="100%,100%"></dc-import>
+      <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;bottom:30px;left:50%;transform:translateX(-50%);background:#26241d;color:#f3ecda;padding:.72em 1.15em;border-radius:999px;font-size:13px;font-weight:600;box-shadow:0 10px 28px rgba(0,0,0,.35);z-index:40;white-space:nowrap;animation:daToast .25s ease both;">{{ toast }}</div>
+      </sc-if>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultTheme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Auto&quot;,&quot;Gelap&quot;,&quot;Terang&quot;],&quot;default&quot;:&quot;Auto&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#D4AF5F&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;showTips&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.MF=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    this.MS=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    this.WD=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+    this.WH=['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+    this.SAPTA=['Redite','Soma','Anggara','Buda','Wraspati','Sukra','Saniscara'];
+    this.PANCA=['Umanis','Paing','Pon','Wage','Kliwon'];
+    this.TRI=['Pasah','Beteng','Kajeng'];
+    this.WUKU=['Sinta','Landep','Ukir','Kulantir','Tolu','Gumbreg','Wariga','Warigadian','Julungwangi','Sungsang','Dungulan','Kuningan','Langkir','Medangsia','Pujut','Pahang','Krulut','Merakih','Tambir','Medangkungan','Matal','Uye','Menail','Prangbakat','Bala','Ugu','Wayang','Kelawu','Dukut','Watugunung'];
+    this.CER=[
+      {id:'semua', label:'Semua', icon:'all', fav:null},
+      {id:'otonan', label:'Otonan', icon:'sun', fav:{panca:['Kliwon','Umanis'], wuku:['Sinta','Watugunung','Kuningan']}},
+      {id:'pawiwahan', label:'Pawiwahan', icon:'rings', fav:{sapta:['Soma','Buda','Sukra'], panca:['Umanis','Kliwon']}},
+      {id:'mlaspas', label:'Mlaspas', icon:'diamond', fav:{tri:['Kajeng'], sapta:['Wraspati','Sukra']}},
+      {id:'ngenteg', label:'Ngenteg Linggih', icon:'tri', fav:{panca:['Kliwon'], sapta:['Buda','Saniscara']}},
+      {id:'memungkah', label:'Memungkah', icon:'leaf', fav:{sapta:['Saniscara','Wraspati'], wuku:['Dungulan','Kuningan']}},
+    ];
+    const t=this.today();
+    const md=this.props.defaultTheme==='Terang'?'light':this.props.defaultTheme==='Gelap'?'dark':'auto';
+    this.state={ sel:this.key(t), viewY:t.getFullYear(), viewM:t.getMonth(), mode:md, sysDark:true, cer:'semua', toast:'' };
+  }
+  componentDidMount(){
+    try{
+      this.mql=window.matchMedia('(prefers-color-scheme: dark)');
+      this.setState({sysDark:this.mql.matches});
+      this._onMql=(e)=>this.setState({sysDark:e.matches});
+      this.mql.addEventListener('change', this._onMql);
+    }catch(e){}
+  }
+  componentWillUnmount(){ try{ this.mql && this.mql.removeEventListener('change', this._onMql); }catch(e){} if(this._tt) clearTimeout(this._tt); }
+  today(){ return new Date(2026,5,19); }
+  key(d){ return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate(); }
+  iso(d){ const p=n=>String(n).padStart(2,'0'); return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()); }
+  parseKey(k){ const a=k.split('-').map(Number); return new Date(a[0],a[1],a[2]); }
+  mod(a,b){ return ((a%b)+b)%b; }
+  frac(n){ const x=Math.sin(n*127.1+311.7)*43758.5453; return x-Math.floor(x); }
+  compute(d){
+    const day=Math.floor(d.getTime()/86400000);
+    const sapta=this.SAPTA[this.mod(day+4,7)];
+    const panca=this.PANCA[this.mod(day,5)];
+    const tri=this.TRI[this.mod(day,3)];
+    const wuku=this.WUKU[this.mod(Math.floor(day/7),30)];
+    const r=this.frac(day);
+    const base=Math.round(34+r*61);
+    return {day,sapta,panca,tri,wuku,base};
+  }
+  cerObj(id){ return this.CER.find(c=>c.id===(id||this.state.cer))||this.CER[0]; }
+  cerBonus(c,cer){
+    if(!cer||!cer.fav) return {b:0,hits:[]};
+    let b=0; const hits=[];
+    if(cer.fav.sapta&&cer.fav.sapta.includes(c.sapta)){ b+=9; hits.push(c.sapta); }
+    if(cer.fav.panca&&cer.fav.panca.includes(c.panca)){ b+=9; hits.push(c.panca); }
+    if(cer.fav.tri&&cer.fav.tri.includes(c.tri)){ b+=7; hits.push(c.tri); }
+    if(cer.fav.wuku&&cer.fav.wuku.includes(c.wuku)){ b+=8; hits.push('Wuku '+c.wuku); }
+    return {b,hits};
+  }
+  scoreFor(c,cer){
+    let s=c.base;
+    if(cer&&cer.fav){ const {b}=this.cerBonus(c,cer); s = s - 7 + b; }
+    return Math.max(6, Math.min(99, Math.round(s)));
+  }
+  verdictOf(s){ return s>=72?'ayu':s>=52?'caution':'bad'; }
+  vmeta(v){
+    if(v==='ayu') return {word:'Ayu',sub:'Baik · disarankan'};
+    if(v==='caution') return {word:'Madya',sub:'Netral · perhatikan'};
+    return {word:'Ala',sub:'Kurang baik · dihindari'};
+  }
+  vvar(v){ return v==='ayu'?'var(--ayu)':v==='caution'?'var(--caution)':'var(--ala)'; }
+  buildInfo(d){
+    const c=this.compute(d); const cer=this.cerObj();
+    const score=this.scoreFor(c,cer); const verdict=this.verdictOf(score);
+    const m=this.vmeta(verdict);
+    const {b,hits}=this.cerBonus(c,cer);
+    const summary = verdict==='ayu'
+      ? 'Hari yang baik. '+c.sapta+' '+c.panca+' selaras untuk '+(cer.id==='semua'?'sebagian besar upacara':cer.label)+'.'
+      : verdict==='caution'
+      ? 'Cukup baik dengan catatan — sesuaikan dan pertimbangkan konsultasi.'
+      : 'Sebaiknya dihindari untuk hajatan besar. Pilih hari lain bila memungkinkan.';
+    const rules=[];
+    if(cer.id!=='semua'){
+      rules.push({name:'Selaras untuk '+cer.label, why:(b>0?('didukung '+hits.join(', ')):'tidak ada wewaran pendukung khusus'), pass:b>0});
+    }
+    rules.push(
+      {name:'Saptawara · Pancawara', why:c.sapta+' '+c.panca+(score>=60?' — kombinasi mendukung':' — kurang selaras'), pass:score>=60},
+      {name:'Wuku '+c.wuku, why:(this.frac(c.day*3+1)>0.5?'wuku baik untuk hajatan':'wuku perlu kehati-hatian'), pass:this.frac(c.day*3+1)>0.5},
+      {name:'Bebas pantangan utama', why:(score>=46?'tidak bertepatan hari Ala':'bertepatan dengan pantangan'), pass:score>=46},
+    );
+    const rr=rules.map(x=>({name:x.name,why:x.why,pass:x.pass,fail:!x.pass}));
+    let tagsAyu=[],tagsAla=[];
+    if(verdict==='ayu') tagsAyu=(cer.id==='semua'?['Otonan','Pawiwahan','Mlaspas']:[cer.label,'Persembahyangan']);
+    else if(verdict==='caution'){ tagsAyu=['Persembahyangan']; tagsAla=[cer.id==='semua'?'Pawiwahan':cer.label]; }
+    else tagsAla=(cer.id==='semua'?['Pawiwahan','Memungkah']:[cer.label]);
+    return {
+      verdictVar:this.vvar(verdict), verdictWord:m.word, verdictSub:m.sub,
+      score, meterPct:score, summary,
+      cerNote: cer.id==='semua'?'':('Dinilai untuk · '+cer.label), hasCerNote: cer.id!=='semua',
+      wewaran:[{t:'Saptawara',v:c.sapta},{t:'Pancawara',v:c.panca},{t:'Triwara',v:c.tri},{t:'Wuku',v:c.wuku}],
+      rules:rr, tagsAyu, tagsAla, hasAyu:tagsAyu.length>0, hasAla:tagsAla.length>0,
+    };
+  }
+  buildMonth(){
+    const y=this.state.viewY, mo=this.state.viewM, cer=this.cerObj();
+    const startW=new Date(y,mo,1).getDay();
+    const days=new Date(y,mo+1,0).getDate();
+    const tk=this.key(this.today());
+    const cells=[];
+    for(let i=0;i<startW;i++) cells.push({key:'b'+i,blank:true,show:false});
+    for(let n=1;n<=days;n++){
+      const d=new Date(y,mo,n), c=this.compute(d), k=this.key(d);
+      const verdict=this.verdictOf(this.scoreFor(c,cer));
+      const sel=k===this.state.sel, tod=k===tk;
+      cells.push({
+        key:k, num:n, blank:false, show:true,
+        dotColor:this.vvar(verdict),
+        cellBg: sel?'var(--sel-bg)':(tod?'var(--panel-2)':'transparent'),
+        cellShadow: sel?'inset 0 0 0 2px var(--accent)':'none',
+        numColor: tod?'var(--accent)':'var(--text)',
+        onClick:()=>this.setState({sel:k}),
+      });
+    }
+    return cells;
+  }
+  buildReco(){
+    const base=this.today(), cer=this.cerObj(), out=[];
+    for(let i=1;i<=70 && out.length<4;i++){
+      const d=new Date(base); d.setDate(base.getDate()+i);
+      const c=this.compute(d); const s=this.scoreFor(c,cer);
+      if(this.verdictOf(s)==='ayu'){
+        out.push({
+          key:this.key(d), dayNum:d.getDate(), monAbbr:this.MS[d.getMonth()],
+          weekday:this.WD[d.getDay()], wewaran:c.sapta+' '+c.panca, score:s,
+          onClick:()=>this.setState({sel:this.key(d),viewY:d.getFullYear(),viewM:d.getMonth()}),
+        });
+      }
+    }
+    return out;
+  }
+  resolved(){ return this.state.mode==='auto'?(this.state.sysDark?'dark':'light'):this.state.mode; }
+  vars(){
+    const accent=this.props.accent||'#D4AF5F';
+    if(this.resolved()==='light')
+      return "--scheme:light;--bg:#F4ECDA;--panel:#FBF6EA;--panel-2:#ECE1C9;--edge:#E2D6BC;--edge-2:#D2C3A0;--text:#3A2E1F;--soft:#6B5B43;--faint:#8A795C;--accent:#8A6A1E;--ayu:#3E7A4E;--caution:#8A7320;--ala:#9A4A44;--ayu-bg:#E2EDD9;--ala-bg:#F2E1DD;--ayu-fg:#2E6B40;--ala-fg:#8A3A35;--header-bg:rgba(244,236,218,.86);--sel-bg:rgba(138,106,30,.14);--about-bg:#F0E6CF;--shadow:0 8px 26px rgba(80,60,20,.08)";
+    return "--scheme:dark;--bg:#15130F;--panel:#1E1B15;--panel-2:#272217;--edge:#2F2818;--edge-2:#3A3120;--text:#F0E7D4;--soft:#B6A988;--faint:#8C8169;--accent:"+accent+";--ayu:#83B26B;--caution:#D2B24C;--ala:#D88A82;--ayu-bg:#1E2A1C;--ala-bg:#2C1C1A;--ayu-fg:#9BC585;--ala-fg:#E0978F;--header-bg:rgba(21,19,15,.85);--sel-bg:rgba(212,175,95,.18);--about-bg:#1A170F;--shadow:0 10px 30px rgba(0,0,0,.3)";
+  }
+  showToast(msg){ this.setState({toast:msg}); if(this._tt) clearTimeout(this._tt); this._tt=setTimeout(()=>this.setState({toast:''}),1900); }
+  shiftDay(n){ const d=this.parseKey(this.state.sel); d.setDate(d.getDate()+n); this.setState({sel:this.key(d),viewY:d.getFullYear(),viewM:d.getMonth()}); }
+  buildData(){
+    const d=this.parseKey(this.state.sel);
+    const reco=this.buildReco();
+    const cer=this.cerObj();
+    const ceremonies=this.CER.map(ce=>{ const active=ce.id===this.state.cer; return {
+      key:ce.id, label:ce.label,
+      iconAll:ce.icon==='all', iconSun:ce.icon==='sun', iconRings:ce.icon==='rings',
+      iconDiamond:ce.icon==='diamond', iconTri:ce.icon==='tri', iconLeaf:ce.icon==='leaf',
+      bg: active?'var(--sel-bg)':'var(--panel)',
+      bd: active?'var(--accent)':'var(--edge-2)',
+      fg: active?'var(--accent)':'var(--soft)',
+      onClick:()=>this.setState({cer:ce.id}),
+    };});
+    const mode=this.state.mode;
+    return {
+      vars:this.vars(),
+      modeAuto:mode==='auto', modeLight:mode==='light', modeDark:mode==='dark',
+      themeModeLabel: mode==='auto'?'Auto':mode==='light'?'Terang':'Gelap',
+      showTips:this.props.showTips!==false,
+      tipsScore:'Skor = tingkat kecocokan menurut pedoman Wariga umum untuk pilihan upacara ini. Makin tinggi, makin disarankan.',
+      selFull:this.WD[d.getDay()]+', '+d.getDate()+' '+this.MF[d.getMonth()]+' '+d.getFullYear(),
+      selISO:this.iso(d),
+      info:this.buildInfo(d),
+      ceremonies, cerLabel:cer.label,
+      monthLabel:this.MF[this.state.viewM]+' '+this.state.viewY,
+      monthCells:this.buildMonth(),
+      weekdayHeads:this.WH,
+      recoTitle: cer.id==='semua'?'Hari baik terdekat':('Hari baik untuk '+cer.label),
+      recoList:reco, recoHas:reco.length>0, recoEmpty:reco.length===0,
+      onToday:()=>{ const t=this.today(); this.setState({sel:this.key(t),viewY:t.getFullYear(),viewM:t.getMonth()}); },
+      onPrev:()=>{ let m=this.state.viewM-1,y=this.state.viewY; if(m<0){m=11;y--;} this.setState({viewM:m,viewY:y}); },
+      onNext:()=>{ let m=this.state.viewM+1,y=this.state.viewY; if(m>11){m=0;y++;} this.setState({viewM:m,viewY:y}); },
+      onPrevDay:()=>this.shiftDay(-1),
+      onNextDay:()=>this.shiftDay(1),
+      onPickDate:(e)=>{ const v=e&&e.target&&e.target.value; if(!v) return; const a=v.split('-').map(Number); const nd=new Date(a[0],a[1]-1,a[2]); if(isNaN(nd)) return; this.setState({sel:this.key(nd),viewY:nd.getFullYear(),viewM:nd.getMonth()}); },
+      onCycleTheme:()=>this.setState(s=>({mode: s.mode==='auto'?'light':s.mode==='light'?'dark':'auto'})),
+      onShare:()=>{
+        const inf=this.buildInfo(d);
+        const txt='Dewasa Ayu — '+this.WD[d.getDay()]+', '+d.getDate()+' '+this.MF[d.getMonth()]+' '+d.getFullYear()+': '+inf.verdictWord+' ('+inf.score+'/100). '+inf.summary;
+        try{
+          if(navigator.share){ navigator.share({title:'Dewasa Ayu',text:txt}).catch(()=>{}); this.showToast('Membuka bagikan…'); }
+          else if(navigator.clipboard){ navigator.clipboard.writeText(txt); this.showToast('Disalin ke clipboard'); }
+          else this.showToast('Tidak didukung di perangkat ini');
+        }catch(err){ this.showToast('Tidak bisa membagikan'); }
+      },
+    };
+  }
+  renderVals(){ return { app:this.buildData(), toast:this.state.toast }; }
+}
+</script>
+</body>
+</html>

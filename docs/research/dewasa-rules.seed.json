@@ -1,0 +1,271 @@
+{
+  "meta": {
+    "version": "0.1.0-seed",
+    "status": "UNVERIFIED BOOTSTRAP — disusun dari sumber sekunder gratis (Tribun Bali yang mengutip buku Ala Ayuning Dewasa 2016, + blog wariga). WAJIB divalidasi pakar wariga/sulinggih dan dicek ke buku otoritatif sebelum produksi. Jangan tampilkan ke user sebagai final.",
+    "tujuan": "Seed awal untuk rule engine padewasan (lihat wariga-engine-reference.md §8). Claude Code memakai ini sebagai titik mulai, BUKAN kebenaran final.",
+    "prinsip_kunci": "Efek padewasan bersifat RELATIF terhadap aktivitas, bukan absolut. Contoh: 'Kala Gotongan' BURUK untuk ngaben tapi BAIK untuk memulai usaha. Karena itu jangan beri satu polaritas baik/buruk global per padewasan — pakai field 'efek' (per konteks) + tabel 'pemetaan_aktivitas'.",
+    "skema_padewasan": {
+      "id": "snake_case unik",
+      "nama": "nama padewasan",
+      "kategori_umum": "ayu | ala | kontekstual (kecenderungan umum saja; logika sebenarnya di 'efek' & 'pemetaan_aktivitas')",
+      "dasar": "komponen wariga yang dibutuhkan untuk menghitung (input engine)",
+      "kondisi": "aturan presisi (null = belum diketahui, JANGAN dikarang)",
+      "efek": "baik/buruk untuk apa, per konteks",
+      "sumber": "asal data",
+      "verified": "false untuk seluruh seed ini"
+    },
+    "tingkat_kepercayaan_sumber": {
+      "Ariana & Budayoga 2016 (via Tribun Bali)": "sedang — kutipan media atas buku otoritatif; kondisi numerik relatif dapat dipercaya, tetap perlu cek buku",
+      "blog wariga (lenteradharma, dll.)": "rendah — hanya untuk orientasi/daftar nama; jangan dipakai produksi tanpa verifikasi"
+    }
+  },
+
+  "padewasan_dengan_kondisi": [
+    {
+      "id": "ayu_nulus",
+      "nama": "Ayu Nulus",
+      "kategori_umum": "ayu",
+      "dasar": ["saptawara", "penanggal"],
+      "kondisi": {
+        "tipe": "saptawara_x_penanggal",
+        "aturan": [
+          { "saptawara": "Redite", "penanggal": [6] },
+          { "saptawara": "Soma", "penanggal": [3] },
+          { "saptawara": "Anggara", "penanggal": [7] },
+          { "saptawara": "Budha", "penanggal": [12, 13] },
+          { "saptawara": "Saniscara", "penanggal": [5] }
+        ],
+        "catatan": "Wraspati & Sukra tidak disebut di sumber — verifikasi apakah memang tidak ada atau data terpotong."
+      },
+      "efek": "Baik untuk pekerjaan/kegiatan umum dan upacara Panca Yadnya; baik untuk mengesahkan awig-awig.",
+      "jenis_upacara": ["umum", "panca_yadnya"],
+      "sumber": "Ala Ayuning Dewasa (Ariana & Budayoga 2016) via Tribun Bali",
+      "verified": false
+    },
+    {
+      "id": "lebur_awu",
+      "nama": "Lebur Awu",
+      "kategori_umum": "ala",
+      "dasar": ["saptawara", "astawara"],
+      "kondisi": {
+        "tipe": "saptawara_x_astawara",
+        "aturan": [
+          { "saptawara": "Redite", "astawara": "Indra" },
+          { "saptawara": "Soma", "astawara": "Uma" },
+          { "saptawara": "Anggara", "astawara": "Rudra" },
+          { "saptawara": "Budha", "astawara": "Brahma" },
+          { "saptawara": "Wraspati", "astawara": "Guru" },
+          { "saptawara": "Sukra", "astawara": "Sri" },
+          { "saptawara": "Saniscara", "astawara": "Yama" }
+        ]
+      },
+      "efek": "Buruk untuk membuat rumah dan upacara/prosesi pemakuhan; baik untuk membuat terusan baru sungai.",
+      "jenis_upacara": ["mendirikan_rumah"],
+      "sumber": "Ala Ayuning Dewasa (Ariana & Budayoga 2016) via Tribun Bali",
+      "verified": false
+    },
+    {
+      "id": "semut_sadulur",
+      "nama": "Semut Sadulur",
+      "kategori_umum": "kontekstual",
+      "dasar": ["urip_pancawara", "urip_saptawara"],
+      "kondisi": {
+        "tipe": "jumlah_urip",
+        "aturan": "uripPancawara + uripSaptawara == 13",
+        "catatan": "Beberapa sumber menyebut muncul berturut (mis. 3x). Verifikasi pola berulangnya."
+      },
+      "efek": "Buruk untuk atiwa-tiwa/ngaben; baik untuk membentuk organisasi.",
+      "jenis_upacara": ["ngaben"],
+      "sumber": "sumber sekunder wariga",
+      "verified": false
+    },
+    {
+      "id": "kala_gotongan",
+      "nama": "Kala Gotongan (Saat Gotongan)",
+      "kategori_umum": "kontekstual",
+      "dasar": ["urip_pancawara", "urip_saptawara"],
+      "kondisi": {
+        "tipe": "jumlah_urip",
+        "aturan": "uripPancawara + uripSaptawara == 14",
+        "catatan": "Verifikasi pola berulang seperti Semut Sadulur."
+      },
+      "efek": "Buruk untuk atiwa-tiwa/ngaben; baik untuk memulai usaha. (Contoh utama sifat relatif-aktivitas.)",
+      "jenis_upacara": ["ngaben", "mulai_usaha"],
+      "sumber": "sumber sekunder wariga",
+      "verified": false
+    },
+    {
+      "id": "tanpa_guru",
+      "nama": "Tanpa Guru",
+      "kategori_umum": "ala",
+      "dasar": ["wuku", "astawara"],
+      "kondisi": {
+        "tipe": "absen_dalam_wuku",
+        "aturan": "Dalam satu wuku tidak terdapat anggota Astawara 'Guru'."
+      },
+      "efek": "Buruk untuk memulai belajar/menuntut ilmu dan memulai usaha.",
+      "jenis_upacara": ["mulai_usaha", "pendidikan"],
+      "sumber": "sumber sekunder wariga",
+      "verified": false
+    },
+    {
+      "id": "was_penganten",
+      "nama": "Was Penganten",
+      "kategori_umum": "kontekstual",
+      "dasar": ["wuku", "sadwara"],
+      "kondisi": {
+        "tipe": "ganda_dalam_wuku",
+        "aturan": "Dalam satu wuku terdapat dua hari ber-Sadwara 'Was'."
+      },
+      "efek": "Baik untuk membuat benda tajam (keris/tombak), tembok, pagar, dan pertemuan.",
+      "jenis_upacara": ["umum"],
+      "sumber": "sumber sekunder wariga",
+      "verified": false
+    },
+    {
+      "id": "ingkel",
+      "nama": "Ingkel",
+      "kategori_umum": "ala",
+      "dasar": ["wuku"],
+      "kondisi": {
+        "tipe": "wuku_modulo",
+        "aturan": "kategori = wukuKe (1..30) dipetakan siklis ke 6 kategori; berlaku sepanjang wuku (Redite–Saniscara)",
+        "kategori_siklus": ["Wong", "Sato", "Mina", "Manuk", "Taru", "Buku"],
+        "catatan": "Verifikasi offset awal siklus terhadap wuku Sinta sebelum hardcode."
+      },
+      "efek": "Pantangan terhadap kategori terkait: Wong=manusia, Sato=hewan darat, Mina=ikan, Manuk=unggas, Taru=tumbuhan berkayu, Buku=tumbuhan beruas.",
+      "jenis_upacara": ["umum"],
+      "sumber": "pengetahuan wariga umum",
+      "verified": false
+    },
+    {
+      "id": "titi_buwuk",
+      "nama": "Titi Buwuk",
+      "kategori_umum": "ala",
+      "dasar": ["belum_diketahui"],
+      "kondisi": null,
+      "efek": "Pantangan membuat jembatan dan sejenisnya; tidak baik bepergian untuk mencari solusi masalah (matedung/matenung).",
+      "jenis_upacara": ["umum"],
+      "sumber": "Ala Ayuning Dewasa (Ariana & Budayoga 2016) via Tribun Bali",
+      "verified": false
+    },
+    {
+      "id": "tali_wangke",
+      "nama": "Tali Wangke",
+      "kategori_umum": "kontekstual",
+      "dasar": ["belum_diketahui"],
+      "kondisi": null,
+      "efek": "Baik untuk mengikat atap ilalang, mengikat tiang (saka) dengan rotan, dan mengikat benda mati; buruk untuk mengikat sesuatu yang hidup.",
+      "jenis_upacara": ["umum", "mendirikan_rumah"],
+      "sumber": "Ala Ayuning Dewasa (Ariana & Budayoga 2016) via Tribun Bali",
+      "verified": false
+    }
+  ],
+
+  "padewasan_pending_kondisi": {
+    "catatan": "Nama padewasan yang muncul di sumber TANPA kondisi numerik. JANGAN diaktifkan di engine sampai kondisinya diisi dari buku Ala Ayuning Dewasa (2016) / divalidasi pakar. Daftar ini hanya peta cakupan.",
+    "ayu": [
+      "Dauh Ayu",
+      "Ayu Badra",
+      "Amerta Yoga",
+      "Amerta Gati",
+      "Amerta Dewa",
+      "Amerta Danta",
+      "Amerta Masa",
+      "Sedana Yoga",
+      "Purna Suka",
+      "Subacara",
+      "Dewa Ngelayang",
+      "Dewa Ngelampar",
+      "Tulus",
+      "Dadi"
+    ],
+    "kontekstual_atau_ala": [
+      "Kala Cakra",
+      "Kala Rebutan",
+      "Kala Raja",
+      "Kala Wisesa",
+      "Kala Panyeneng",
+      "Kala Ketemu",
+      "Kala Ngunya",
+      "Kala Mangap",
+      "Kala Dangastra",
+      "Kala Pati Jengkang",
+      "Kala Luang",
+      "Kala Ngruda",
+      "Kala Pegat",
+      "Kala Suwung",
+      "Kala Pacekan",
+      "Kala Macan",
+      "Kala Rau",
+      "Kala Sudukan",
+      "Kala Beser",
+      "Rangda Tiga",
+      "Sampar Wangke",
+      "Dina Carik"
+    ]
+  },
+
+  "pemetaan_aktivitas": {
+    "catatan": "Aktivitas -> padewasan yang dipakai/dihindari. Sumber blog (lenteradharma) = kepercayaan RENDAH; pakai sebagai kerangka §9, verifikasi sebelum produksi. Banyak nama di sini kondisinya masih 'pending' (lihat di atas).",
+    "entri": [
+      {
+        "aktivitas": "Membuka usaha & sarananya",
+        "gunakan": [
+          "Purna Suka",
+          "Sedana Yoga",
+          "Amerta Gati",
+          "Amerta Yoga",
+          "Ayu Nulus",
+          "Dauh Ayu",
+          "Kala Cakra",
+          "Kala Gotongan",
+          "Kala Rebutan",
+          "Kala Raja",
+          "Tulus",
+          "Dadi"
+        ],
+        "hindari": [
+          "Tali Wangke",
+          "Kala Mangap",
+          "Kala Dangastra",
+          "Kala Pati Jengkang",
+          "Kala Luang",
+          "Kala Ngruda",
+          "Kala Pegat"
+        ],
+        "sumber": "lenteradharma.blogspot.com",
+        "verified": false
+      },
+      {
+        "aktivitas": "Pelantikan pejabat/pengurus",
+        "gunakan": ["Kala Raja", "Kala Wisesa", "Kala Panyeneng"],
+        "hindari": ["Sasih Kasanga", "Kala Pegat", "Kala Suwung", "Panglong"],
+        "sumber": "lenteradharma.blogspot.com",
+        "verified": false
+      },
+      {
+        "aktivitas": "Mengesahkan peraturan/awig-awig",
+        "gunakan": ["Dauh Ayu", "Ayu Nulus", "Kala Panyeneng"],
+        "hindari": [],
+        "sumber": "lenteradharma.blogspot.com",
+        "verified": false
+      },
+      {
+        "aktivitas": "Pertemuan penting",
+        "gunakan": ["Kala Ketemu", "Kala Ngunya", "Kala Panyeneng"],
+        "hindari": [
+          "Kala Pacekan",
+          "Kala Pegat",
+          "Kala Macan",
+          "Kala Rau",
+          "Kala Sudukan",
+          "Kala Suwung",
+          "Titi Buwuk"
+        ],
+        "sumber": "lenteradharma.blogspot.com",
+        "verified": false
+      }
+    ]
+  }
+}

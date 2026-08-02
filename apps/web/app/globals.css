@@ -1,0 +1,1470 @@
+@import 'tailwindcss';
+
+/*
+ * Dewasa Ayu — "Pananggalan" design system (see /DESIGN.md v0.3.0).
+ * The printed Balinese wall calendar as software: ink + cinnabar red on
+ * bright paper. Paper (light) is the canonical default; Malam (dark) keeps
+ * the same print language on warm near-black. Components style against
+ * SEMANTIC vars (--bg, --text, --accent, …) so one markup set themes
+ * automatically. Fonts come from next/font (layout.tsx).
+ */
+
+:root {
+  --serif: var(--font-besley), 'Rockwell', Georgia, serif;
+  --sans: var(--font-franklin), system-ui, -apple-system, sans-serif;
+
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 16px;
+  --s4: 24px;
+  --s5: 40px;
+  --s6: 64px;
+
+  /* Border widths — thickened by the high-contrast variant. */
+  --bw: 1px;
+  --bw-med: 1.5px;
+  --bw-thick: 2.5px;
+  --focus-w: 2px;
+
+  /* Font scaling (Aa toggle) drives the document base size. */
+  --font-base: 16px;
+}
+:root[data-font-scale='large'] {
+  --font-base: 18px;
+}
+:root[data-font-scale='xlarge'] {
+  --font-base: 20px;
+}
+
+/* --- Paper theme (default) — bright calendar paper, printed ink --- */
+:root,
+:root[data-theme='paper'] {
+  --bg: #fcfbf7;
+  --bg-deep: #f3efe5;
+  --edge: #d9d2c2; /* grid lines, hairlines */
+  --edge-strong: #191613; /* the ink rules */
+  --text: #191613;
+  --text-soft: #5d564c;
+  --text-faint: #6b634f; /* ≥4.5:1 on --bg (WCAG AA) */
+  --faded: #847c6e; /* large faded numerals only (≥3:1 large-text) */
+  --accent: #b23a26; /* cinnabar — AA as text on paper */
+  --accent-deep: #8e2b1b;
+  --accent-hover: #8e2b1b;
+  --sel-bg: #f6e9e4; /* red wash — selected day */
+  --ayu: #b23a26;
+  --caution: #5d564c;
+  --ala: #6b634f;
+  --shadow: 0 6px 20px rgba(60, 48, 24, 0.08);
+}
+
+/* --- Malam theme — the same print language at night --- */
+:root[data-theme='night'] {
+  --bg: #171412;
+  --bg-deep: #211d19;
+  --edge: #3b352c;
+  --edge-strong: #ede7da;
+  --text: #ede7da;
+  --text-soft: #b3ab9c;
+  --text-faint: #948c7e; /* ≥4.5:1 on --bg */
+  --faded: #8a8274;
+  --accent: #e07a5f; /* cinnabar brightened for AA on dark */
+  --accent-deep: #eda18c;
+  --accent-hover: #eda18c;
+  --sel-bg: #33221d;
+  --ayu: #e07a5f;
+  --caution: #b3ab9c;
+  --ala: #948c7e;
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* --- High-contrast variant — pure ink on pure paper (DESIGN.md) ---
+ * Activated by the header toggle, or automatically when the OS reports
+ * `prefers-contrast: more` (inline script in layout.tsx). Red retreats to
+ * marks that already carry a distinct glyph; text goes pure black. */
+:root[data-contrast='high'] {
+  --bg: #ffffff;
+  --bg-deep: #ffffff;
+  --edge: #000000;
+  --edge-strong: #000000;
+  --text: #000000;
+  --text-soft: #000000;
+  --text-faint: #3d3d3d;
+  --faded: #3d3d3d;
+  --accent: #000000;
+  --accent-deep: #000000;
+  --accent-hover: #000000;
+  --sel-bg: #e8e8e8;
+  --ayu: #000000;
+  --caution: #000000;
+  --ala: #000000;
+  --shadow: none;
+  --bw: 2px;
+  --bw-med: 2px;
+  --bw-thick: 3px;
+  --focus-w: 3px;
+}
+
+/* ============================== Base ============================== */
+
+html {
+  background: var(--bg);
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: var(--font-base);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+::selection {
+  background: var(--sel-bg);
+  color: var(--text);
+}
+:focus-visible {
+  outline: var(--focus-w) solid var(--accent);
+  outline-offset: 2px;
+}
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+a {
+  color: inherit;
+}
+em {
+  font-style: italic;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
+  color: var(--accent);
+  padding: 10px 16px;
+  border: var(--bw-med) solid var(--accent);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+}
+.skip-link:focus-visible {
+  left: 12px;
+  top: 12px;
+}
+
+/* Entrance animation — brief, functional (DESIGN.md Motion). */
+.anim {
+  animation: fade-up 0.3s ease-out both;
+}
+.anim.d1 {
+  animation-delay: 0.02s;
+}
+.anim.d2 {
+  animation-delay: 0.06s;
+}
+.anim.d3 {
+  animation-delay: 0.1s;
+}
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .anim {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================ Chrome ============================== */
+
+/* Signature #4 — the calendar's binding strip. */
+.redband {
+  height: 6px;
+  background: var(--accent);
+}
+:root[data-contrast='high'] .redband {
+  background: #000;
+}
+
+.wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+main {
+  display: block;
+  padding-bottom: var(--s6);
+}
+main:focus {
+  outline: none;
+}
+
+.masthead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--s3);
+  padding: 18px 0 12px;
+  border-bottom: 2px solid var(--edge-strong);
+  margin-bottom: var(--s3);
+}
+.brand {
+  text-decoration: none;
+}
+.brand .name {
+  display: block;
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 22px;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+}
+.brand .name em {
+  font-style: normal;
+  color: var(--accent);
+}
+.brand .name small {
+  display: block;
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-top: 3px;
+}
+
+.tools {
+  display: flex;
+  gap: var(--s2);
+  align-items: center;
+}
+.tool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: var(--bw) solid var(--edge);
+  background: var(--bg);
+  color: var(--text-soft);
+}
+.tool:hover {
+  border-color: var(--text);
+  color: var(--text);
+}
+.tool svg {
+  width: 17px;
+  height: 17px;
+}
+.tool.type .a1 {
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 15px;
+  line-height: 1;
+}
+.tool.type .a2 {
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 11px;
+  line-height: 1;
+}
+.theme-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+  border: var(--bw) solid var(--edge);
+  background: var(--bg);
+  color: var(--text-soft);
+  font-weight: 600;
+  font-size: 13px;
+}
+.theme-pill:hover {
+  border-color: var(--text);
+  color: var(--text);
+}
+.theme-pill-icon {
+  width: 15px;
+  height: 15px;
+}
+
+.site-footer {
+  border-top: 2px solid var(--edge-strong);
+  margin-top: var(--s5);
+}
+.foot {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: var(--s3) 20px var(--s5);
+  display: flex;
+  gap: var(--s3);
+  align-items: flex-start;
+}
+.foot .seal {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  color: var(--accent);
+  margin-top: 2px;
+}
+.foot p {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--text-soft);
+  max-width: 60ch;
+}
+
+/* ======================== Ceremony tabs =========================== */
+
+.tabs {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  border-bottom: var(--bw) solid var(--edge);
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+.tab {
+  padding: 12px 13px 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-soft);
+  white-space: nowrap;
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+}
+.tab:hover {
+  color: var(--text);
+}
+.tab.is-active {
+  color: var(--accent-deep);
+  border-bottom-color: var(--accent);
+}
+:root[data-theme='night'] .tab.is-active {
+  color: var(--accent);
+}
+
+/* Upacara landing pages reuse the same print-tab language. */
+.ceremonies {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  border-bottom: var(--bw) solid var(--edge);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  scrollbar-width: none;
+}
+.ceremonies::-webkit-scrollbar {
+  display: none;
+}
+.ceremonies a {
+  display: block;
+  padding: 12px 13px 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-soft);
+  white-space: nowrap;
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+}
+.ceremonies a:hover {
+  color: var(--text);
+}
+.ceremonies a.active {
+  color: var(--accent-deep);
+  border-bottom-color: var(--accent);
+}
+:root[data-theme='night'] .ceremonies a.active {
+  color: var(--accent);
+}
+
+/* ========================= Month bar ============================== */
+
+.monthbar {
+  padding-top: var(--s4);
+}
+.monthbar-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--s3);
+}
+.month-name {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: clamp(38px, 8.5vw, 54px);
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+}
+.month-name small {
+  display: block;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 7px;
+}
+.cal-nav {
+  display: flex;
+  gap: var(--s2);
+}
+.cal-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: var(--bw-med) solid var(--edge-strong);
+  font-size: 19px;
+  line-height: 1;
+  text-decoration: none;
+  color: var(--text);
+  background: var(--bg);
+}
+.cal-arrow:hover {
+  background: var(--bg-deep);
+}
+.cal-arrow.is-end {
+  opacity: 0.3;
+  border-color: var(--edge);
+}
+
+.monthbar-sub {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+  flex-wrap: wrap;
+  border-bottom: var(--bw) solid var(--edge);
+  padding: var(--s1) 0 12px;
+  margin-top: var(--s1);
+}
+.tally {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-soft);
+}
+.tally b {
+  font-weight: 600;
+  color: var(--accent-deep);
+}
+:root[data-theme='night'] .tally b {
+  color: var(--accent);
+}
+.tally b em {
+  font-style: italic;
+}
+
+/* Date stepper + picker — the precise-date utility row. */
+.app-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+}
+.app-controls .step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: var(--bw) solid var(--edge);
+  background: var(--bg);
+  font-size: 16px;
+  color: var(--text-soft);
+}
+.app-controls .step:hover {
+  border-color: var(--text);
+  color: var(--text);
+}
+.today-btn {
+  height: 38px;
+  padding: 0 12px;
+  border: var(--bw) solid var(--edge);
+  background: var(--bg);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+.today-btn:hover {
+  border-color: var(--text);
+  color: var(--text);
+}
+.dp-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 12px;
+  border: var(--bw) solid var(--edge);
+  background: var(--bg);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+.dp-trigger:hover {
+  border-color: var(--text);
+}
+.dp-trigger .edit {
+  display: inline-flex;
+  color: var(--accent);
+}
+.dp-trigger .edit svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Popover calendar (react-day-picker v9) in print dress. */
+.dp-panel {
+  z-index: 50;
+  background: var(--bg);
+  border: var(--bw-med) solid var(--edge-strong);
+  box-shadow: var(--shadow);
+  padding: 12px;
+}
+.dp-panel .rdp-root {
+  --rdp-accent-color: var(--accent);
+  --rdp-accent-background-color: var(--sel-bg);
+  --rdp-today-color: var(--accent);
+  --rdp-day-width: 38px;
+  --rdp-day-height: 38px;
+  --rdp-day_button-width: 38px;
+  --rdp-day_button-height: 38px;
+  --rdp-day_button-border-radius: 2px;
+  --rdp-disabled-opacity: 0.28;
+  --rdp-outside-opacity: 0.4;
+  --rdp-selected-border: var(--bw-med) solid var(--accent);
+  font-size: 14px;
+}
+.dp-panel .rdp-month_caption {
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 17px;
+}
+.dp-panel .rdp-weekday {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.dp-panel .rdp-day_button {
+  font-variant-numeric: tabular-nums;
+}
+.dp-panel .rdp-today .rdp-day_button {
+  color: var(--accent);
+  font-weight: 600;
+}
+.dp-panel .rdp-selected .rdp-day_button {
+  background: var(--sel-bg);
+}
+.dp-panel .rdp-chevron {
+  fill: var(--text-soft);
+}
+.dp-panel .rdp-button_previous:hover .rdp-chevron,
+.dp-panel .rdp-button_next:hover .rdp-chevron {
+  fill: var(--text);
+}
+
+/* ======================= Calendar grid ============================ */
+
+.cal-sec {
+  margin-top: var(--s3);
+}
+table.cal {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.cal th {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  padding: 6px 0;
+  border-bottom: var(--bw-med) solid var(--edge-strong);
+}
+.cal th em {
+  display: block;
+  font-style: normal;
+  color: var(--accent);
+  font-size: 9.5px;
+  letter-spacing: 0.05em;
+}
+.cal td {
+  border: var(--bw) solid var(--edge);
+  padding: 0;
+  vertical-align: top;
+  height: 64px;
+}
+.cal td.blank {
+  background: var(--bg-deep);
+}
+
+.day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  width: 100%;
+  height: 100%;
+  min-height: 64px;
+  padding: 6px 2px 5px;
+  box-sizing: border-box;
+  text-decoration: none;
+  color: inherit;
+}
+.day:hover {
+  background: var(--bg-deep);
+}
+.day .num {
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 19px;
+  line-height: 1;
+}
+.day .pw {
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  color: var(--text-faint);
+  text-transform: uppercase;
+}
+.day .moon {
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--accent-deep);
+}
+:root[data-theme='night'] .day .moon {
+  color: var(--accent);
+}
+.day .mark {
+  font-size: 9px;
+  line-height: 1;
+  margin-top: auto;
+}
+
+/* Rating treatment — notation + red/ink/faded (never color alone). */
+.day.r-ayu .num,
+.day.r-ayu .mark {
+  color: var(--accent);
+}
+.day.r-caution .mark {
+  color: var(--text-soft);
+}
+.day.r-bad .num,
+.day.r-bad .mark {
+  color: var(--faded);
+}
+.day.is-selected {
+  box-shadow: inset 0 0 0 2px var(--accent);
+  background: var(--sel-bg);
+}
+.day.is-today .num {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.cal-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font-size: 12px;
+  color: var(--text-soft);
+  padding: 12px 0 0;
+}
+.cal-legend b {
+  font-weight: 400;
+  margin-right: 5px;
+}
+.cal-legend .l-ayu b {
+  color: var(--accent);
+}
+.cal-legend .l-bad b {
+  color: var(--faded);
+}
+.cal-legend .l-moon b {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--accent-deep);
+}
+:root[data-theme='night'] .cal-legend .l-moon b {
+  color: var(--accent);
+}
+
+/* ===================== Detail panel ("hasil") ===================== */
+
+.detail {
+  margin-top: var(--s5);
+  border: var(--bw-med) solid var(--edge-strong);
+  background: var(--bg);
+}
+
+.verdict-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s3);
+  padding: 18px 22px 0;
+}
+.verdict-when {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.verdict-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.verdict-cernote {
+  font-size: 13px;
+  color: var(--text-soft);
+}
+
+.verdict-head {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 20px;
+  padding: 14px 22px 18px;
+  border-bottom: var(--bw) solid var(--edge);
+}
+/* Signature #3 — number-as-print: the torn-off daily-calendar numeral. */
+.bignum {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 86px;
+  line-height: 0.82;
+  font-variant-numeric: tabular-nums;
+}
+.verdict.is-ayu .bignum {
+  color: var(--accent);
+}
+.verdict.is-bad .bignum {
+  color: var(--faded);
+}
+.bignum small {
+  display: block;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--text-soft);
+  text-transform: uppercase;
+  margin-top: 10px;
+}
+.verdict-who {
+  align-self: center;
+  min-width: 0;
+}
+.wewaran-line {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: clamp(20px, 4.5vw, 26px);
+  line-height: 1.15;
+  text-wrap: balance;
+}
+.sasih-line {
+  margin: 6px 0 0;
+  font-size: 13.5px;
+  color: var(--text-soft);
+}
+.sasih-line sup {
+  color: var(--accent);
+}
+
+/* Signature #2 — the stamp verdict. */
+.stamp-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+  flex-wrap: wrap;
+  padding: 18px 22px;
+  border-bottom: var(--bw) solid var(--edge);
+}
+.stamp {
+  display: inline-block;
+  border: var(--bw-thick) solid var(--caution);
+  color: var(--caution);
+  padding: 7px 15px 6px;
+  font-weight: 600;
+  font-size: 14.5px;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  transform: rotate(-2deg);
+  border-radius: 3px;
+  mask-image: radial-gradient(circle at 30% 60%, black 96%, transparent 100%);
+}
+.verdict.is-ayu .stamp {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.verdict.is-bad .stamp {
+  border-color: var(--ala);
+  color: var(--ala);
+}
+:root[data-contrast='high'] .stamp {
+  mask-image: none;
+  transform: none;
+}
+.score-frac {
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 44px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.score-frac sub {
+  font-size: 15px;
+  color: var(--text-faint);
+  font-family: var(--sans);
+  font-weight: 600;
+  vertical-align: baseline;
+}
+
+.verdict-summary {
+  margin: 14px 22px 4px;
+  font-size: 14.5px;
+  max-width: 58ch;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+@media (min-width: 640px) {
+  .detail-grid {
+    grid-template-columns: 3fr 2fr;
+  }
+  .detail-grid .padew {
+    border-left: var(--bw) solid var(--edge);
+  }
+}
+
+.card-title {
+  margin: 0 0 10px;
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 17px;
+}
+
+/* Factor checks — dotted-leader print rows. */
+.factors {
+  padding: 16px 22px 6px;
+}
+.rules {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.rule {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  padding: 9px 0;
+  border-bottom: 1px dotted var(--edge);
+}
+.rule:last-child {
+  border-bottom: none;
+}
+.rule-badge {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  align-self: center;
+}
+.rule-badge svg {
+  width: 14px;
+  height: 14px;
+}
+.rule-badge.pass {
+  color: var(--accent);
+}
+.rule-badge.fail {
+  color: var(--faded);
+}
+.rule-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.rule-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+.rule-why {
+  font-size: 13px;
+  color: var(--text-soft);
+}
+
+/* Padewasan tags. */
+.padew {
+  padding: 16px 22px 12px;
+}
+.tags-empty {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-faint);
+}
+.tag-group {
+  margin-bottom: 12px;
+}
+.tag-head {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 6px;
+}
+.taglist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.pill-tag {
+  display: inline-block;
+  padding: 3px 9px;
+  font-size: 12.5px;
+  font-weight: 600;
+  border: var(--bw) solid var(--edge);
+  border-radius: 2px;
+}
+.pill-tag.ayu {
+  border-color: var(--accent);
+  color: var(--accent-deep);
+}
+:root[data-theme='night'] .pill-tag.ayu {
+  color: var(--accent);
+}
+.pill-tag.ala {
+  color: var(--text-faint);
+}
+
+.estnote {
+  margin: 0;
+  padding: 12px 22px 18px;
+  font-size: 12.5px;
+  color: var(--text-soft);
+  border-top: var(--bw) solid var(--edge);
+}
+.estnote sup {
+  color: var(--accent);
+}
+
+/* ===================== Recommendations =========================== */
+
+.rec-sec {
+  margin-top: var(--s5);
+}
+.sec-title {
+  margin: 0 0 4px;
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 24px;
+}
+.sec-sub {
+  margin: 0 0 14px;
+  font-size: 13.5px;
+  color: var(--text-soft);
+}
+.rec-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.rec {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 13px 2px;
+  border-top: var(--bw) solid var(--edge);
+  text-decoration: none;
+  color: inherit;
+}
+.rec-list li:last-child .rec {
+  border-bottom: var(--bw) solid var(--edge);
+}
+.rec:hover {
+  background: var(--bg-deep);
+}
+.rec-date {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+  min-width: 74px;
+  white-space: nowrap;
+}
+:root[data-theme='night'] .rec-date {
+  color: var(--accent);
+}
+.rec-date b {
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 21px;
+  letter-spacing: 0;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.rec-info {
+  flex: 1;
+  min-width: 0;
+  font-size: 13.5px;
+  color: var(--text-soft);
+}
+.rec-info b {
+  display: block;
+  color: var(--text);
+  font-weight: 600;
+  font-size: 14.5px;
+}
+.rec-badge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+  border: var(--bw) solid var(--accent);
+  padding: 2px 6px;
+  border-radius: 2px;
+  align-self: center;
+}
+:root[data-theme='night'] .rec-badge {
+  color: var(--accent);
+}
+.rec-score {
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 21px;
+  font-variant-numeric: tabular-nums;
+}
+.reco-empty {
+  border: var(--bw) solid var(--edge);
+  padding: 16px 18px;
+  font-size: 14px;
+  color: var(--text-soft);
+}
+
+/* ======================= Share + toast =========================== */
+
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 11px;
+  border: var(--bw) solid var(--edge);
+  background: var(--bg);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-soft);
+  flex: none;
+}
+.share-btn:hover {
+  border-color: var(--text);
+  color: var(--text);
+}
+.share-btn svg {
+  width: 14px;
+  height: 14px;
+}
+.app-toast {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  background: var(--text);
+  color: var(--bg);
+  padding: 9px 16px;
+  font-size: 13.5px;
+  font-weight: 600;
+  border-radius: 2px;
+  box-shadow: var(--shadow);
+}
+
+/* ==================== Error / state cards ========================= */
+
+.state-card {
+  margin: 0;
+  border: var(--bw) solid var(--edge);
+  border-left: 3px solid var(--accent);
+  background: var(--bg-deep);
+  padding: 14px 16px;
+  font-size: 14px;
+  color: var(--text-soft);
+}
+.detail .state-card {
+  border: none;
+  border-left: 3px solid var(--accent);
+  margin: 16px 22px;
+}
+
+/* ======================= About card (home) ======================== */
+
+.about-card {
+  margin-top: var(--s5);
+  border-top: 2px solid var(--edge-strong);
+  padding-top: var(--s3);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--s3);
+}
+@media (min-width: 640px) {
+  .about-card {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s4);
+  }
+}
+.about-card p {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--text-soft);
+}
+.about-card a {
+  color: var(--accent-deep);
+  font-weight: 600;
+  text-decoration: none;
+}
+:root[data-theme='night'] .about-card a {
+  color: var(--accent);
+}
+.about-card a:hover {
+  text-decoration: underline;
+}
+
+/* ================= Long-form pages (About, Upacara) =============== */
+
+.ask {
+  padding: var(--s4) 0 var(--s2);
+}
+.eyebrow {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.ask h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: clamp(28px, 6vw, 40px);
+  line-height: 1.12;
+  text-wrap: balance;
+}
+.ask .pick {
+  color: var(--accent);
+}
+
+.about {
+  max-width: 640px;
+  padding-bottom: var(--s4);
+}
+.about p {
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: var(--text-soft);
+  margin: 0 0 14px;
+  max-width: 62ch;
+}
+.about strong {
+  color: var(--text);
+  font-weight: 600;
+}
+.about-lead {
+  font-size: 17px;
+  color: var(--text);
+}
+.drop-cap::first-letter {
+  font-family: var(--serif);
+  font-weight: 800;
+  color: var(--accent);
+  float: left;
+  font-size: 3.1em;
+  line-height: 0.82;
+  padding: 4px 8px 0 0;
+}
+.about-section {
+  margin-top: var(--s4);
+}
+.col-head {
+  margin: 0 0 10px;
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 21px;
+}
+.col-head .n {
+  color: var(--accent);
+}
+
+.divider {
+  margin: var(--s5) 0 var(--s2);
+  color: var(--edge);
+  text-align: center;
+}
+:root[data-contrast='high'] .divider {
+  color: #000;
+}
+.divider svg {
+  width: 200px;
+  height: 12px;
+}
+
+/* "Cara kerja" numbered steps — a real sequence. */
+.analysis {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: langkah;
+}
+.analysis li {
+  display: flex;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px dotted var(--edge);
+  counter-increment: langkah;
+}
+.analysis li:last-child {
+  border-bottom: none;
+}
+.analysis .idx::before {
+  content: counter(langkah);
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 21px;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.analysis .name {
+  display: block;
+  font-weight: 600;
+  color: var(--text);
+  font-size: 15px;
+}
+.analysis .why {
+  display: block;
+  font-size: 13.5px;
+  color: var(--text-soft);
+}
+
+/* The "rujukan, bukan pengganti" note — bordered like the detail panel. */
+.inscription {
+  position: relative;
+  border: var(--bw-med) solid var(--edge-strong);
+  padding: 18px 22px;
+  margin-top: var(--s4);
+}
+.inscription .hole {
+  display: none;
+}
+.insc-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.insc-glyph {
+  width: 22px;
+  height: 22px;
+  color: var(--accent);
+  flex: none;
+}
+.about-note-head {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 19px;
+}
+.about-note p:last-child {
+  margin-bottom: 0;
+}
+
+.v-ayu {
+  color: var(--accent);
+  font-weight: 600;
+}
+.v-caution {
+  color: var(--text);
+  font-weight: 600;
+}
+.v-bad {
+  color: var(--text-faint);
+  font-weight: 600;
+}
+
+.about-cta,
+.up-cta {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  flex-wrap: wrap;
+  margin-top: var(--s4);
+}
+.periksa {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 22px;
+  background: var(--accent);
+  color: #fcfbf7;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  border-radius: 2px;
+}
+.periksa:hover {
+  background: var(--accent-deep);
+}
+:root[data-theme='night'] .periksa {
+  color: #171412;
+}
+:root[data-contrast='high'] .periksa {
+  background: #000;
+  color: #fff;
+  outline: 2px solid #000;
+}
+.up-link {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent-deep);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+:root[data-theme='night'] .up-link {
+  color: var(--accent);
+}
+.about-source {
+  font-size: 13.5px;
+}
+
+/* ==================== Responsive refinements ====================== */
+
+@media (max-width: 560px) {
+  .cal td,
+  .day {
+    height: 56px;
+    min-height: 56px;
+  }
+  .day .pw {
+    display: none;
+  }
+  .cal th em {
+    display: none;
+  }
+  .bignum {
+    font-size: 64px;
+  }
+  .verdict-head {
+    gap: 14px;
+    padding: 12px 16px 14px;
+  }
+  .verdict-top {
+    padding: 14px 16px 0;
+  }
+  .stamp-row {
+    padding: 14px 16px;
+  }
+  .verdict-summary {
+    margin: 12px 16px 4px;
+  }
+  .factors,
+  .padew {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .estnote {
+    padding: 10px 16px 14px;
+  }
+  .monthbar-sub {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .share-btn .share-btn-label {
+    display: none;
+  }
+  .share-btn {
+    width: 34px;
+    padding: 0;
+    justify-content: center;
+  }
+}
+
+/* =================== High-contrast reinforcement ================== */
+
+:root[data-contrast='high'] .day.is-selected {
+  box-shadow: inset 0 0 0 3px #000;
+}
+:root[data-contrast='high'] .cal td {
+  border-color: #000;
+}
+:root[data-contrast='high'] .tab.is-active,
+:root[data-contrast='high'] .ceremonies a.active {
+  border-bottom-color: #000;
+  text-decoration: underline;
+}
+:root[data-contrast='high'] .app-toast {
+  background: #000;
+  color: #fff;
+  outline: 2px solid #fff;
+}
