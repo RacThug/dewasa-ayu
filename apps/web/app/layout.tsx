@@ -12,6 +12,7 @@ import { FontToggle } from '@/components/font-toggle';
 import { ThemeCycle } from '@/components/theme-cycle';
 import { ThemeProvider } from '@/components/theme-provider';
 import { SealIcon } from '@/lib/icons';
+import { SITE_URL } from '@/lib/site-url';
 
 // Runs before paint so saved (or OS-preferred) contrast and font-scale apply
 // without a flash. next-themes does the same for the color theme.
@@ -40,8 +41,6 @@ const franklin = Libre_Franklin({
   variable: '--font-franklin',
   display: 'swap',
 });
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
