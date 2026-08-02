@@ -1,8 +1,7 @@
 import type { MetadataRoute } from 'next';
 
 import { CEREMONIES } from '@/lib/api';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+import { SITE_URL } from '@/lib/site-url';
 
 /** Static routes that are real, crawlable pages (query-param variants are not listed). */
 export default function sitemap(): MetadataRoute.Sitemap {
