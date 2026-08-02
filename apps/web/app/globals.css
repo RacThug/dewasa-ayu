@@ -850,8 +850,8 @@ table.cal {
   color: var(--accent);
 }
 .verdict.is-bad .stamp {
-  border-color: var(--faded);
-  color: var(--faded);
+  border-color: var(--ala);
+  color: var(--ala);
 }
 :root[data-contrast='high'] .stamp {
   mask-image: none;
