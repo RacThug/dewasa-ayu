@@ -1,6 +1,16 @@
-import type { BalineseDate, CeremonyId, Evaluation } from '@dewasa-ayu/types';
+import type { BalineseDate, CeremonyId, EvaluatedDate, Evaluation } from '@dewasa-ayu/types';
+import { IsoDateSchema } from '@dewasa-ayu/types/schemas';
+import {
+  evaluate,
+  findGoodDates,
+  getFullInfo,
+  getMonthEvaluation,
+  WarigaError,
+} from '@dewasa-ayu/wariga-engine';
 
-// The API serialises Dates as ISO strings; everything else matches the engine types.
+// Dates cross the server/client boundary as ISO strings; everything else matches
+// the engine types. (Kept identical to the REST wire format so the API remains a
+// drop-in alternative for third-party consumers — see `apps/api`.)
 export type WireInfo = Omit<BalineseDate, 'gregorian'> & { gregorian: string };
 
 export interface WireEvaluatedDate {
@@ -55,51 +65,91 @@ export class ApiError extends Error {
   }
 }
 
-const API_BASE = process.env.API_URL ?? 'http://localhost:3001/api/v1';
-
-/** User-facing copy per API error code (Bahasa Indonesia — never show the raw
- *  English engine/API message to users; the code is the stable contract). */
+/** User-facing copy per error code (Bahasa Indonesia — never show the raw
+ *  English engine message to users; the code is the stable contract). */
 const ERROR_COPY: Record<string, string> = {
   OUT_OF_RANGE: 'Tanggal di luar rentang yang didukung (3 Januari 2003 – 31 Desember 2100).',
   INVALID_DATE: 'Tanggal tidak valid — periksa kembali tanggal yang dimasukkan.',
   INVALID_PARAM: 'Permintaan tidak valid — periksa kembali tanggal yang dimasukkan.',
   UNKNOWN_CEREMONY: 'Jenis upacara tidak dikenali.',
-  RATE_LIMITED: 'Terlalu banyak permintaan — coba lagi sebentar lagi.',
 };
 const ERROR_FALLBACK = 'Terjadi kesalahan pada layanan. Silakan coba lagi.';
 
-/** Server-side GET against the Wariga API. Throws `ApiError` on a non-2xx response. */
-async function getJSON<T>(path: string): Promise<T> {
-  let res: Response;
+/** Parse a strict `YYYY-MM-DD` string into a local Date whose Y/M/D components are
+ *  exactly those digits — timezone-independent (the engine reads local components).
+ *
+ *  Validates against the shared schema first: `new Date()` silently rolls
+ *  2026-02-31 over into March, so an unvalidated string would yield a verdict
+ *  for a date the user never asked about. Same rule the REST API enforces. */
+function parseISODate(iso: string): Date {
+  if (!IsoDateSchema.safeParse(iso).success) {
+    throw new ApiError('INVALID_DATE', ERROR_COPY.INVALID_DATE ?? ERROR_FALLBACK);
+  }
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y!, m! - 1, d!);
+}
+
+function wireInfo(info: BalineseDate): WireInfo {
+  return { ...info, gregorian: info.gregorian.toISOString() };
+}
+
+function wireEvaluated(e: EvaluatedDate): WireEvaluatedDate {
+  return { date: e.date.toISOString(), info: wireInfo(e.info), evaluation: e.evaluation };
+}
+
+/** Engine errors carry the same stable codes the UI already maps to Indonesian
+ *  copy; anything else is an unexpected fault and gets the generic fallback. */
+function toApiError(err: unknown): ApiError {
+  if (err instanceof ApiError) return err;
+  const code = err instanceof WarigaError ? err.code : 'INTERNAL_ERROR';
+  return new ApiError(code, ERROR_COPY[code] ?? ERROR_FALLBACK);
+}
+
+/** The engine is a zero-dependency pure function bundled into this app, so these
+ *  run in-process — no network hop, no second service to keep alive. They stay
+ *  async because callers await them (and `Promise.allSettled` them) per section. */
+export async function checkDate(date: string, ceremony: CeremonyId): Promise<CheckResult> {
   try {
-    res = await fetch(`${API_BASE}${path}`, { cache: 'no-store' });
-  } catch {
-    throw new ApiError('UNREACHABLE', 'Tidak dapat menghubungi layanan. Pastikan API berjalan.');
+    const info = getFullInfo(parseISODate(date));
+    return { date, info: wireInfo(info), evaluation: evaluate(info, ceremony) };
+  } catch (err) {
+    throw toApiError(err);
   }
-  if (!res.ok) {
-    const body: unknown = await res.json().catch(() => null);
-    const err =
-      typeof body === 'object' && body !== null
-        ? (body as { error?: { code?: string; message?: string } }).error
-        : undefined;
-    const code = err?.code ?? 'INTERNAL_ERROR';
-    throw new ApiError(code, ERROR_COPY[code] ?? ERROR_FALLBACK);
+}
+
+export async function getMonth(
+  year: number,
+  month: number,
+  ceremony: CeremonyId,
+): Promise<MonthResult> {
+  try {
+    const m = getMonthEvaluation(year, month, ceremony);
+    return {
+      year: m.year,
+      month: m.month,
+      ceremony: m.ceremony,
+      days: m.days.map(wireEvaluated),
+      summary: {
+        ayuCount: m.summary.ayuCount,
+        cautionCount: m.summary.cautionCount,
+        badCount: m.summary.badCount,
+        topDates: m.summary.topDates.map(wireEvaluated),
+      },
+    };
+  } catch (err) {
+    throw toApiError(err);
   }
-  return res.json() as Promise<T>;
 }
 
-export function checkDate(date: string, ceremony: CeremonyId): Promise<CheckResult> {
-  return getJSON(`/calendar/check?date=${date}&ceremony=${ceremony}`);
-}
-
-export function getMonth(year: number, month: number, ceremony: CeremonyId): Promise<MonthResult> {
-  return getJSON(`/calendar/month?year=${year}&month=${month}&ceremony=${ceremony}`);
-}
-
-export function getRecommend(
+export async function getRecommend(
   from: string,
   count: number,
   ceremony: CeremonyId,
 ): Promise<RecommendResult> {
-  return getJSON(`/calendar/recommend?from=${from}&count=${count}&ceremony=${ceremony}`);
+  try {
+    const r = findGoodDates(parseISODate(from), count, ceremony);
+    return { from, count, dates: r.dates.map(wireEvaluated), capReached: r.capReached };
+  } catch (err) {
+    throw toApiError(err);
+  }
 }
