@@ -11,6 +11,7 @@ import { FontToggle } from '@/components/font-toggle';
 import { ThemeCycle } from '@/components/theme-cycle';
 import { ThemeProvider } from '@/components/theme-provider';
 import { SealIcon } from '@/lib/icons';
+import { PREFETCH_LINKS } from '@/lib/routes';
 import { SITE_URL } from '@/lib/site-url';
 
 // Runs before paint so saved (or OS-preferred) contrast and font-scale apply
@@ -92,8 +93,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <div className="redband" aria-hidden="true" />
           <div className="wrap">
             <header className="masthead anim d1">
-              {/* `/` resolves today and redirects, so there is nothing to prefetch. */}
-              <Link className="brand" href="/" prefetch={false} aria-label="Dewasa Ayu — beranda">
+              <Link
+                className="brand"
+                href="/"
+                prefetch={PREFETCH_LINKS}
+                aria-label="Dewasa Ayu — beranda"
+              >
                 <span className="name">
                   Dewasa <em>Ayu</em>
                   <small>Pencari Hari Wariga</small>

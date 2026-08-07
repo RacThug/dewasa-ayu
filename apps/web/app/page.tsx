@@ -1,40 +1,26 @@
-import { redirect } from 'next/navigation';
+import type { Metadata } from 'next';
 
-import { isCeremonyId } from '@/lib/api';
+import { VerdictView } from '@/components/verdict-view';
 import { todayInBali } from '@/lib/display';
-import { dayHref, firstDayOfClampedMonth, ISO_DATE } from '@/lib/routes';
-
-const VIEW = /^(\d{4})-(\d{2})$/;
-
-const one = (v: string | string[] | undefined): string | undefined => (Array.isArray(v) ? v[0] : v);
 
 /**
- * The site entrance, and the compatibility layer for every pre-#74 link.
+ * The site entrance: today's verdict, for the default ceremony.
  *
- * Verdicts now live at `/{ceremony}/{date}`, which is cached permanently. This
- * route stays dynamic on purpose: it resolves "today" and old query strings, but
- * it runs no engine code, so it costs a redirect and nothing more.
+ * This is a cached page rather than a redirect to `/{ceremony}/{today}`. A
+ * redirect looked tidier but cost more than the page it pointed at -- Next sends
+ * a full HTML document alongside the 307, so a cold visit paid 13 KB for the
+ * redirect plus 10 KB for the destination. `/` takes the overwhelming majority
+ * of this site's traffic, so it has to be the cheapest route, not the priciest.
+ *
+ * Revalidating rather than permanent, because "today" moves. Five minutes bounds
+ * how long the page can lag midnight in Bali while costing ~290 renders a day.
  */
-export default async function Home(props: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}) {
-  const sp = await props.searchParams;
+export const revalidate = 300;
 
-  const rawCeremony = one(sp.ceremony);
-  const ceremony = rawCeremony && isCeremonyId(rawCeremony) ? rawCeremony : 'pawiwahan';
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+};
 
-  const rawDate = one(sp.date);
-  const rawView = one(sp.view);
-  const viewMatch = rawView ? VIEW.exec(rawView) : null;
-
-  const date =
-    rawDate && ISO_DATE.test(rawDate)
-      ? rawDate
-      : viewMatch
-        ? // A bare ?view= (month, no day) lands on that month's first day.
-          firstDayOfClampedMonth(Number(viewMatch[1]), Number(viewMatch[2]))
-        : todayInBali();
-
-  const scrollTo = one(sp.scrollTo);
-  redirect(`${dayHref(ceremony, date)}${scrollTo ? `?scrollTo=${scrollTo}` : ''}`);
+export default async function Home() {
+  return <VerdictView ceremony="pawiwahan" date={todayInBali()} />;
 }
