@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { CeremonyNav } from '@/components/ceremony-nav';
 import { CEREMONIES, isCeremonyId } from '@/lib/api';
 import { DividerOrnament, SealIcon } from '@/lib/icons';
+import { PREFETCH_LINKS } from '@/lib/routes';
 
 /** Short, general, sourceable definitions (approved copy) — no specific Wariga rules. */
 const INFO: Record<string, { lead: string; body: string }> = {
@@ -113,23 +114,18 @@ export default async function Upacara({ params }: { params: Promise<{ ceremony: 
         </section>
 
         <div className="up-cta">
-          {/* These go through `/`, which resolves "today" and redirects. This page
-              is statically generated, so it cannot bake today's date into the href
-              — and there is nothing to prefetch through a redirect. */}
-          <Link className="periksa" href={`/?ceremony=${cer.id}`} prefetch={false}>
+          {/* `/{ceremony}` is that ceremony's cached "today" page. This page is
+              statically generated, so it cannot bake today's date into the href. */}
+          <Link className="periksa" href={`/${cer.id}`} prefetch={PREFETCH_LINKS}>
             Cek Hari
           </Link>
-          <Link
-            className="up-link"
-            href={`/?ceremony=${cer.id}&scrollTo=kalender`}
-            prefetch={false}
-          >
+          <Link className="up-link" href={`/${cer.id}?scrollTo=kalender`} prefetch={PREFETCH_LINKS}>
             Lihat kalender
           </Link>
           <Link
             className="up-link"
-            href={`/?ceremony=${cer.id}&scrollTo=rekomendasi`}
-            prefetch={false}
+            href={`/${cer.id}?scrollTo=rekomendasi`}
+            prefetch={PREFETCH_LINKS}
           >
             Cari hari baik
           </Link>
