@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 import { type MonthResult } from '@/lib/api';
-import { CAL_MAX, CAL_MIN, PRINT_VERDICT, todayISO } from '@/lib/display';
+import { CAL_MAX, CAL_MIN, PREFETCH_DYNAMIC, PRINT_VERDICT, todayISO } from '@/lib/display';
 
 // Gregorian + Balinese day-name pairs, Sunday-first like the printed calendar.
 const HEADS: Array<[string, string]> = [
@@ -43,7 +43,12 @@ export function CalNav({
           ‹
         </span>
       ) : (
-        <Link className="cal-arrow" href={href(prev.y, prev.m)} aria-label="Bulan sebelumnya">
+        <Link
+          className="cal-arrow"
+          href={href(prev.y, prev.m)}
+          prefetch={PREFETCH_DYNAMIC}
+          aria-label="Bulan sebelumnya"
+        >
           ‹
         </Link>
       )}
@@ -52,7 +57,12 @@ export function CalNav({
           ›
         </span>
       ) : (
-        <Link className="cal-arrow" href={href(next.y, next.m)} aria-label="Bulan berikutnya">
+        <Link
+          className="cal-arrow"
+          href={href(next.y, next.m)}
+          prefetch={PREFETCH_DYNAMIC}
+          aria-label="Bulan berikutnya"
+        >
           ›
         </Link>
       )}
@@ -130,6 +140,7 @@ export function MiniCalendar({
                 <td key={iso}>
                   <Link
                     href={`/?ceremony=${ceremony}&date=${iso}&view=${view}`}
+                    prefetch={PREFETCH_DYNAMIC}
                     className={cls}
                     aria-label={`${dayNum} — ${PRINT_VERDICT[rating].word}${moon ? `, ${moon === 'PUR' ? 'purnama' : 'tilem'}` : ''}`}
                     aria-current={isSel ? 'date' : undefined}

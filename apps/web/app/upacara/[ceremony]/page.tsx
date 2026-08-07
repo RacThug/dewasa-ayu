@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 
 import { CeremonyNav } from '@/components/ceremony-nav';
 import { CEREMONIES, isCeremonyId } from '@/lib/api';
+import { PREFETCH_DYNAMIC } from '@/lib/display';
 import { DividerOrnament, SealIcon } from '@/lib/icons';
 
 /** Short, general, sourceable definitions (approved copy) — no specific Wariga rules. */
@@ -113,13 +114,21 @@ export default async function Upacara({ params }: { params: Promise<{ ceremony: 
         </section>
 
         <div className="up-cta">
-          <Link className="periksa" href={`/?ceremony=${cer.id}`}>
+          <Link className="periksa" href={`/?ceremony=${cer.id}`} prefetch={PREFETCH_DYNAMIC}>
             Cek Hari
           </Link>
-          <Link className="up-link" href={`/?ceremony=${cer.id}&scrollTo=kalender`}>
+          <Link
+            className="up-link"
+            href={`/?ceremony=${cer.id}&scrollTo=kalender`}
+            prefetch={PREFETCH_DYNAMIC}
+          >
             Lihat kalender
           </Link>
-          <Link className="up-link" href={`/?ceremony=${cer.id}&scrollTo=rekomendasi`}>
+          <Link
+            className="up-link"
+            href={`/?ceremony=${cer.id}&scrollTo=rekomendasi`}
+            prefetch={PREFETCH_DYNAMIC}
+          >
             Cari hari baik
           </Link>
         </div>
