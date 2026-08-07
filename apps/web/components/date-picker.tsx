@@ -9,7 +9,9 @@ import { formatID } from '@/lib/display';
 import { EditIcon } from '@/lib/icons';
 
 // The engine's supported Sasih range (see wariga-engine getSupportedRange()).
-const MIN = new Date(2003, 0, 3);
+// February 2003 is the first month the calendar grid can show in full, so it is
+// also the first date offerable here — matches DateControls' clamp.
+const MIN = new Date(2003, 1, 1);
 const MAX = new Date(2100, 11, 31);
 
 function toDate(iso: string): Date {

@@ -1,7 +1,8 @@
 import Link from 'next/link';
 
 import { CEREMONIES, type RecommendResult } from '@/lib/api';
-import { cap, PREFETCH_DYNAMIC } from '@/lib/display';
+import { cap } from '@/lib/display';
+import { dayHref, PREFETCH_LINKS } from '@/lib/routes';
 
 const MS = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 
@@ -30,17 +31,12 @@ export function Reco({
     <ol className="rec-list">
       {data.dates.map((d) => {
         const iso = d.date.slice(0, 10);
-        const view = iso.slice(0, 7);
         const sasih = d.info.sasih;
         const half = sasih.isPangelong ? 'pangelong' : 'penanggal';
         const badge = sasih.isPurnama ? 'Purnama' : sasih.isTilem ? 'Tilem' : '';
         return (
           <li key={iso}>
-            <Link
-              href={`/?ceremony=${ceremony}&date=${iso}&view=${view}`}
-              prefetch={PREFETCH_DYNAMIC}
-              className="rec"
-            >
+            <Link href={dayHref(ceremony, iso)} prefetch={PREFETCH_LINKS} className="rec">
               <span className="rec-date">
                 <b>{Number(iso.slice(8, 10))}</b> {MS[Number(iso.slice(5, 7)) - 1]}
               </span>

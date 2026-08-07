@@ -6,19 +6,19 @@ import type { WireInfo } from './api';
 export const cap = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
 
 /**
- * Router prefetch setting for links pointing at `/?ceremony=…&date=…&view=…`.
+ * Today in Bali, as `YYYY-MM-DD`.
  *
- * `/` is a dynamic (uncached) route, so each prefetch costs a full server render
- * of a month plus recommendations. A single home page holds ~38 such links, and
- * Next drops dynamic prefetches from the client router cache straight away, so
- * they buy no navigation speed in return -- measured 96 requests per page view,
- * 78 of them prefetch renders, which is what pushed Vercel usage ~30x over the
- * plan's Active CPU allowance.
- *
- * Flip this back to `true` once `/` is served from the CDN (params moved into the
- * route path + ISR); until then prefetching is pure cost.
+ * Used on the server, where there is no visitor timezone to read and the host
+ * clock is UTC -- eight hours behind Wita, so a plain `new Date()` would call it
+ * "yesterday" for anyone in Bali before 08:00. The audience and the calendar are
+ * both Balinese, so Bali's day is the right default. Anything the visitor
+ * actually sees marked as today is decided in their own browser -- see
+ * `todayISO` and `TodayMarker`.
  */
-export const PREFETCH_DYNAMIC = false;
+export function todayInBali(): string {
+  // en-CA formats as YYYY-MM-DD.
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Makassar' }).format(new Date());
+}
 
 /**
  * Verdict for the Pananggalan view: traditional word (Ayu/Madya/Ala) + the

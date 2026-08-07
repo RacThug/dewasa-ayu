@@ -17,14 +17,17 @@ test.describe('Kalender', () => {
   test('month navigation moves forward', async ({ kalender, page }) => {
     await kalender.goto({ ceremony: CEREMONY, year: YEAR, month: MONTH });
     await kalender.nextMonth().click();
-    await expect(page).toHaveURL(/[?&]view=2026-10(&|$)/);
+    // The arrow carries the selected day into the next month (#74).
+    await expect(page).toHaveURL(/\/pawiwahan\/2026-10-01$/);
     await expect(kalender.monthLabel()).toHaveText('Oktober 2026');
   });
 
   test('a day cell links through to its Home verdict', async ({ kalender, page }) => {
+    // Landing on this month selects the 1st, so pick a different day — otherwise
+    // the click is a no-op and proves nothing.
     await kalender.goto({ ceremony: CEREMONY, year: YEAR, month: MONTH });
-    await kalender.cell(1).click();
-    await expect(page).toHaveURL(/[?&]date=2026-09-01(&|$)/);
+    await kalender.cell(15).click();
+    await expect(page).toHaveURL(/\/pawiwahan\/2026-09-15$/);
     await expect(page.locator('#verdict-h')).toBeVisible();
   });
 });
