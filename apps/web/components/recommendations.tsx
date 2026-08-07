@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 import { CEREMONIES, type RecommendResult } from '@/lib/api';
-import { cap } from '@/lib/display';
+import { cap, PREFETCH_DYNAMIC } from '@/lib/display';
 
 const MS = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 
@@ -36,7 +36,11 @@ export function Reco({
         const badge = sasih.isPurnama ? 'Purnama' : sasih.isTilem ? 'Tilem' : '';
         return (
           <li key={iso}>
-            <Link href={`/?ceremony=${ceremony}&date=${iso}&view=${view}`} className="rec">
+            <Link
+              href={`/?ceremony=${ceremony}&date=${iso}&view=${view}`}
+              prefetch={PREFETCH_DYNAMIC}
+              className="rec"
+            >
               <span className="rec-date">
                 <b>{Number(iso.slice(8, 10))}</b> {MS[Number(iso.slice(5, 7)) - 1]}
               </span>

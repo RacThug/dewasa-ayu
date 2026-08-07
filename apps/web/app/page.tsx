@@ -10,7 +10,7 @@ import { Reco } from '@/components/recommendations';
 import { Rincian } from '@/components/rincian';
 import { ScrollOnLoad } from '@/components/scroll-on-load';
 import { ApiError, CEREMONIES, checkDate, getMonth, getRecommend } from '@/lib/api';
-import { monthLabel } from '@/lib/display';
+import { monthLabel, PREFETCH_DYNAMIC } from '@/lib/display';
 import { getValidatedSearchParams } from '@/lib/search-params';
 
 export async function generateMetadata(props: {
@@ -58,6 +58,7 @@ export default async function Home(props: {
           <Link
             key={c.id}
             href={hrefFor(c.id)}
+            prefetch={PREFETCH_DYNAMIC}
             className={`tab${c.id === ceremony ? ' is-active' : ''}`}
             aria-current={c.id === ceremony ? 'page' : undefined}
           >

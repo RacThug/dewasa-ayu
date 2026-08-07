@@ -6,6 +6,21 @@ import type { WireInfo } from './api';
 export const cap = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
 
 /**
+ * Router prefetch setting for links pointing at `/?ceremony=…&date=…&view=…`.
+ *
+ * `/` is a dynamic (uncached) route, so each prefetch costs a full server render
+ * of a month plus recommendations. A single home page holds ~38 such links, and
+ * Next drops dynamic prefetches from the client router cache straight away, so
+ * they buy no navigation speed in return -- measured 96 requests per page view,
+ * 78 of them prefetch renders, which is what pushed Vercel usage ~30x over the
+ * plan's Active CPU allowance.
+ *
+ * Flip this back to `true` once `/` is served from the CDN (params moved into the
+ * route path + ISR); until then prefetching is pure cost.
+ */
+export const PREFETCH_DYNAMIC = false;
+
+/**
  * Verdict for the Pananggalan view: traditional word (Ayu/Madya/Ala) + the
  * stamp line (rendered uppercase by CSS) keeping the humble
  * "disarankan/dihindari" voice (never larangan).
