@@ -1,7 +1,8 @@
 import Link from 'next/link';
 
 import { type MonthResult } from '@/lib/api';
-import { CAL_MAX, CAL_MIN, PREFETCH_DYNAMIC, PRINT_VERDICT, todayISO } from '@/lib/display';
+import { PRINT_VERDICT } from '@/lib/display';
+import { dayHref, PREFETCH_LINKS, shiftMonth } from '@/lib/routes';
 
 // Gregorian + Balinese day-name pairs, Sunday-first like the printed calendar.
 const HEADS: Array<[string, string]> = [
@@ -18,49 +19,38 @@ const HEADS: Array<[string, string]> = [
 // the legend below the grid; color is never the only signal.
 const MARK: Record<string, string> = { ayu: '●', caution: '◐', bad: '✕' };
 
-export function CalNav({
-  ceremony,
-  date,
-  viewY,
-  viewM,
-}: {
-  ceremony: string;
-  date: string;
-  viewY: number;
-  viewM: number;
-}) {
-  const atMin = viewY === CAL_MIN.y && viewM === CAL_MIN.m;
-  const atMax = viewY === CAL_MAX.y && viewM === CAL_MAX.m;
-  const prev = viewM === 1 ? { y: viewY - 1, m: 12 } : { y: viewY, m: viewM - 1 };
-  const next = viewM === 12 ? { y: viewY + 1, m: 1 } : { y: viewY, m: viewM + 1 };
-  const href = (y: number, m: number): string =>
-    `/?ceremony=${ceremony}&date=${date}&view=${y}-${String(m).padStart(2, '0')}`;
+/** Month arrows. Flipping the month carries the selected day with it (same day
+ *  number, clamped to the shorter month), so the grid and the verdict below it
+ *  always describe the same date -- and each arrow is a plain cached URL. */
+export function CalNav({ ceremony, date }: { ceremony: string; date: string }) {
+  const prev = shiftMonth(date, -1);
+  const next = shiftMonth(date, 1);
 
   return (
     <div className="cal-nav">
-      {atMin ? (
+      {prev === null ? (
         <span className="cal-arrow is-end" aria-hidden="true">
           ‹
         </span>
       ) : (
         <Link
           className="cal-arrow"
-          href={href(prev.y, prev.m)}
-          prefetch={PREFETCH_DYNAMIC}
+          href={dayHref(ceremony, prev)}
+          prefetch={PREFETCH_LINKS}
           aria-label="Bulan sebelumnya"
         >
           ‹
         </Link>
       )}
-      {atMax ? (
+      {next === null ? (
         <span className="cal-arrow is-end" aria-hidden="true">
           ›
         </span>
       ) : (
         <Link
           className="cal-arrow"
-          href={href(next.y, next.m)}
-          prefetch={PREFETCH_DYNAMIC}
+          href={dayHref(ceremony, next)}
+          prefetch={PREFETCH_LINKS}
           aria-label="Bulan berikutnya"
         >
           ›
@@ -94,8 +84,6 @@ export function MiniCalendar({
   const days = month.days;
   if (days.length === 0) return null;
   const lead = new Date(days[0]!.date).getUTCDay();
-  const today = todayISO();
-  const view = `${month.year}-${String(month.month).padStart(2, '0')}`;
 
   // Chunk lead blanks + days into table rows of 7.
   type Cell = (typeof days)[number] | null;
@@ -127,20 +115,17 @@ export function MiniCalendar({
               const sasih = d.info.sasih;
               const moon = sasih.isPurnama ? 'PUR' : sasih.isTilem ? 'TIL' : '';
               const isSel = iso === selected;
-              const isToday = iso === today;
-              const cls = [
-                'day',
-                `r-${rating}`,
-                isSel ? 'is-selected' : '',
-                isToday ? 'is-today' : '',
-              ]
+              const cls = ['day', `r-${rating}`, isSel ? 'is-selected' : '']
                 .filter(Boolean)
                 .join(' ');
               return (
                 <td key={iso}>
+                  {/* `data-date` is how TodayMarker finds today in the browser —
+                      it cannot be rendered here, these pages are cached forever. */}
                   <Link
-                    href={`/?ceremony=${ceremony}&date=${iso}&view=${view}`}
-                    prefetch={PREFETCH_DYNAMIC}
+                    href={dayHref(ceremony, iso)}
+                    prefetch={PREFETCH_LINKS}
+                    data-date={iso}
                     className={cls}
                     aria-label={`${dayNum} — ${PRINT_VERDICT[rating].word}${moon ? `, ${moon === 'PUR' ? 'purnama' : 'tilem'}` : ''}`}
                     aria-current={isSel ? 'date' : undefined}

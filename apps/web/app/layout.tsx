@@ -4,7 +4,6 @@ import 'react-day-picker/style.css';
 import type { Metadata } from 'next';
 import { Besley, Libre_Franklin } from 'next/font/google';
 import Link from 'next/link';
-import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import type { ReactNode } from 'react';
 
 import { ContrastToggle } from '@/components/contrast-toggle';
@@ -85,45 +84,44 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <NuqsAdapter>
-          <ThemeProvider>
-            <a className="skip-link" href="#konten">
-              Lewati ke konten
-            </a>
-            {/* The calendar's binding strip — signature pattern #4. */}
-            <div className="redband" aria-hidden="true" />
-            <div className="wrap">
-              <header className="masthead anim d1">
-                <Link className="brand" href="/" aria-label="Dewasa Ayu — beranda">
-                  <span className="name">
-                    Dewasa <em>Ayu</em>
-                    <small>Pencari Hari Wariga</small>
-                  </span>
-                </Link>
-                <div className="tools">
-                  <FontToggle />
-                  <ContrastToggle />
-                  <ThemeCycle />
-                </div>
-              </header>
-              <main id="konten" tabIndex={-1}>
-                {children}
-              </main>
-            </div>
-
-            <footer className="site-footer">
-              <div className="foot">
-                <SealIcon className="seal" />
-                <p>
-                  <em>Catatan.</em> Platform ini menyediakan perhitungan referensi berdasarkan
-                  pedoman <em>Wariga</em> umum, bukan pengganti konsultasi <em>Sulinggih</em> atau{' '}
-                  <em>Pemangku</em>. Perhitungan Sasih bersifat estimasi dan dapat berbeda dengan
-                  variasi tradisi regional.
-                </p>
+        <ThemeProvider>
+          <a className="skip-link" href="#konten">
+            Lewati ke konten
+          </a>
+          {/* The calendar's binding strip — signature pattern #4. */}
+          <div className="redband" aria-hidden="true" />
+          <div className="wrap">
+            <header className="masthead anim d1">
+              {/* `/` resolves today and redirects, so there is nothing to prefetch. */}
+              <Link className="brand" href="/" prefetch={false} aria-label="Dewasa Ayu — beranda">
+                <span className="name">
+                  Dewasa <em>Ayu</em>
+                  <small>Pencari Hari Wariga</small>
+                </span>
+              </Link>
+              <div className="tools">
+                <FontToggle />
+                <ContrastToggle />
+                <ThemeCycle />
               </div>
-            </footer>
-          </ThemeProvider>
-        </NuqsAdapter>
+            </header>
+            <main id="konten" tabIndex={-1}>
+              {children}
+            </main>
+          </div>
+
+          <footer className="site-footer">
+            <div className="foot">
+              <SealIcon className="seal" />
+              <p>
+                <em>Catatan.</em> Platform ini menyediakan perhitungan referensi berdasarkan pedoman{' '}
+                <em>Wariga</em> umum, bukan pengganti konsultasi <em>Sulinggih</em> atau{' '}
+                <em>Pemangku</em>. Perhitungan Sasih bersifat estimasi dan dapat berbeda dengan
+                variasi tradisi regional.
+              </p>
+            </div>
+          </footer>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -29,7 +29,7 @@ test.describe('Rekomendasi', () => {
     const firstISO = utcToISO(expected.dates[0]!.date);
     await rekomendasi.goto({ ceremony: CEREMONY, from: FROM });
     await rekomendasi.cards().first().click();
-    await expect(page).toHaveURL(new RegExp(`[?&]date=${firstISO}(&|$)`));
+    await expect(page).toHaveURL(new RegExp(`/${CEREMONY}/${firstISO}$`));
     await expect(page.locator('#verdict-h')).toBeVisible();
   });
 });

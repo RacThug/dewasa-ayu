@@ -2,14 +2,14 @@ import type { MetadataRoute } from 'next';
 
 import { SITE_URL } from '@/lib/site-url';
 
-/** The calendar links every day, month and ceremony as a `/?ceremony=…&date=…&view=…`
- *  URL, so the crawlable space is combinatorially unbounded (6 ceremonies ×
- *  ~35,000 dates × ~1,170 months) while every one of those URLs is a dynamic,
- *  uncached server render. Left open, a single crawler walks it forever and burns
- *  the whole compute budget; `/` is the canonical for all of them anyway.
+/** Content lives at `/{ceremony}/{date}` now, and no real page depends on a query
+ *  string -- the only ones left are `?scrollTo=` and the legacy `/?ceremony=…`
+ *  links, which redirect to the canonical path. So `Disallow: /*?` costs nothing
+ *  and keeps duplicate, parameterised copies out of the index.
  *
- *  `Disallow: /*?` blocks any URL carrying a query string. The real pages -- `/`,
- *  `/about`, `/upacara/*`, `/sitemap.xml` -- have none, so they stay indexable. */
+ *  The crawl delay stays: dated pages outside the prerendered window are built on
+ *  first request, so an unthrottled crawler walking the 2003-2100 range would pay
+ *  for each of them once. They are cached permanently afterwards. */
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
