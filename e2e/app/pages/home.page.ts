@@ -4,10 +4,17 @@ import { expect, type Locator, type Page } from '@playwright/test';
 export class HomePage {
   constructor(private readonly page: Page) {}
 
+  /** Verdicts live at `/{ceremony}/{date}`. Without both, go through `/`, which
+   *  resolves today (and any legacy query string) and redirects to that URL. */
   async goto(params?: { ceremony?: string; date?: string }): Promise<void> {
+    const { ceremony, date } = params ?? {};
+    if (ceremony && date) {
+      await this.page.goto(`/${ceremony}/${date}`);
+      return;
+    }
     const qs = new URLSearchParams();
-    if (params?.ceremony) qs.set('ceremony', params.ceremony);
-    if (params?.date) qs.set('date', params.date);
+    if (ceremony) qs.set('ceremony', ceremony);
+    if (date) qs.set('date', date);
     await this.page.goto(qs.toString() ? `/?${qs.toString()}` : '/');
   }
 

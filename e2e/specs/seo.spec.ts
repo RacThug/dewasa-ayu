@@ -14,8 +14,8 @@ test.describe('SEO infra', () => {
   test('per-page titles differ (about vs home; /kalender redirects home)', async ({ page }) => {
     // /kalender folded into the consolidated home (PR #63) — old links redirect.
     await page.goto('/kalender?ceremony=pawiwahan&year=2026&month=9');
-    await expect(page).toHaveURL(/[?&]view=2026-09(&|$)/);
-    await expect(page).toHaveTitle(/Cek hari baik Pawiwahan/);
+    await expect(page).toHaveURL(/\/pawiwahan\/2026-09-01/);
+    await expect(page).toHaveTitle(/hari baik Pawiwahan/);
     await page.goto('/about');
     await expect(page).toHaveTitle(/^Tentang — Dewasa Ayu$/);
   });

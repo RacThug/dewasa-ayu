@@ -1,14 +1,15 @@
 'use client';
 
-import { useQueryStates } from 'nuqs';
+import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 
 import { DatePicker } from '@/components/date-picker';
 import { todayISO } from '@/lib/display';
-import { searchParamsParsers } from '@/lib/search-params';
+import { dayHref } from '@/lib/routes';
 
 // The engine's supported Sasih range (see wariga-engine getSupportedRange()).
-const MIN = '2003-01-03';
+// February 2003 is the first month the grid can show in full.
+const MIN = '2003-02-01';
 const MAX = '2100-12-31';
 
 function clampISO(iso: string): string {
@@ -26,18 +27,17 @@ function shift(iso: string, days: number): string {
 }
 
 /**
- * Date stepper for the consolidated home view.
- * Utilizes `nuqs` useQueryStates for type-safe and shallow URL updates.
+ * Date stepper for the consolidated home view. Navigates to the target date's
+ * own URL, which is a permanently cached page -- so stepping through days is a
+ * CDN hit, not a server render.
  */
 export function DateControls({ ceremony, date }: { ceremony: string; date: string }) {
-  const [, setQuery] = useQueryStates(searchParamsParsers, { shallow: false }); // Disable shallow to let server re-fetch Data
+  const router = useRouter();
   const [pending, startTransition] = useTransition();
 
   const go = (iso: string): void => {
-    const clamped = clampISO(iso);
-    const view = clamped.slice(0, 7); // YYYY-MM
     startTransition(() => {
-      setQuery({ ceremony, date: clamped, view });
+      router.push(dayHref(ceremony, clampISO(iso)));
     });
   };
 

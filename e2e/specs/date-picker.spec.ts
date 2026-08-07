@@ -7,7 +7,7 @@ test('date picker: choosing a day checks that date immediately', async ({ home, 
   // Selecting a day navigates right away (no separate submit on the
   // consolidated home).
   await home.pickDayOfMonth(20);
-  await expect(page).toHaveURL(/[?&]date=2026-09-20(&|$)/);
+  await expect(page).toHaveURL(/\/pawiwahan\/2026-09-20$/);
   await expect(home.pickerTrigger()).toContainText('20 September 2026');
   await expect(home.verdict()).toBeVisible();
 });
