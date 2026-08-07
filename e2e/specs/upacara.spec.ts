@@ -11,8 +11,8 @@ test.describe('Upacara (/upacara/[ceremony])', () => {
   test('the CTA links to the check page for that ceremony', async ({ page }) => {
     await page.goto('/upacara/usaha');
     await page.locator('.up-cta').getByRole('link', { name: 'Cek Hari' }).click();
-    // The CTA goes through `/`, which resolves today and redirects (#74).
-    await expect(page).toHaveURL(/\/usaha\/\d{4}-\d{2}-\d{2}$/);
+    // `/{ceremony}` is that ceremony's cached "today" page (#74).
+    await expect(page).toHaveURL(/\/usaha$/);
     await expect(page.locator('#verdict-h')).toBeVisible();
   });
 });
