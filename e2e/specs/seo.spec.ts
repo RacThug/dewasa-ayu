@@ -63,6 +63,37 @@ test.describe('SEO infra', () => {
     expect(xml).not.toContain('/rekomendasi');
   });
 
+  test('every static route the sitemap submits declares its own canonical', async ({
+    page,
+    request,
+  }) => {
+    // Search Console reports a submitted URL with no user-declared canonical as an
+    // issue, and it is invisible until you look: the page renders perfectly.
+    // /about shipped without one for exactly that reason.
+    const xml = await (await request.get('/sitemap.xml')).text();
+    const routes = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)]
+      .map((m) => new URL(m[1]!).pathname)
+      .filter((p) => !/\/\d{4}-\d{2}-\d{2}$/.test(p)); // dated pages sampled separately
+
+    expect(routes.length).toBeGreaterThan(0);
+    for (const route of routes) {
+      await page.goto(route);
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+        'href',
+        new RegExp(`${route.replace(/\/$/, '')}/?$`),
+        { timeout: 5_000 },
+      );
+    }
+  });
+
+  test('a dated verdict page canonicalises to itself', async ({ page }) => {
+    await page.goto('/pawiwahan/2026-09-15');
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      /\/pawiwahan\/2026-09-15$/,
+    );
+  });
+
   test('the OG image route actually renders an image', async ({ page, request }) => {
     await page.goto('/');
     const ogUrl = await page.locator('meta[property="og:image"]').getAttribute('content');
