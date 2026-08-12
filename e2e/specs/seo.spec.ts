@@ -11,6 +11,18 @@ test.describe('SEO infra', () => {
     expect(ld).toContain('WebApplication');
   });
 
+  test('the Search Console ownership tag is served on every page', async ({ page }) => {
+    // Deleting this tag silently un-verifies the property: the site keeps working,
+    // Search Console just stops reporting. Nothing else would catch it.
+    for (const route of ['/', '/about', '/pawiwahan/2026-09-15']) {
+      await page.goto(route);
+      await expect(page.locator('meta[name="google-site-verification"]')).toHaveAttribute(
+        'content',
+        /^\S{20,}$/,
+      );
+    }
+  });
+
   test('per-page titles differ (about vs home; /kalender redirects home)', async ({ page }) => {
     // /kalender folded into the consolidated home (PR #63) — old links redirect.
     await page.goto('/kalender?ceremony=pawiwahan&year=2026&month=9');
