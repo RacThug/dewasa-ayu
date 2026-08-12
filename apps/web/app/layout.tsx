@@ -61,6 +61,10 @@ export const metadata: Metadata = {
   },
   twitter: { card: 'summary_large_image' },
   robots: { index: true, follow: true },
+  // Proves site ownership to Google Search Console. Public by design (Google
+  // reads it from the served HTML), not a secret. Removing it un-verifies the
+  // property, so it stays even after verification succeeds.
+  verification: { google: 'hA5NepM4UWDg24aThASkDmhnhqlzEFHvAqEz7NAz4H4' },
 };
 
 const jsonLd = {
