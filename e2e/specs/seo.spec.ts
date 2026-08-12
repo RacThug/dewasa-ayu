@@ -28,6 +28,29 @@ test.describe('SEO infra', () => {
     expect(body.toLowerCase()).toContain('sitemap:');
   });
 
+  test('robots.txt fences the dated pages to the years the sitemap submits', async ({
+    request,
+  }) => {
+    // `/{ceremony}/{date}` spans 2003-2100 and every page links to ~44 more of
+    // them. Without this fence a crawler walks the whole space, rendering each
+    // one cold. The fence must track the URL shape: when the verdict pages moved
+    // from `?date=` to `/{ceremony}/{date}`, the old `Disallow: /*?` silently
+    // stopped covering them.
+    const body = await (await request.get('/robots.txt')).text();
+    const year = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Makassar' })
+      .format(new Date())
+      .slice(0, 4);
+
+    for (const ceremony of ['pawiwahan', 'usaha']) {
+      expect(body).toContain(`Disallow: /${ceremony}/`);
+      expect(body).toContain(`Allow: /${ceremony}/${year}-`);
+      expect(body).toContain(`Allow: /${ceremony}/${Number(year) + 1}-`);
+      // Out-of-window years are covered by the ceremony-wide Disallow, which
+      // only holds while no broader Allow re-opens them.
+      expect(body).not.toContain(`Allow: /${ceremony}/2050-`);
+    }
+  });
+
   test('sitemap.xml lists the real pages (and not the folded-in redirects)', async ({
     request,
   }) => {
