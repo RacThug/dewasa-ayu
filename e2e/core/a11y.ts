@@ -12,15 +12,34 @@ const BLOCKING = new Set(['serious', 'critical']);
 export async function checkA11y(page: Page, opts?: { disableRules?: string[] }): Promise<void> {
   // Let the page settle so axe reads its final, fully-styled state — not a
   // frame mid-render or mid entrance-animation. Under heavy parallel load this
-  // is what prevents false color-contrast positives. We: (1) disable
+  // is what prevents false color-contrast positives. We: (1) disable CSS
   // animations/transitions so elements sit at their resting (end) state,
-  // (2) wait for network idle + web fonts, and (3) wait for a painted frame.
+  // (2) wait for network idle, (3) fast-forward script-driven animations, and
+  // (4) wait for web fonts + a painted frame.
   await page.addStyleTag({
     content:
       '*, *::before, *::after { animation-duration: 0s !important; animation-delay: 0s !important; transition-duration: 0s !important; transition-delay: 0s !important; }',
   });
   await page.waitForLoadState('networkidle');
   await page.evaluate(async () => {
+    // The CSS override above only reaches animations the stylesheet owns.
+    // Script-driven ones (Framer Motion, GSAP, anything on the Web Animations
+    // API) ignore it entirely, so axe can sample an element mid-fade and report
+    // the blended color as a contrast failure — a false positive that moves with
+    // machine load. Jumping each finite animation to its end state is both
+    // faster and more deterministic than waiting one out.
+    const finite = document
+      .getAnimations()
+      .filter((a) => a.effect?.getComputedTiming().iterations !== Infinity);
+    for (const a of finite) {
+      try {
+        a.finish();
+      } catch {
+        // Unresolved/zero-duration effects throw; they have no midpoint to catch.
+      }
+    }
+    await Promise.allSettled(finite.map((a) => a.finished));
+
     await document.fonts.ready;
     await new Promise<void>((resolve) => {
       requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
