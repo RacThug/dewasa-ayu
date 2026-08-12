@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   title: 'Tentang',
   description:
     'Apa itu Dewasa Ayu, cara kerjanya, dan posisinya sebagai rujukan berdasarkan pedoman Wariga umum — bukan pengganti konsultasi Sulinggih atau Pemangku.',
+  // Every other page the sitemap submits declares one; without it Search Console
+  // reports this URL as having no user-declared canonical.
+  alternates: { canonical: '/about' },
 };
 
 export default function About() {
