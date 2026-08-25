@@ -160,9 +160,9 @@ Session 1 builds; Session 2 reviews with fresh eyes — no ego in the code, so i
 ## Project Facts _(this is the part that changes)_
 
 - **Rate (for estimates)**: Not set — internal product, no client billing. Estimate in time/effort; ask Rac before quoting any Rupiah figure (never invent rates).
-- **Stage**: **Shipped v0.1 and live in production** (2026-08-02; URL/caching rework 2026-08-07; crawl fence 2026-08-12) — https://dewasa-ayu-web.vercel.app, deployed from `main`. Engine complete (Pawukon, Wewaran, Sasih, `detectDewasa`, `evaluate`, `findGoodDates`), API read Slice 1 complete, web complete through the "Pananggalan" rework. `apps/web` is deployed; **`apps/api` is deliberately not** (see the 2026-08-02 decision). Open threads: dewasa rules still need **human expert verification** (#59), API slices 2–3 (cache/DB/auth) not started, CI still parked (#15).
+- **Stage**: **Shipped v0.1 and live in production** (2026-08-02; URL/caching rework 2026-08-07; crawl fence 2026-08-12) — https://dewasa-ayu-web.vercel.app, deployed from `main`. Engine complete (Pawukon, Wewaran, Sasih, `detectDewasa`, `evaluate`, `findGoodDates`), API read Slice 1 complete, web complete through the "Pananggalan" rework. `apps/web` is deployed; **`apps/api` is deliberately not** (see the 2026-08-02 decision). Open threads: dewasa rules still need **human expert verification** (#88 — a launch gate in Phase 8, not engine work), API slices 2–3 (cache/DB/auth) not started, CI still parked (#15).
 - **Tech stack**: Turborepo + pnpm monorepo.
-  - `apps/web` — Next.js 16 App Router (Turbopack default, React 19), Tailwind v4, shadcn/ui (Radix), Framer Motion, react-query, nuqs (URL state), next-intl.
+  - `apps/web` — Next.js 16 App Router (Turbopack default, React 19), Tailwind v4, Radix popover, Framer Motion, react-day-picker, next-themes. **No react-query / nuqs / next-intl**: state lives in the route path (2026-08-07 decision) and the engine runs in-process (2026-08-02), so neither a client cache nor a URL-state library is used.
   - `apps/api` — NestJS + Swagger + Throttler + cache-manager.
   - `packages/wariga-engine` — pure TypeScript, **zero external deps**, runs in browser + Node (<30 KB gzipped).
   - `packages/{ceremony-rules, types, constants}` — per-ceremony config, shared Zod/TS types, static Wariga data.
@@ -183,4 +183,4 @@ Session 1 builds; Session 2 reviews with fresh eyes — no ego in the code, so i
   - Always present the app as a **reference, not a substitute for Sulinggih/Pemangku consultation** — disclaimer always visible.
   - Use "disarankan/dihindari", never "dilarang/wajib". Sasih = **estimasi**. Not affiliated with PHDI. Credit every source. Core features always free.
   - Full detail: PRD §18 + `DESIGN.md` voice & tone.
-- **Active sprint / tracking**: GitHub **Issues + Milestones** (Phases 0–8). Currently in **Phase 0: Setup** (#10–#16). This task = #16.
+- **Active sprint / tracking**: GitHub **Issues + Milestones** (Phases 0–8). **Phase 0 (Setup) and Phase 1 (Wariga Engine) are closed** — epics #1 and #2; Phase 1 exit evidence is recorded in ENG-001 §Verification status. Phase 2 (API, #3) is part-done: read Slice 1 ships, slices 2–3 open. Phase 3 (Frontend Core, #4) shipped its scope with the deviations logged on the epic. Next gate: **#88** — expert verification of the dewasa rules (Phase 8), which is what still keeps every verdict labelled _estimasi_.

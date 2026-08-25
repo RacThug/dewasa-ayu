@@ -27,7 +27,8 @@ export {
   getTriwara,
 } from './wewaran';
 
-export const ENGINE_VERSION: SemVer = '0.0.0';
+/** Tracks the ENG-001 contract version this engine implements (spec + code bump together). */
+export const ENGINE_VERSION: SemVer = '0.7.0';
 
 /** Liveness placeholder used by the web skeleton to prove cross-package wiring. */
 export function ping(): string {
